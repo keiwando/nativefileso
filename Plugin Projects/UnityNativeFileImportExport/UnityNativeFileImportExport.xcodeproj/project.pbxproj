@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		BB682B3A215231E000FE6534 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB682B39215231E000FE6534 /* AppKit.framework */; };
-		BB73DED921519587001A0EED /* Plugin.mm in Sources */ = {isa = PBXBuildFile; fileRef = BB73DED821519587001A0EED /* Plugin.mm */; };
+		BB682B3B215244EA00FE6534 /* Plugin.mm in Sources */ = {isa = PBXBuildFile; fileRef = BB73DED821519587001A0EED /* Plugin.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -131,7 +131,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BB73DED921519587001A0EED /* Plugin.mm in Sources */,
+				BB682B3B215244EA00FE6534 /* Plugin.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

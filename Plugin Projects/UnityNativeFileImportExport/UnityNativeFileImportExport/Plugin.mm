@@ -17,8 +17,20 @@ extern "C" {
     }
     
     const char* _openFile() {
-        
+
         NSOpenPanel* panel = [NSOpenPanel openPanel];
+        NSModalResponse response = [panel runModal];
+
+        if (response == NSModalResponseOK) {
+            return [panel.URL.path UTF8String];
+        } else {
+            return "";
+        }
+    }
+    
+    const char* _saveFile() {
+        
+        NSSavePanel* panel = [NSSavePanel savePanel];
         NSModalResponse response = [panel runModal];
         
         if (response == NSModalResponseOK) {

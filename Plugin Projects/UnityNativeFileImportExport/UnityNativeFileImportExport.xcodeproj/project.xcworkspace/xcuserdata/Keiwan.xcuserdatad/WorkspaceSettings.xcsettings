@@ -7,9 +7,9 @@
 	<key>CustomBuildLocationType</key>
 	<string>RelativeToDerivedData</string>
 	<key>DerivedDataCustomLocation</key>
-	<string>/Users/Keiwan/Documents/UnityProjects/Native File Import Export/Assets/Plugins/macOS</string>
+	<string>DerivedData</string>
 	<key>DerivedDataLocationStyle</key>
-	<string>AbsolutePath</string>
+	<string>WorkspaceRelativePath</string>
 	<key>EnabledFullIndexStoreVisibility</key>
 	<false/>
 	<key>IssueFilterStyle</key>
