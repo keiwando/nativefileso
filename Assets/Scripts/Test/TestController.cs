@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,17 +12,20 @@ public class TestController : MonoBehaviour {
 
 	void Start () {
 
+		FileWriter.WriteTestFile(Application.persistentDataPath);
+
 		exportTestButton.onClick.AddListener(() => ExportTest());
 		importTestButton.onClick.AddListener(() => ImportTest());
 	}
 
 	private void ExportTest() {
 
-		NativeSaveOpen.SaveFile();
+		var testFilePath = Path.Combine(Application.persistentDataPath, "Test.evol");
+		NativeFileSO.shared.SaveFile(testFilePath);
 	}
 
 	private void ImportTest() {
 
-		NativeSaveOpen.OpenFile();
+		NativeFileSO.shared.OpenFile();
 	}
 }
