@@ -21,11 +21,12 @@ public class TestController : MonoBehaviour {
 	private void ExportTest() {
 
 		var testFilePath = Path.Combine(Application.persistentDataPath, "Test.evol");
-		NativeFileSO.shared.SaveFile(testFilePath);
+		NativeFileSO.shared.SaveFile(testFilePath, "Test", "evol");
 	}
 
 	private void ImportTest() {
 
-		NativeFileSO.shared.OpenFile();
+		var extensions = new string[] { "evol", "creat" };
+		NativeFileSO.shared.OpenFile(extensions);
 	}
 }

@@ -17,8 +17,9 @@
 
 @implementation NativeFileSO
 
-+ (const char *)fileOpen:(NSArray<NSString *> *)fileExtensions {
++ (const char *)fileOpen:(NSString *)extensions {
     
+    NSArray *fileExtensions = [self extractExtensions:extensions];
     NSOpenPanel* panel = [self createOpenPanel:fileExtensions];
     NSModalResponse response = [panel runModal];
     
@@ -29,9 +30,11 @@
     }
 }
 
-+ (const char *)fileSave:(NSString *)originalPath {
++ (const char *)fileSave:(NSString *)extension
+                    name:(NSString *)name {
     
-    NSSavePanel* panel = [NSSavePanel savePanel];
+    NSArray *fileExtensions = [NSArray arrayWithObjects:extension, nil];
+    NSSavePanel* panel = [self createSavePanel:fileExtensions name:name];
     NSModalResponse response = [panel runModal];
     
     if (response == NSModalResponseOK) {
@@ -49,9 +52,29 @@
     [panel setAllowedFileTypes:fileExtensions];
     [panel setFloatingPanel:YES];
     [panel setCanChooseFiles:TRUE];
+    [panel setCanCreateDirectories:NO];
     [panel setAllowsMultipleSelection:NO];
     
     return panel;
+}
+
++ (NSSavePanel *)createSavePanel:(NSArray<NSString *> *)fileExtensions
+                            name:(NSString *)name {
+    
+    NSSavePanel *panel = [NSSavePanel savePanel];
+    
+    [panel setCanCreateDirectories:NO];
+    [panel setAllowedFileTypes:fileExtensions];
+    [panel setFloatingPanel:YES];
+    [panel setCanCreateDirectories:YES];
+    [panel setNameFieldStringValue:name];
+    
+    return panel;
+}
+
++ (NSArray<NSString *> *)extractExtensions:(NSString *)extensions {
+    
+    return [extensions componentsSeparatedByString:@"%"];
 }
 
 @end

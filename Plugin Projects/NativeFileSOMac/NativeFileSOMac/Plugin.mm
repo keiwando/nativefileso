@@ -12,14 +12,15 @@
 
 extern "C" {
     
-    const char* _openFile() {
+    const char* _openFile(const char* extensions) {
 
-        NSArray<NSString *> *fileExtensions = @[@"evol", @"creat"];
-        return [NativeFileSO fileOpen:fileExtensions];
+        return [NativeFileSO fileOpen:[NSString stringWithUTF8String:extensions]];
     }
     
-    const char* _saveFile(NSString * srcPath) {
+    const char* _saveFile(const char* name,
+                          const char* extension) {
         
-        return [NativeFileSO fileSave:srcPath];
+        return [NativeFileSO fileSave:[NSString stringWithUTF8String:extension]
+                                 name:[NSString stringWithUTF8String:name]];
     }
 }

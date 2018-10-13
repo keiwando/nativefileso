@@ -14,27 +14,32 @@ public class NativeFileSOMacWin : INativeFileSO {
 #endif
 
 	[DllImport(libname)]
-	private static extern IntPtr _openFile();
+	private static extern IntPtr _openFile(string extensions);
 
 	[DllImport(libname)]
-	private static extern IntPtr _saveFile();
+	private static extern IntPtr _saveFile(string name, string extension);
 
-	public void OpenFile() { 
+	public string OpenFile(string[] extensions) {
 
-		var pathPtr = _openFile();
-		var path = Marshal.PtrToStringAnsi(pathPtr);
-		Debug.Log("Path : " + path);
-
-		string contents = File.ReadAllText(path);
-		Debug.Log(contents);
+		var pathPtr = _openFile(EncodeExtensions(extensions));
+		return Marshal.PtrToStringAnsi(pathPtr);
 	}
 
-	public void SaveFile(string srcPath) { 
+	public void SaveFile(string srcPath, 
+	                     string filename, 
+	                     string extension) {
 
-		var pathPtr = _saveFile();
+		var pathPtr = _saveFile(filename, extension);
 		var path = Marshal.PtrToStringAnsi(pathPtr);
-		Debug.Log("Path : " + path);
+
+		Debug.Log("Save Path : " + path);
 
 		File.Copy(srcPath, path);
+	}
+
+	// MARK: - Helpers
+	private string EncodeExtensions(string[] extensions) {
+
+		return string.Join("%", extensions);
 	}
 }

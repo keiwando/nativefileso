@@ -2,6 +2,9 @@
 
 public interface INativeFileSO {
 
-	void OpenFile();
-	void SaveFile(string srcPath);
+	string OpenFile(string[] extensions);
+
+	void SaveFile(string srcPath, 
+	              string filename, 
+	              string extension);
 }

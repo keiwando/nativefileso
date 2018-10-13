@@ -14,8 +14,10 @@
 
 @interface NativeFileSO : NSObject
 
-+ (const char *) fileOpen:(NSArray<NSString *> *)fileExtensions;
-+ (const char *) fileSave:(NSString *)originalPath;
++ (const char *) fileOpen:(NSString *)extensions;
+
++ (const char *) fileSave:(NSString *)extension
+                     name:(NSString *)name;
 
 @end
 
