@@ -10,7 +10,7 @@ public class NativeFileSOMacWin : INativeFileSO {
 #elif UNITY_STANDALONE_WIN
 	private const string libname = "";
 #else
-	private const string libname = "";
+	private const string libname = "NativeFileSO";
 #endif
 
 	[DllImport(libname)]
