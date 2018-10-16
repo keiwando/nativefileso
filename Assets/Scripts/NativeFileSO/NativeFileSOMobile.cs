@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
@@ -7,20 +8,30 @@ public class NativeFileSOMobile : INativeFileSO {
 #if UNITY_IOS
 
 	[DllImport("__Internal")]
-	private static extern IntPtr _openFile(string extensions);
+	private static extern IntPtr pluginOpenFile(string extensions);
 
 	[DllImport("__Internal")]
-	private static extern void _saveFile(string srcPath, string name);
+	private static extern void pluginSaveFile(string srcPath, string name);
+
+	[DllImport("__Internal")]
+	private static extern IntPtr pluginGetOpenURL();
 
 #elif UNITY_ANDROID
 
 #endif
 
+	public string TryOpenURL() {
 
+		return OpenFile(null);
+	}
 
 	public string OpenFile(string[] extensions) {
-
+		
+#if UNITY_IOS
+		return Marshal.PtrToStringAnsi(pluginGetOpenURL());
+#elif UNITY_ANDROID
 		return "";
+#endif
 	}
 
 	public void SaveFile(string srcPath,
@@ -29,7 +40,7 @@ public class NativeFileSOMobile : INativeFileSO {
 
 #if UNITY_IOS
 
-		_saveFile(srcPath, filename);
+		pluginSaveFile(srcPath, filename);
 
 #elif UNITY_ANDROID
 
@@ -41,4 +52,6 @@ public class NativeFileSOMobile : INativeFileSO {
 		nativeFileSO.CallStatic("SaveFile", currentActivity, srcPath);
 #endif
 	}
+
+
 }

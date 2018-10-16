@@ -7,12 +7,26 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BB68A6222175DBD600CBCFE5 /* libNativeFileSO.a in CopyFiles */ = {isa = PBXBuildFile; fileRef = BB9ADE0F21732E1800C7C911 /* libNativeFileSO.a */; };
+		BB68A6252175E16500CBCFE5 /* NativeFileOpenHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = BB68A6242175E16500CBCFE5 /* NativeFileOpenHandler.m */; };
+		BB68A62A2175EC5F00CBCFE5 /* EPPZSwizzler.m in Sources */ = {isa = PBXBuildFile; fileRef = BB68A6292175EC5F00CBCFE5 /* EPPZSwizzler.m */; };
+		BB68A62D21766FEF00CBCFE5 /* NativeFileOpenURLBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = BB68A62C21766FEF00CBCFE5 /* NativeFileOpenURLBuffer.m */; };
 		BB9ADE1421732E1800C7C911 /* NativeFileSO.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9ADE1321732E1800C7C911 /* NativeFileSO.m */; };
 		BB9ADE1521732E1800C7C911 /* NativeFileSO.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = BB9ADE1221732E1800C7C911 /* NativeFileSO.h */; };
 		BB9ADE1C21732EEA00C7C911 /* Plugin.mm in Sources */ = {isa = PBXBuildFile; fileRef = BB9ADE1B21732EEA00C7C911 /* Plugin.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		BB68A6212175DA3600CBCFE5 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(PROJECT_DIR)/../../../Assets/Plugins/iOS";
+			dstSubfolderSpec = 0;
+			files = (
+				BB68A6222175DBD600CBCFE5 /* libNativeFileSO.a in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BB9ADE0D21732E1800C7C911 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -26,6 +40,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		BB68A6232175E12500CBCFE5 /* NativeFileOpenHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NativeFileOpenHandler.h; sourceTree = "<group>"; };
+		BB68A6242175E16500CBCFE5 /* NativeFileOpenHandler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NativeFileOpenHandler.m; sourceTree = "<group>"; };
+		BB68A6272175EC0F00CBCFE5 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		BB68A6282175EC3900CBCFE5 /* EPPZSwizzler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EPPZSwizzler.h; sourceTree = "<group>"; };
+		BB68A6292175EC5F00CBCFE5 /* EPPZSwizzler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EPPZSwizzler.m; sourceTree = "<group>"; };
+		BB68A62B21766EA300CBCFE5 /* NativeFileOpenURLBuffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NativeFileOpenURLBuffer.h; sourceTree = "<group>"; };
+		BB68A62C21766FEF00CBCFE5 /* NativeFileOpenURLBuffer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NativeFileOpenURLBuffer.m; sourceTree = "<group>"; };
 		BB9ADE0F21732E1800C7C911 /* libNativeFileSO.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libNativeFileSO.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB9ADE1221732E1800C7C911 /* NativeFileSO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NativeFileSO.h; sourceTree = "<group>"; };
 		BB9ADE1321732E1800C7C911 /* NativeFileSO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NativeFileSO.m; sourceTree = "<group>"; };
@@ -43,6 +64,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		BB68A6262175EC0000CBCFE5 /* EPPZSwizzler */ = {
+			isa = PBXGroup;
+			children = (
+				BB68A6272175EC0F00CBCFE5 /* LICENSE */,
+				BB68A6282175EC3900CBCFE5 /* EPPZSwizzler.h */,
+				BB68A6292175EC5F00CBCFE5 /* EPPZSwizzler.m */,
+			);
+			path = EPPZSwizzler;
+			sourceTree = "<group>";
+		};
 		BB9ADE0621732E1800C7C911 = {
 			isa = PBXGroup;
 			children = (
@@ -62,9 +93,14 @@
 		BB9ADE1121732E1800C7C911 /* NativeFileSO */ = {
 			isa = PBXGroup;
 			children = (
+				BB68A6262175EC0000CBCFE5 /* EPPZSwizzler */,
 				BB9ADE1221732E1800C7C911 /* NativeFileSO.h */,
 				BB9ADE1321732E1800C7C911 /* NativeFileSO.m */,
 				BB9ADE1B21732EEA00C7C911 /* Plugin.mm */,
+				BB68A6232175E12500CBCFE5 /* NativeFileOpenHandler.h */,
+				BB68A6242175E16500CBCFE5 /* NativeFileOpenHandler.m */,
+				BB68A62B21766EA300CBCFE5 /* NativeFileOpenURLBuffer.h */,
+				BB68A62C21766FEF00CBCFE5 /* NativeFileOpenURLBuffer.m */,
 			);
 			path = NativeFileSO;
 			sourceTree = "<group>";
@@ -79,6 +115,7 @@
 				BB9ADE0B21732E1800C7C911 /* Sources */,
 				BB9ADE0C21732E1800C7C911 /* Frameworks */,
 				BB9ADE0D21732E1800C7C911 /* CopyFiles */,
+				BB68A6212175DA3600CBCFE5 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -125,7 +162,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BB68A62D21766FEF00CBCFE5 /* NativeFileOpenURLBuffer.m in Sources */,
 				BB9ADE1C21732EEA00C7C911 /* Plugin.mm in Sources */,
+				BB68A6252175E16500CBCFE5 /* NativeFileOpenHandler.m in Sources */,
+				BB68A62A2175EC5F00CBCFE5 /* EPPZSwizzler.m in Sources */,
 				BB9ADE1421732E1800C7C911 /* NativeFileSO.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
