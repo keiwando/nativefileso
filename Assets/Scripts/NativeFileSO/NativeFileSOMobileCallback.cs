@@ -1,35 +1,53 @@
 ﻿using System.IO;
 using UnityEngine;
 
-public class NativeFileSOMobileCallback : MonoBehaviour {
+namespace Keiwando.NativeFileSO { 
 
-	private static NativeFileSOMobileCallback instance;
+	public class NativeFileSOMobileCallback : MonoBehaviour {
 
-	void Awake() {
-		if (instance == null) {
-			instance = this;
-			DontDestroyOnLoad(this.gameObject);
-		} else {
-			Destroy(this.gameObject);
+		public delegate void FileWasOpenedHandler(object sender, string contents);
+
+		public event FileWasOpenedHandler FileWasOpened;
+
+		public static NativeFileSOMobileCallback instance;
+
+		void Awake() {
+			if (instance == null) {
+				instance = this;
+				DontDestroyOnLoad(this.gameObject);
+			} else {
+				Destroy(this.gameObject);
+			}
 		}
-	}
 
-	private void OnApplicationFocus(bool focus) {
+		private void OnApplicationFocus(bool focus) {
 
-		if (focus) {
-			TryOpenURL();	
+			if (focus) {
+				TryOpenURL();
+			}
 		}
-	}
 
-	private void OnApplicationPause(bool pause) {
-		if (!pause) {
-			TryOpenURL();
+		private void OnApplicationPause(bool pause) {
+			if (!pause) {
+				TryOpenURL();
+			}
 		}
-	}
 
-	private void TryOpenURL() { 
-		var contents = new NativeFileSOMobile().TryOpenURL();
+		private void TryOpenURL() {
+			var contents = new NativeFileSOMobile().TryOpenURL();
 
-		Debug.Log(string.Format("File Contents: \n{0}\n ---END OF FILE---", contents));
+			if (FileWasOpened != null) {
+				FileWasOpened(this, contents);
+			}
+		}
+
+		public  void AndroidDidOpenTextFile(string contents) {
+
+			print("AndroidDidOpenTextFile");
+
+			if (FileWasOpened != null) {
+				FileWasOpened(this, contents);
+			}
+		}
 	}
 }

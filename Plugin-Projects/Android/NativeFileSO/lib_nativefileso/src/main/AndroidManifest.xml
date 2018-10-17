@@ -2,6 +2,7 @@
           package="com.keiwando.lib_nativefileso">
 
     <application>
+        <activity android:name="com.keiwando.lib_nativefileso.NativeFileOpenActivity"/>
         <provider
                 android:name="com.keiwando.lib_nativefileso.androidx.core.content.FileProvider"
                 android:authorities="com.keiwando.nativefileso.provider"
