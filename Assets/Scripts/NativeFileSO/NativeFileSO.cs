@@ -6,7 +6,7 @@ namespace Keiwando.NativeFileSO {
 
 	public class NativeFileSO : INativeFileSO {
 
-		public event Action<string> FileWasOpened;
+		public event Action<OpenedFile> FileWasOpened;
 
 #if UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX
 	private static INativeFileSO nativeFileSO = new NativeFileSOMacWin();
@@ -19,27 +19,14 @@ namespace Keiwando.NativeFileSO {
 		public static readonly NativeFileSO shared = new NativeFileSO();
 
 		private NativeFileSO() {
-			NativeFileSOMobileCallback.instance.FileWasOpened +=
-				delegate (object o, string contents) {
 
-					if (FileWasOpened != null) {
-						FileWasOpened(contents);
-					}
-				};
+			nativeFileSO.FileWasOpened += OnFileOpened;
+
 		}
 
-		public string OpenFile(string[] extensions) {
+		public void OpenFile(string[] extensions) {
 
-			var path = nativeFileSO.OpenFile(extensions);
-
-			Debug.Log("Path : " + path);
-
-			if (path == "") return "";
-
-			string contents = File.ReadAllText(path);
-			Debug.Log(contents);
-
-			return path;
+			nativeFileSO.OpenFile(extensions);
 		}
 
 		public void SaveFile(string srcPath,
@@ -47,6 +34,13 @@ namespace Keiwando.NativeFileSO {
 							 string extension) {
 
 			nativeFileSO.SaveFile(srcPath, filename, extension);
+		}
+
+		private void OnFileOpened(OpenedFile file) {
+			Debug.Log("OnFileOpened");
+			if (FileWasOpened != null) {
+				FileWasOpened(file);
+			}
 		}
 	}
 }

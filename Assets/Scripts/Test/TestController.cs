@@ -21,9 +21,9 @@ public class TestController : MonoBehaviour {
 		exportTestButton.onClick.AddListener(() => ExportTest());
 		importTestButton.onClick.AddListener(() => ImportTest());
 
-		NativeFileSO.shared.FileWasOpened += delegate(string contents) {
+		NativeFileSO.shared.FileWasOpened += delegate(OpenedFile file) {
 
-			ShowContents(contents);
+			ShowContents(file);
 		};
 	}
 
@@ -36,13 +36,14 @@ public class TestController : MonoBehaviour {
 	private void ImportTest() {
 
 		var extensions = new string[] { "evol", "creat" };
-		var contents = NativeFileSO.shared.OpenFile(extensions);
-
-		//ShowContents(contents);
+		NativeFileSO.shared.OpenFile(extensions);
 	}
 
-	private void ShowContents(string contents) { 
-		var output = string.Format("File Contents: \n{0}\n ---END OF FILE---", contents);
+	private void ShowContents(OpenedFile file) {
+
+		var output = string.Format("File Contents: \n{0}\n --- EOF ---\n{1} bytes\n{2}\n{3}", 
+		                           file.stringContents, file.data.Length, 
+		                           file.name, file.extension);
 		Debug.Log(output);
 		textField.text = output;
 	}

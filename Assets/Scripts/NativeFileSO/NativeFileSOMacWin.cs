@@ -21,10 +21,41 @@ namespace Keiwando.NativeFileSO {
 		[DllImport(libname)]
 		private static extern IntPtr _saveFile(string name, string extension);
 
-		public string OpenFile(string[] extensions) {
+
+		public event Action<OpenedFile> FileWasOpened;
+
+		public void OpenFile(string[] extensions) {
 
 			var pathPtr = _openFile(EncodeExtensions(extensions));
-			return Marshal.PtrToStringAnsi(pathPtr);
+			var path = Marshal.PtrToStringAnsi(pathPtr);
+
+			Debug.Log("Path : " + path);
+
+			if (path == "" || FileWasOpened == null) return;
+
+			byte[] data = File.ReadAllBytes(path);
+
+			string contents = "";
+			bool isTextFile = true;
+			try {
+				contents = File.ReadAllText(path);
+				isTextFile = false;
+			} catch (Exception e) {
+				Debug.Log(e.StackTrace);
+			}
+
+			var name = Path.GetFileName(path);
+			var extension = Path.GetExtension(path);
+
+			var file = new OpenedFile {
+				name = name,
+				extension = extension,
+				isTextFile = isTextFile,
+				stringContents = contents,
+				data = data
+			};
+
+			FileWasOpened(file);
 		}
 
 		public void SaveFile(string srcPath,

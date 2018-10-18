@@ -5,7 +5,7 @@ namespace Keiwando.NativeFileSO {
 
 	public class NativeFileSOMobileCallback : MonoBehaviour {
 
-		public delegate void FileWasOpenedHandler(object sender, string contents);
+		public delegate void FileWasOpenedHandler(OpenedFile file);
 
 		public event FileWasOpenedHandler FileWasOpened;
 
@@ -20,34 +20,44 @@ namespace Keiwando.NativeFileSO {
 			}
 		}
 
+		private void Start() {
+			TryRetrieveOpenedFile();
+		}
+
 		private void OnApplicationFocus(bool focus) {
 
 			if (focus) {
-				TryOpenURL();
+				TryRetrieveOpenedFile();
 			}
 		}
 
 		private void OnApplicationPause(bool pause) {
 			if (!pause) {
-				TryOpenURL();
+				TryRetrieveOpenedFile();
 			}
 		}
 
-		private void TryOpenURL() {
-			var contents = new NativeFileSOMobile().TryOpenURL();
+		private void TryRetrieveOpenedFile() {
 
-			if (FileWasOpened != null) {
-				FileWasOpened(this, contents);
+			if (FileWasOpened == null) return;
+
+			var fileSO = new NativeFileSOMobile();
+
+			fileSO.LoadIfTemporaryAvailable(); 
+
+			if (fileSO.IsFileOpened()) { 
+
+				var file = new NativeFileSOMobile().GetOpenedFile();
+
+				FileWasOpened(file);
 			}
 		}
 
-		public  void AndroidDidOpenTextFile(string contents) {
+		public void AndroidDidOpenTextFile(string message) {
 
 			print("AndroidDidOpenTextFile");
 
-			if (FileWasOpened != null) {
-				FileWasOpened(this, contents);
-			}
+			TryRetrieveOpenedFile();
 		}
 	}
 }

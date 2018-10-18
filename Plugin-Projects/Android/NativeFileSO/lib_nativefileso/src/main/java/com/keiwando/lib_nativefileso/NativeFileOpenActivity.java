@@ -9,79 +9,83 @@ import android.os.Debug;
 import android.util.Log;
 import com.keiwando.lib_nativefileso.androidx.annotation.Nullable;
 import com.unity3d.player.UnityPlayer;
+import com.unity3d.player.UnityPlayerActivity;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 public class NativeFileOpenActivity extends Activity {
 
     private final int REQUEST_CODE = 1;
 
-    public static String fileContents = "";
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String extension = getIntent().getStringExtra("extension");
+        Intent lastIntent = getIntent();
 
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT); // 4.4+
-        //intent.setType("text/" + extension);
-        intent.setType("text/plain");
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        if (lastIntent.getBooleanExtra("openedFromNativeFileSO", false)) {
 
-        startActivityForResult(Intent.createChooser(intent, "Select a file"), REQUEST_CODE);
+            String extension = lastIntent.getStringExtra("extension");
+
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT); // 4.4+
+            //intent.setType("text/" + extension);
+            intent.setType("*/*");
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+            Log.d("Plugin DEBUG", "Showing Chooser");
+
+            startActivityForResult(Intent.createChooser(intent, "Select a file"), REQUEST_CODE);
+
+        } else {
+
+            Log.d("Plugin DEBUG", "Opened externally");
+
+            // File is trying to be openend externally
+            Uri uri = (Uri)lastIntent.getExtras().get(Intent.EXTRA_STREAM);
+            if (uri != null) {
+
+                //NativeFileOpenURLBuffer.getInstance().loadFileFromUri(uri, getContentResolver());
+                NativeFileOpenURLBuffer.getInstance().saveFileInCacheDir(uri, getCacheDir(), getContentResolver());
+
+                Intent launchIntent = getPackageManager().getLaunchIntentForPackage(UnityPlayer.currentActivity.getPackageName());
+                launchIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(launchIntent);
+
+            } else {
+                Log.d("Plugin DEBUG", "No Uri");
+                finish();
+            }
+        }
+
+
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        Log.d("Plugin DEBUG", "OnActivity result " + (data == null));
+
         if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
 
             if (data != null) {
                 Uri uri = data.getData();
 
-                ContentResolver resolver = getContentResolver();
-                InputStream stream;
-                try {
-                    stream = resolver.openInputStream(uri);
-
-                    ByteArrayOutputStream result = new ByteArrayOutputStream();
-                    byte[] buffer = new byte[1024];
-                    int length;
-                    while ((length = stream.read(buffer)) != -1) {
-                        Log.d("Buffer write", "B");
-                        result.write(buffer, 0, length);
-                    }
-                    fileContents = result.toString("UTF-8");
-
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                    finish();
-                    return;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    finish();
-                    return;
-                }
-
-                Log.d("Stream Contents", fileContents);
-
-                finish();
+                NativeFileOpenURLBuffer.getInstance().loadFileFromUri(uri, getContentResolver());
             }
         }
+
+        finish();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
 
-        UnityPlayer.UnitySendMessage("NativeFileSOMobileCallback",
-                "AndroidDidOpenTextFile", fileContents);
+        //UnityPlayer.UnitySendMessage("NativeFileSOMobileCallback",
+        //        "AndroidDidOpenTextFile", "");
 
-        Log.d("SendMessage", "UnitySendMessage " + fileContents);
+        //Log.d("SendMessage", "UnitySendMessage ");
     }
 }

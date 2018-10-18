@@ -1,10 +1,17 @@
 ﻿using System;
 
-public interface INativeFileSO {
+namespace Keiwando.NativeFileSO { 
 
-	string OpenFile(string[] extensions);
+	public interface INativeFileSO {
 
-	void SaveFile(string srcPath, 
-	              string filename, 
-	              string extension);
+		event Action<OpenedFile> FileWasOpened;
+
+		void OpenFile(string[] extensions);
+
+		void SaveFile(string srcPath,
+					  string filename,
+					  string extension);
+	}
 }
+
+
