@@ -35,8 +35,11 @@ public class TestController : MonoBehaviour {
 
 	private void ImportTest() {
 
-		var extensions = new string[] { "evol", "creat" };
-		NativeFileSO.shared.OpenFile(extensions);
+		var types = new SupportedFileType[] { 
+			CustomFileTypes.creat, CustomFileTypes.evol
+		};
+
+		NativeFileSO.shared.OpenFile(types);
 	}
 
 	private void ShowContents(OpenedFile file) {

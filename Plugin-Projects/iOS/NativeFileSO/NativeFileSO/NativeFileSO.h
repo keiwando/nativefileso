@@ -7,10 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "NativeFileOpenURLBuffer.h"
+#import "UIKit/UIKit.h"
 
 @interface NativeFileSO : NSObject
 
-+ (const char *) fileOpen:(NSString *)extensions;
++ (const char *) fileOpen:(NSString *)UTIs;
 
 + (void) fileSave:(NSString *)srcPath
                 //extension:(NSString *)extension

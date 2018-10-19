@@ -10,11 +10,16 @@
 #define NativeFileOpenURLBuffer_h
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
-@interface NativeFileOpenURLBuffer : NSObject
+@interface NativeFileOpenURLBuffer : NSObject <UIDocumentPickerDelegate>
 
-//@property (nonatomic, strong) NSData *data;
-@property (nonatomic, strong) NSString *URLContents;
+@property (nonatomic) BOOL isFileOpened;
+@property (nonatomic) BOOL isTextFile;
+@property (nonatomic, strong) NSData *data;
+@property (nonatomic, strong) NSString *stringContents;
+@property (nonatomic, strong) NSString *filename;
+@property (nonatomic, strong) NSString *extension;
 
 +(NativeFileOpenURLBuffer *)instance;
 -(void)reset;

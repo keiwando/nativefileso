@@ -24,9 +24,9 @@ namespace Keiwando.NativeFileSO {
 
 		}
 
-		public void OpenFile(string[] extensions) {
+		public void OpenFile(SupportedFileType[] supportedTypes) {
 
-			nativeFileSO.OpenFile(extensions);
+			nativeFileSO.OpenFile(supportedTypes);
 		}
 
 		public void SaveFile(string srcPath,

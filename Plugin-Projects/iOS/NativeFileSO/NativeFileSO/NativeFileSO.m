@@ -7,13 +7,19 @@
 //
 
 #import "NativeFileSO.h"
-#import "UIKit/UIKit.h"
 
 @implementation NativeFileSO
 
-+ (const char *)fileOpen:(NSString *)extensions {
++ (const char *)fileOpen:(NSString *)UTIs {
     
-    //NSArray *fileExtensions = [self extractExtensions:extensions];
+    NSArray *utiStrings = [self decodeUTIs:UTIs];
+    UIDocumentPickerViewController *documentPicker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:utiStrings inMode:UIDocumentPickerModeImport];
+    
+    documentPicker.delegate = [NativeFileOpenURLBuffer instance];
+    documentPicker.allowsMultipleSelection = NO;
+    
+    UIViewController *topVC = [self topViewController];
+    [topVC presentViewController:documentPicker animated:YES completion:^{}];
     
     return "";
 }
@@ -61,6 +67,11 @@
     
     UIViewController *presentedViewController = (UIViewController *)rootViewController.presentedViewController;
     return [self topViewController:presentedViewController];
+}
+
++ (NSArray<NSString *> *)decodeUTIs:(NSString *)UTIs
+{
+    return [UTIs componentsSeparatedByString:@"%"];
 }
 
 @end

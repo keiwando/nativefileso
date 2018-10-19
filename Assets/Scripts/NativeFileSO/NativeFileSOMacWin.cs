@@ -2,6 +2,7 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using System.Linq;
 
 namespace Keiwando.NativeFileSO { 
 
@@ -24,7 +25,9 @@ namespace Keiwando.NativeFileSO {
 
 		public event Action<OpenedFile> FileWasOpened;
 
-		public void OpenFile(string[] extensions) {
+		public void OpenFile(SupportedFileType[] fileTypes) {
+
+			var extensions = fileTypes.Select(x => x.Extension).ToArray();
 
 			var pathPtr = _openFile(EncodeExtensions(extensions));
 			var path = Marshal.PtrToStringAnsi(pathPtr);

@@ -147,6 +147,14 @@ public class NativeFileOpenURLBuffer {
 
             loadFileFromUri(Uri.fromFile(tempFile), resolver);
 
+            this.filename = filename;
+            String[] parts = filename.split("\\.");
+            if (parts.length < 2) {
+                fileExtension = "";
+            } else {
+                fileExtension = parts[parts.length - 1];
+            }
+
             tempFile.delete();
 
             Log.d("Plugin DEBUG", "Loaded from Cache Dir");

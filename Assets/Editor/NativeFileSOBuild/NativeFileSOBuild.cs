@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Callbacks;
@@ -8,31 +10,6 @@ using UnityEditor.Android;
 namespace Keiwando.NativeFileSO {
 
 	public class NativeFileSOBuild {
-
-		private struct SupportedFileType {
-			public string Name;
-			public string Extension;
-			public bool Owner;
-			public string AppleUTI;
-			public string MimeType;
-		}
-
-		private static readonly SupportedFileType[] supportedFileTypes = new SupportedFileType[] {
-			new SupportedFileType {
-				Name = "Text File",
-				Extension = "txt",
-				Owner = false,
-				AppleUTI = "public.plain-text",
-				MimeType = "text/plain"
-			},
-			new SupportedFileType {
-				Name = "Evolution Save File",
-				Extension = "evol",
-				Owner = true,
-				AppleUTI = "com.keiwando.Evolution.evol",
-				MimeType = "text/plain"
-			}
-		};
 
 		public int callbackOrder { get { return 0; } }
 
@@ -63,14 +40,13 @@ namespace Keiwando.NativeFileSO {
 			plist.ReadFromFile(plistPath);
 			var rootDict = plist.root;
 
-			var appID = PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.iOS);
+			//var appID = PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.iOS);
 
 			var documentTypesArray = rootDict.CreateArray("CFBundleDocumentTypes");
 
 			var exportedTypesArray = rootDict.CreateArray("UTExportedTypeDeclarations");
-			var exportedTypesDict = exportedTypesArray.AddDict();
 
-			foreach (var supportedType in supportedFileTypes) {
+			foreach (var supportedType in SupportedFilePreferences.supportedFileTypes) {
 
 				var typesDict = documentTypesArray.AddDict();
 
@@ -81,6 +57,7 @@ namespace Keiwando.NativeFileSO {
 				var contentTypesArray = typesDict.CreateArray("LSItemContentTypes");
 				contentTypesArray.AddString(supportedType.AppleUTI);
 
+				var exportedTypesDict = exportedTypesArray.AddDict();
 				if (supportedType.Owner) {
 					// Export the File Type
 
@@ -108,26 +85,83 @@ namespace Keiwando.NativeFileSO {
 			project.AddBuildProperty(targetGUID, "OTHER_LDFLAGS", "-ObjC");
 		}
 
-		[MenuItem("NativeFileSO/GereateAndroidManifestForOpeningFiles")]
+		[MenuItem("NativeFileSO/UpdateAndroidPluginForOpeningFiles")]
 		public static void GenerateAndroidManifestForOpeningFiles() {
 
-			var aarPath = CombinePaths(Application.dataPath, "Plugins", "Android");
-			//Directory.CreateDirectory(aarPath);
+			var pluginManifestPath = CombinePaths(Application.dataPath, "..",
+												  "Plugin-Projects",
+												  "Android", "NativeFileSO",
+												  "lib_nativefileso", "src", "main",
+													 "AndroidManifest.xml");
 
-			Debug.Log(aarPath);
+			//Debug.Log(pluginManifestPath);
 
-			var manifestPath = Path.Combine(aarPath, "AndroidManifest.xml");
-			var manifestContents = GetManifestTemplate();
+			var manifestContents = File.ReadAllText(pluginManifestPath);
 
-			var intentFilters = new System.Text.StringBuilder();
-			foreach (var supportedFileType in supportedFileTypes) {
+			//Debug.Log(manifestContents);
 
-				intentFilters.Append(GetIntentForFileBrowser(supportedFileType.Extension));
+			var startTag = "<!-- #NativeFileSOIntentsStart# -->";
+			var endTag = "<!-- #NativeFileSOIntentsEnd# -->";
+
+			var mimeTypes = new HashSet<string>();
+			foreach (var fileType in SupportedFilePreferences.supportedFileTypes) {
+				mimeTypes.Add(fileType.MimeType);
 			}
 
-			manifestContents = manifestContents.Replace("#content#", intentFilters.ToString());
+			var intentFilters = new System.Text.StringBuilder(startTag);
+			foreach (var mimeType in mimeTypes) {
 
-			File.WriteAllText(manifestPath, manifestContents);
+				intentFilters.Append(GetIntentForFileBrowser(mimeType));
+			}
+			intentFilters.Append(endTag);
+
+			var pattern = string.Format("{0}.*{1}", startTag, endTag);
+			manifestContents = Regex.Replace(manifestContents,
+											 pattern,
+											 intentFilters.ToString(),
+											 RegexOptions.Singleline);
+
+			//manifestContents = manifestContents.Replace("#content#", intentFilters.ToString());
+			//Debug.Log(manifestContents);
+
+			File.WriteAllText(pluginManifestPath, manifestContents);
+
+			// Run the Gradle Build script
+			var pInfo = new System.Diagnostics.ProcessStartInfo();
+#if UNITY_EDITOR_OSX
+			var gradlewName = "gradlew";
+			//gradlewName = "test.sh"; 
+#else
+			var gradlewName = "gradlew.bat";
+#endif
+
+			pInfo.FileName = CombinePaths(".", Application.dataPath, "..", 
+			                                "Plugin-Projects", "Android",
+			                                "NativeFileSO", gradlewName);
+			pInfo.WorkingDirectory = CombinePaths(pInfo.FileName, "..");
+			
+			pInfo.UseShellExecute = false;
+			pInfo.RedirectStandardOutput = true;
+			pInfo.RedirectStandardError = true;
+			pInfo.CreateNoWindow = false;
+
+			pInfo.Arguments = "lib_nativefileso:build";
+			//pInfo.Arguments = pInfo.FileName;
+			//pInfo.FileName = "sh";
+
+			Debug.Log("Building Android Plugin");
+
+			System.Diagnostics.Process process = System.Diagnostics.Process.Start(pInfo);
+			string output = process.StandardOutput.ReadToEnd();
+			string error = process.StandardError.ReadToEnd();
+			process.WaitForExit();
+
+			Debug.Log(output);
+			if (error != "") { 
+				Debug.Log(error);
+			}
+
+			Debug.Log("Android Plugin Build Finished");
 		}
 
 		private static string CombinePaths(params string[] paths) {
@@ -141,29 +175,14 @@ namespace Keiwando.NativeFileSO {
 			return combined;
 		}
 
-		private static string GetManifestTemplate() {
-
-			return @"
-		
-	<manifest xmlns:android=""http://schemas.android.com/apk/res/android"">
-		<application>
-			#content#
-		</application>
-	</manifest>
-	";
-		}
-
-		private static string GetIntentForFileBrowser(string extension) {
+		private static string GetIntentForFileBrowser(string mimeType) {
 
 			return string.Format(@"
 	<intent-filter>
-    	<action android:name=""android.intent.action.VIEW"" />
+    	<action android:name=""android.intent.action.SEND""/>
 		<category android:name=""android.intent.category.DEFAULT""/>
-	  	<data android:scheme=""file""/>
-		<data android:host=""*""/>
-		<data android:mimeType=""*/*""/>
-		<data android:pathPattern="".*\\.{0}""/>
-	</intent-filter>\n", extension);
+		<data android:mimeType=""{0}""/>
+	</intent-filter>", mimeType);
 		}
 
 	}

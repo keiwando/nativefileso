@@ -3,8 +3,6 @@ apply plugin: 'com.android.library'
 android {
     compileSdkVersion 28
 
-
-
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 28
@@ -47,7 +45,7 @@ task exportJar(type: Copy) {
 }
 
 task deleteOldJar(type: Delete) {
-    //delete '../../../../Assets/Plugins/Android/NativeFileSO.jar'
+
     delete '../../../../Assets/Plugins/Android/NativeFileSO.aar'
 }
 exportJar.dependsOn(deleteOldJar)

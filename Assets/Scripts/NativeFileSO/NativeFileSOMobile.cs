@@ -1,4 +1,9 @@
-﻿using System;
+﻿//#define UNITY_IOS
+//#undef UNITY_ANDROID
+
+
+using System;
+using System.Linq;
 using System.IO;
 using System.Runtime.InteropServices;
 using UnityEngine;
@@ -7,16 +12,38 @@ namespace Keiwando.NativeFileSO {
 
 	public class NativeFileSOMobile : INativeFileSO {
 
+
 #if UNITY_IOS
 
 		[DllImport("__Internal")]
-		private static extern IntPtr pluginOpenFile(string extensions);
+		private static extern Boolean pluginIsFileLoaded();
+
+		[DllImport("__Internal")]
+		private static extern Boolean pluginIsTextFile();
+
+		[DllImport("__Internal")]
+		private static extern IntPtr pluginGetData();
+
+		[DllImport("__Internal")]
+		private static extern ulong pluginGetDataByteCount();
+
+		[DllImport("__Internal")]
+		private static extern IntPtr pluginGetStringContents();
+
+		[DllImport("__Internal")]
+		private static extern IntPtr pluginGetFilename();
+
+		[DllImport("__Internal")]
+		private static extern IntPtr pluginGetExtension();
+
+		[DllImport("__Internal")]
+		private static extern void pluginResetLoadedFile();
+
+		[DllImport("__Internal")]
+		private static extern IntPtr pluginOpenFile(string utis);
 
 		[DllImport("__Internal")]
 		private static extern void pluginSaveFile(string srcPath, string name);
-
-		[DllImport("__Internal")]
-		private static extern IntPtr pluginGetOpenURL();
 
 #elif UNITY_ANDROID
 
@@ -29,7 +56,7 @@ namespace Keiwando.NativeFileSO {
 			//Debug.Log("Registering callback on " + NativeFileSOMobileCallback.instance);
 
 			NativeFileSOMobileCallback.instance.FileWasOpened += delegate (OpenedFile file) {
-				if (FileWasOpened != null) { 
+				if (FileWasOpened != null) {
 					FileWasOpened(file);
 				}
 				Debug.Log("File Was Opened - SOMobile");
@@ -38,7 +65,7 @@ namespace Keiwando.NativeFileSO {
 
 		public bool LoadIfTemporaryAvailable() {
 #if UNITY_IOS
-			return false;
+			return pluginIsFileLoaded();
 #elif UNITY_ANDROID
 			AndroidJavaClass nativeFileSO = new AndroidJavaClass("com.keiwando.lib_nativefileso.NativeFileSO");
 			var isAvailable = nativeFileSO.CallStatic<bool>("IsTemporaryFileAvailable");
@@ -54,7 +81,7 @@ namespace Keiwando.NativeFileSO {
 
 		public bool IsFileOpened() {
 #if UNITY_IOS
-			return true;
+			return pluginIsFileLoaded();
 #elif UNITY_ANDROID
 
 			AndroidJavaClass nativeFileSO = new AndroidJavaClass("com.keiwando.lib_nativefileso.NativeFileSO");
@@ -65,7 +92,23 @@ namespace Keiwando.NativeFileSO {
 		public OpenedFile GetOpenedFile() {
 
 #if UNITY_IOS
-			return Marshal.PtrToStringAnsi(pluginGetOpenURL());
+			string textContents = Marshal.PtrToStringAnsi(pluginGetStringContents());
+			byte[] byteContents = new byte[pluginGetDataByteCount()];
+			Marshal.Copy(pluginGetData(), byteContents, 0, byteContents.Length);
+			bool isTextFile = pluginIsTextFile();
+			String filename = Marshal.PtrToStringAnsi(pluginGetFilename());
+			String extension = Marshal.PtrToStringAnsi(pluginGetExtension());
+
+			pluginResetLoadedFile();
+
+			return new OpenedFile {
+				name = filename,
+				extension = extension,
+				isTextFile = isTextFile,
+				stringContents = textContents,
+				data = byteContents
+			};;
+
 #elif UNITY_ANDROID
 
 			AndroidJavaClass nativeFileSO = new AndroidJavaClass("com.keiwando.lib_nativefileso.NativeFileSO");
@@ -89,18 +132,24 @@ namespace Keiwando.NativeFileSO {
 #endif
 		}
 
-		public void OpenFile(string[] extensions) {
+		public void OpenFile(SupportedFileType[] supportedTypes) {
+
+#if UNITY_IOS
+			string encodedUTIs = EncodeUTIs(supportedTypes.Select(x => x.AppleUTI).ToArray());
+			pluginOpenFile(encodedUTIs);
+#elif UNITY_ANDROID
 
 			AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
 			AndroidJavaObject currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
 
 			AndroidJavaClass nativeFileSO = new AndroidJavaClass("com.keiwando.lib_nativefileso.NativeFileSO");
 
-			if (extensions == null || extensions.Length == 0) {
-				nativeFileSO.CallStatic("OpenFile", currentActivity, "*");
+			if (supportedTypes == null || supportedTypes.Length == 0) {
+				nativeFileSO.CallStatic("OpenFile", currentActivity, SupportedFileType.Any.MimeType);
 			} else {
-				nativeFileSO.CallStatic("OpenFile", currentActivity, extensions[0]);
+				nativeFileSO.CallStatic("OpenFile", currentActivity, supportedTypes[0].MimeType);
 			}
+#endif
 		}
 
 		public void SaveFile(string srcPath,
@@ -123,6 +172,10 @@ namespace Keiwando.NativeFileSO {
 		}
 
 
+		private string EncodeUTIs(string[] extensions) {
+
+			return string.Join("%", extensions);
+		}
 	}
 }
 

@@ -6,7 +6,7 @@ namespace Keiwando.NativeFileSO {
 
 		event Action<OpenedFile> FileWasOpened;
 
-		void OpenFile(string[] extensions);
+		void OpenFile(SupportedFileType[] supportedTypes);
 
 		void SaveFile(string srcPath,
 					  string filename,

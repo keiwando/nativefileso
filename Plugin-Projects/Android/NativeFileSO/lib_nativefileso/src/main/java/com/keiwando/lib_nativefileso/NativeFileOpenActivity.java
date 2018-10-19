@@ -25,11 +25,11 @@ public class NativeFileOpenActivity extends Activity {
 
         if (lastIntent.getBooleanExtra("openedFromNativeFileSO", false)) {
 
-            String extension = lastIntent.getStringExtra("extension");
+            String mimetype = lastIntent.getStringExtra("mimetype");
 
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT); // 4.4+
             //intent.setType("text/" + extension);
-            intent.setType("*/*");
+            intent.setType(mimetype);
             intent.addCategory(Intent.CATEGORY_OPENABLE);
 
             Log.d("Plugin DEBUG", "Showing Chooser");

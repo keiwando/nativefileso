@@ -3,11 +3,17 @@
 
     <application>
         <activity android:name="com.keiwando.lib_nativefileso.NativeFileOpenActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.SEND"/>
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="text/plain" />
-            </intent-filter>
+            <!-- #NativeFileSOIntentsStart# -->
+	<intent-filter>
+    	<action android:name="android.intent.action.SEND"/>
+		<category android:name="android.intent.category.DEFAULT"/>
+		<data android:mimeType="text/plain"/>
+	</intent-filter>
+	<intent-filter>
+    	<action android:name="android.intent.action.SEND"/>
+		<category android:name="android.intent.category.DEFAULT"/>
+		<data android:mimeType="application/pdf"/>
+	</intent-filter><!-- #NativeFileSOIntentsEnd# -->
         </activity>
         <provider
                 android:name="com.keiwando.lib_nativefileso.androidx.core.content.FileProvider"
@@ -20,14 +26,3 @@
         </provider>
     </application>
 </manifest>
-
-<!-- android:authorities="${applicationId}.provider" -->
-
-        <!--<data android:scheme="http" android:host="*"
-                              android:pathPattern=".*\\.evol" />
-                        <data android:scheme="https" android:host="*"
-                              android:pathPattern=".*\\.evol" />
-                        <data android:scheme="content" android:host="*"
-                              android:pathPattern=".*\\.evol" />
-                        <data android:scheme="file" android:host="*"
-                              android:pathPattern=".*\\.evol" />-->

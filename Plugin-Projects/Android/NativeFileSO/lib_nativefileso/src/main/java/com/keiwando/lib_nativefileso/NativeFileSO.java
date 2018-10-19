@@ -54,10 +54,10 @@ public class NativeFileSO {
         fileBuffer.loadFromTempDir(context.getCacheDir(), context.getContentResolver());
     }
 
-    public static void OpenFile(Activity context, String extension) {
+    public static void OpenFile(Activity context, String mimetype) {
 
         Intent intent = new Intent(context, NativeFileOpenActivity.class);
-        intent.putExtra("extension", extension);
+        intent.putExtra("mimetype", mimetype);
         intent.putExtra("openedFromNativeFileSO", true);
 
         context.startActivity(intent);

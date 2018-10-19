@@ -29,22 +29,37 @@ __strong NativeFileOpenURLBuffer *_nativeFileOpenURLInstance;
 }
 
 -(void)reset {
-    //self.data = [NSData new];
-    self.URLContents = @"";
+    self.data = [NSData new];
+    self.stringContents = @"";
+    self.filename = @"";
+    self.isTextFile = NO;
+    self.isFileOpened = NO;
 }
 
 -(void)loadBufferFromURL:(NSURL *)URL {
     
-    //self.data = [NSData dataWithContentsOfURL:URL];
-    self.URLContents = [NSString stringWithContentsOfURL:URL encoding:NSUTF8StringEncoding error:nil];
+    self.data = [NSData dataWithContentsOfURL:URL];
+    self.stringContents = [NSString stringWithContentsOfURL:URL encoding:NSUTF8StringEncoding error:nil];
     
-    NSLog(self.URLContents);
+    self.extension = URL.pathExtension ? : @"";
+    self.filename = URL.lastPathComponent ? : @"";
     
-    if (self.URLContents == nil) {
-        self.URLContents = @"";
+    self.isTextFile = self.stringContents != nil;
+    self.stringContents = self.stringContents ? : @"";
+    
+    self.isFileOpened = self.data != nil;
+    self.data = self.data ? : [NSData new];
+    
+    NSLog(@"Loaded file from buffer: %s", self.isFileOpened ? @"true" : @"false");
+}
+
+- (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
+    
+    NSURL *url = urls.firstObject;
+    if (url == nil) {
+        return;
     }
-    
-    NSLog(self.URLContents);
+    [self loadBufferFromURL:url];
 }
 
 @end
