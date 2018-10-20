@@ -11,6 +11,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import "UnityCallbackFunction.h"
 
 @interface NativeFileOpenURLBuffer : NSObject <UIDocumentPickerDelegate>
 
@@ -24,6 +25,7 @@
 +(NativeFileOpenURLBuffer *)instance;
 -(void)reset;
 -(void)loadBufferFromURL:(NSURL *)URL;
+-(void)setCallback:(UnityCallbackFunction)callback;
 
 @end
 

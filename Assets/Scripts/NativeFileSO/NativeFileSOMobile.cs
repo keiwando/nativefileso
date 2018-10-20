@@ -16,6 +16,9 @@ namespace Keiwando.NativeFileSO {
 #if UNITY_IOS
 
 		[DllImport("__Internal")]
+		private static extern void pluginSetCallback(NativeFileSOMobileCallback.UnityCallbackFunction callback);
+
+		[DllImport("__Internal")]
 		private static extern Boolean pluginIsFileLoaded();
 
 		[DllImport("__Internal")]
@@ -61,6 +64,8 @@ namespace Keiwando.NativeFileSO {
 				}
 				Debug.Log("File Was Opened - SOMobile");
 			};
+
+			pluginSetCallback(NativeFileSOMobileCallback.IOSFileWasOpened);
 		}
 
 		public bool LoadIfTemporaryAvailable() {

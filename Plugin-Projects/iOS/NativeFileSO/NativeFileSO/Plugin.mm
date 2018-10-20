@@ -9,8 +9,13 @@
 #import <Foundation/Foundation.h>
 #import "NativeFileSO.h"
 #import "NativeFileOpenURLBuffer.h"
+#import "UnityCallbackFunction.h"
 
 extern "C" {
+    
+    void pluginSetCallback(UnityCallbackFunction callback) {
+        [[NativeFileOpenURLBuffer instance] setCallback:callback];
+    }
     
     const BOOL pluginIsFileLoaded() {
         return [NativeFileOpenURLBuffer instance].isFileOpened;

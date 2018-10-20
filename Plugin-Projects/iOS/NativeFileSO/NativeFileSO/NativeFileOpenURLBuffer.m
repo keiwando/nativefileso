@@ -11,6 +11,7 @@
 #import "NativeFileOpenURLBuffer.h"
 
 __strong NativeFileOpenURLBuffer *_nativeFileOpenURLInstance;
+__strong UnityCallbackFunction _nativeFileSOUnityCallback;
 
 @implementation NativeFileOpenURLBuffer
 
@@ -51,6 +52,14 @@ __strong NativeFileOpenURLBuffer *_nativeFileOpenURLInstance;
     self.data = self.data ? : [NSData new];
     
     NSLog(@"Loaded file from buffer: %s", self.isFileOpened ? @"true" : @"false");
+    
+    if (self.isFileOpened && _nativeFileSOUnityCallback) {
+        _nativeFileSOUnityCallback();
+    }
+}
+
+-(void)setCallback:(UnityCallbackFunction) callback {
+    _nativeFileSOUnityCallback = callback;
 }
 
 - (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {

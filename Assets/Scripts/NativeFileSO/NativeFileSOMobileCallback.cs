@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using UnityEngine;
+using AOT;
 
 namespace Keiwando.NativeFileSO { 
 
@@ -8,6 +9,8 @@ namespace Keiwando.NativeFileSO {
 		public delegate void FileWasOpenedHandler(OpenedFile file);
 
 		public event FileWasOpenedHandler FileWasOpened;
+
+		public delegate void UnityCallbackFunction();
 
 		public static NativeFileSOMobileCallback instance;
 
@@ -58,6 +61,11 @@ namespace Keiwando.NativeFileSO {
 			print("AndroidDidOpenTextFile");
 
 			TryRetrieveOpenedFile();
+		}
+
+		[MonoPInvokeCallback(typeof(UnityCallbackFunction))]
+		public static void IOSFileWasOpened() {
+			instance.TryRetrieveOpenedFile();
 		}
 	}
 }
