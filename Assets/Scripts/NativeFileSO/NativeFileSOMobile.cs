@@ -16,7 +16,7 @@ namespace Keiwando.NativeFileSO {
 #if UNITY_IOS
 
 		[DllImport("__Internal")]
-		private static extern void pluginSetCallback(NativeFileSOMobileCallback.UnityCallbackFunction callback);
+		private static extern void pluginSetCallback(NativeFileSO.UnityCallbackFunction callback);
 
 		[DllImport("__Internal")]
 		private static extern Boolean pluginIsFileLoaded();
@@ -77,6 +77,9 @@ namespace Keiwando.NativeFileSO {
 			Debug.Log("Is Temporary File available: " + isAvailable);
 
 			return isAvailable;
+
+#else
+			return false;
 #endif
 		}
 
@@ -87,6 +90,8 @@ namespace Keiwando.NativeFileSO {
 
 			AndroidJavaClass nativeFileSO = new AndroidJavaClass("com.keiwando.lib_nativefileso.NativeFileSO");
 			return nativeFileSO.CallStatic<bool>("IsFileLoaded");
+#else
+			return false;
 #endif
 		}
 
@@ -115,6 +120,8 @@ namespace Keiwando.NativeFileSO {
 			nativeFileSO.CallStatic("ResetLoadedFile");
 
 			return new OpenedFile(filename, byteContents);
+#else
+			return null;
 #endif
 		}
 

@@ -10,8 +10,6 @@ namespace Keiwando.NativeFileSO {
 
 		public event FileWasOpenedHandler FileWasOpened;
 
-		public delegate void UnityCallbackFunction();
-
 		public static NativeFileSOMobileCallback instance;
 
 		void Awake() {
@@ -63,7 +61,7 @@ namespace Keiwando.NativeFileSO {
 			TryRetrieveOpenedFile();
 		}
 
-		[MonoPInvokeCallback(typeof(UnityCallbackFunction))]
+		[MonoPInvokeCallback(typeof(NativeFileSO.UnityCallbackFunction))]
 		public static void IOSFileWasOpened() {
 			instance.TryRetrieveOpenedFile();
 		}

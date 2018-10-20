@@ -6,6 +6,8 @@ namespace Keiwando.NativeFileSO {
 
 	public class NativeFileSO : INativeFileSO {
 
+		public delegate void UnityCallbackFunction();
+
 		public event Action<OpenedFile> FileWasOpened;
 
 #if UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX

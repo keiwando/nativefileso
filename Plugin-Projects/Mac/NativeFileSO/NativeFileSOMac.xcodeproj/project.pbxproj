@@ -7,10 +7,25 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BB105F80217BC70F00766F66 /* NativeFileSOMac.bundle in Copy Files */ = {isa = PBXBuildFile; fileRef = BB4EB5DE2152BB7B0059A003 /* NativeFileSOMac.bundle */; };
 		BB4EB5EA2152BB8E0059A003 /* Plugin.mm in Sources */ = {isa = PBXBuildFile; fileRef = BB4EB5E72152BB8E0059A003 /* Plugin.mm */; };
 		BB4EB5EB2152BB8E0059A003 /* NativeFileSO.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4EB5E92152BB8E0059A003 /* NativeFileSO.m */; };
 		BB4EB5EE2152BBA00059A003 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB4EB5ED2152BBA00059A003 /* AppKit.framework */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		BB105F7F217BC6CD00766F66 /* Copy Files */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(PROJECT_DIR)/../../../Assets/Plugins/macOS";
+			dstSubfolderSpec = 0;
+			files = (
+				BB105F80217BC70F00766F66 /* NativeFileSOMac.bundle in Copy Files */,
+			);
+			name = "Copy Files";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		BB4EB5DE2152BB7B0059A003 /* NativeFileSOMac.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NativeFileSOMac.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -79,6 +94,7 @@
 				BB4EB5DA2152BB7B0059A003 /* Sources */,
 				BB4EB5DB2152BB7B0059A003 /* Frameworks */,
 				BB4EB5DC2152BB7B0059A003 /* Resources */,
+				BB105F7F217BC6CD00766F66 /* Copy Files */,
 			);
 			buildRules = (
 			);

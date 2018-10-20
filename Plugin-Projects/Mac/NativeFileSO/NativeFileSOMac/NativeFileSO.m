@@ -35,13 +35,21 @@
     
     NSArray *fileExtensions = [NSArray arrayWithObjects:extension, nil];
     NSSavePanel* panel = [self createSavePanel:fileExtensions name:name];
-    NSModalResponse response = [panel runModal];
+    //NSModalResponse response = [panel runModal];
     
-    if (response == NSModalResponseOK) {
-        return [panel.URL.path UTF8String];
-    } else {
-        return "";
-    }
+    NSWindow *window = [[NSApplication sharedApplication] mainWindow];
+    
+    if (window == nil) { return ""; }
+    
+    [panel beginSheetModalForWindow:window completionHandler:^(NSModalResponse response) {
+        if (response == NSModalResponseOK) {
+            [panel.URL.path UTF8String];
+        } else {
+            "";
+        }
+    }];
+    
+    return "";
 }
 
 + (NSOpenPanel *)createOpenPanel:(NSArray<NSString *> *)fileExtensions {

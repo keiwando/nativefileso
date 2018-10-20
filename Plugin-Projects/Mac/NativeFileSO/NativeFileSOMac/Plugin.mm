@@ -12,12 +12,12 @@
 
 extern "C" {
     
-    const char* _openFile(const char* extensions) {
+    const char* pluginOpenFile(const char* extensions) {
 
         return [NativeFileSO fileOpen:[NSString stringWithUTF8String:extensions]];
     }
     
-    const char* _saveFile(const char* name,
+    const char* pluginSaveFile(const char* name,
                           const char* extension) {
         
         return [NativeFileSO fileSave:[NSString stringWithUTF8String:extension]

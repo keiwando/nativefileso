@@ -8,6 +8,8 @@ namespace Keiwando.NativeFileSO {
 
 	public class NativeFileSOMacWin : INativeFileSO {
 
+		private delegate void UnityCallbackPathSelected(string path);
+
 #if UNITY_STANDALONE_OSX
 	private const string libname = "NativeFileSOMac";
 #elif UNITY_STANDALONE_WIN
@@ -17,10 +19,13 @@ namespace Keiwando.NativeFileSO {
 #endif
 
 		[DllImport(libname)]
-		private static extern IntPtr _openFile(string extensions);
+		private static extern void pluginSetCallback(NativeFileSO.UnityCallbackFunction callback);
 
 		[DllImport(libname)]
-		private static extern IntPtr _saveFile(string name, string extension);
+		private static extern IntPtr pluginOpenFile(string extensions);
+
+		[DllImport(libname)]
+		private static extern IntPtr pluginSaveFile(string name, string extension);
 
 
 		public event Action<OpenedFile> FileWasOpened;
@@ -29,7 +34,7 @@ namespace Keiwando.NativeFileSO {
 
 			var extensions = fileTypes.Select(x => x.Extension).ToArray();
 
-			var pathPtr = _openFile(EncodeExtensions(extensions));
+			var pathPtr = pluginOpenFile(EncodeExtensions(extensions));
 			var path = Marshal.PtrToStringAnsi(pathPtr);
 
 			Debug.Log("Path : " + path);
@@ -47,12 +52,16 @@ namespace Keiwando.NativeFileSO {
 
 		public void SaveFile(FileToSave file) {
 
-			var pathPtr = _saveFile(file.Name, file.Extension);
+			var pathPtr = pluginSaveFile(file.Name, file.Extension);
 			var path = Marshal.PtrToStringAnsi(pathPtr);
 
 			Debug.Log("Save Path : " + path);
 
 			File.Copy(file.SrcPath, path);
+		}
+
+		private static void PluginDidOpenFile() { 
+			
 		}
 
 		// MARK: - Helpers

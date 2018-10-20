@@ -29,15 +29,23 @@
     //NSString *string = @"Share";
     NSURL *url = [NSURL fileURLWithPath:srcPath];
     
-    UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[url]
-                                          applicationActivities:nil];
+    UIActivityViewController *activityViewController = [[UIActivityViewController alloc]
+                                                        initWithActivityItems:@[url]
+                                                        applicationActivities:nil];
     
     UIViewController *topVC = [self topViewController];
-    [topVC presentViewController:activityViewController
-                        animated:YES
-                      completion:^{
-                        
-    }];
+    
+    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPhone) {
+        
+        UIView *view = topVC.view;
+        CGRect rect = CGRectMake(view.frame.size.width / 2, view.frame.size.height / 2, 1, 1);
+        
+        activityViewController.popoverPresentationController.sourceView = view;
+        activityViewController.popoverPresentationController.sourceRect = rect;
+        activityViewController.popoverPresentationController.permittedArrowDirections = 0;
+    }
+    
+    [topVC presentViewController:activityViewController animated:YES completion:^{}];
 }
 
 
