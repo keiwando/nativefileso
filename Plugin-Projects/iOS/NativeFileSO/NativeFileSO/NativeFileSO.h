@@ -12,7 +12,7 @@
 
 @interface NativeFileSO : NSObject
 
-+ (const char *) fileOpen:(NSString *)UTIs;
++ (void) fileOpen:(NSString *)UTIs;
 
 + (void) fileSave:(NSString *)srcPath
                 //extension:(NSString *)extension

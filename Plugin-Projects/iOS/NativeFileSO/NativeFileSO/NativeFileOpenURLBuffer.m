@@ -31,27 +31,19 @@ __strong UnityCallbackFunction _nativeFileSOUnityCallback;
 
 -(void)reset {
     self.data = [NSData new];
-    self.stringContents = @"";
     self.filename = @"";
-    self.isTextFile = NO;
     self.isFileOpened = NO;
 }
 
 -(void)loadBufferFromURL:(NSURL *)URL {
     
     self.data = [NSData dataWithContentsOfURL:URL];
-    self.stringContents = [NSString stringWithContentsOfURL:URL encoding:NSUTF8StringEncoding error:nil];
-    
-    self.extension = URL.pathExtension ? : @"";
     self.filename = URL.lastPathComponent ? : @"";
-    
-    self.isTextFile = self.stringContents != nil;
-    self.stringContents = self.stringContents ? : @"";
     
     self.isFileOpened = self.data != nil;
     self.data = self.data ? : [NSData new];
     
-    NSLog(@"Loaded file from buffer: %s", self.isFileOpened ? @"true" : @"false");
+    //NSLog(@"Loaded file from buffer: %s", self.isFileOpened ? @"true" : @"false");
     
     if (self.isFileOpened && _nativeFileSOUnityCallback) {
         _nativeFileSOUnityCallback();

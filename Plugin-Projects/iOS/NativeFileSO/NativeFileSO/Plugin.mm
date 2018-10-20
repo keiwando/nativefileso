@@ -21,10 +21,6 @@ extern "C" {
         return [NativeFileOpenURLBuffer instance].isFileOpened;
     }
     
-    const BOOL pluginIsTextFile() {
-        return [NativeFileOpenURLBuffer instance].isTextFile;
-    }
-    
     const void* pluginGetData() {
         return [[NativeFileOpenURLBuffer instance] data].bytes;
     }
@@ -33,16 +29,8 @@ extern "C" {
         return [[NativeFileOpenURLBuffer instance] data].length;
     }
     
-    const char* pluginGetStringContents() {
-        return [[[NativeFileOpenURLBuffer instance] stringContents] UTF8String];
-    }
-    
     const char* pluginGetFilename() {
         return [[[NativeFileOpenURLBuffer instance] filename] UTF8String];
-    }
-    
-    const char* pluginGetExtension() {
-        return [[[NativeFileOpenURLBuffer instance] extension] UTF8String];
     }
     
     void pluginResetLoadedFile() {
@@ -50,16 +38,15 @@ extern "C" {
     }
     
     
-    const char* pluginOpenFile(const char* utis) {
+    void pluginOpenFile(const char* utis) {
         
-        return [NativeFileSO fileOpen:[NSString stringWithUTF8String:utis]];
+        [NativeFileSO fileOpen:[NSString stringWithUTF8String:utis]];
     }
     
     void pluginSaveFile(const char* srcPath,
                    const char* name) {
         
         [NativeFileSO fileSave:[NSString stringWithUTF8String:srcPath]
-                     //extension:[NSString stringWithUTF8String:extension]
                           name:[NSString stringWithUTF8String:name]];
     }
 }

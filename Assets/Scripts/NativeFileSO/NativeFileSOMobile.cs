@@ -22,28 +22,19 @@ namespace Keiwando.NativeFileSO {
 		private static extern Boolean pluginIsFileLoaded();
 
 		[DllImport("__Internal")]
-		private static extern Boolean pluginIsTextFile();
-
-		[DllImport("__Internal")]
 		private static extern IntPtr pluginGetData();
 
 		[DllImport("__Internal")]
 		private static extern ulong pluginGetDataByteCount();
 
 		[DllImport("__Internal")]
-		private static extern IntPtr pluginGetStringContents();
-
-		[DllImport("__Internal")]
 		private static extern IntPtr pluginGetFilename();
-
-		[DllImport("__Internal")]
-		private static extern IntPtr pluginGetExtension();
 
 		[DllImport("__Internal")]
 		private static extern void pluginResetLoadedFile();
 
 		[DllImport("__Internal")]
-		private static extern IntPtr pluginOpenFile(string utis);
+		private static extern void pluginOpenFile(string utis);
 
 		[DllImport("__Internal")]
 		private static extern void pluginSaveFile(string srcPath, string name);
@@ -65,18 +56,23 @@ namespace Keiwando.NativeFileSO {
 				Debug.Log("File Was Opened - SOMobile");
 			};
 
+#if UNITY_IOS
 			pluginSetCallback(NativeFileSOMobileCallback.IOSFileWasOpened);
+#endif
 		}
 
 		public bool LoadIfTemporaryAvailable() {
 #if UNITY_IOS
 			return pluginIsFileLoaded();
 #elif UNITY_ANDROID
+
+			AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
 			AndroidJavaClass nativeFileSO = new AndroidJavaClass("com.keiwando.lib_nativefileso.NativeFileSO");
-			var isAvailable = nativeFileSO.CallStatic<bool>("IsTemporaryFileAvailable");
+			AndroidJavaObject currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+			var isAvailable = nativeFileSO.CallStatic<bool>("IsTemporaryFileAvailable", currentActivity);
 
 			if (isAvailable) {
-				nativeFileSO.CallStatic("LoadTemporaryFile");
+				nativeFileSO.CallStatic("LoadTemporaryFile", currentActivity);
 			}
 			Debug.Log("Is Temporary File available: " + isAvailable);
 
@@ -97,52 +93,44 @@ namespace Keiwando.NativeFileSO {
 		public OpenedFile GetOpenedFile() {
 
 #if UNITY_IOS
-			string textContents = Marshal.PtrToStringAnsi(pluginGetStringContents());
+			//string textContents = Marshal.PtrToStringAnsi(pluginGetStringContents());
 			byte[] byteContents = new byte[pluginGetDataByteCount()];
 			Marshal.Copy(pluginGetData(), byteContents, 0, byteContents.Length);
-			bool isTextFile = pluginIsTextFile();
+			//bool isTextFile = pluginIsTextFile();
 			String filename = Marshal.PtrToStringAnsi(pluginGetFilename());
-			String extension = Marshal.PtrToStringAnsi(pluginGetExtension());
+			//String extension = Marshal.PtrToStringAnsi(pluginGetExtension());
 
 			pluginResetLoadedFile();
 
-			return new OpenedFile {
-				name = filename,
-				extension = extension,
-				isTextFile = isTextFile,
-				stringContents = textContents,
-				data = byteContents
-			};;
+			return new OpenedFile(filename, byteContents);
 
 #elif UNITY_ANDROID
 
 			AndroidJavaClass nativeFileSO = new AndroidJavaClass("com.keiwando.lib_nativefileso.NativeFileSO");
 
-			string textContents = nativeFileSO.CallStatic<string>("GetFileTextContents");
 			byte[] byteContents = nativeFileSO.CallStatic<byte[]>("GetFileByteContents");
-			bool isTextFile = nativeFileSO.CallStatic<bool>("IsTextFile");
 			string filename = nativeFileSO.CallStatic<string>("GetFileName");
-			string extension = nativeFileSO.CallStatic<string>("GetFileExtension");
 
 			// Reset the loaded data
 			nativeFileSO.CallStatic("ResetLoadedFile");
 
-			return new OpenedFile {
-				name = filename,
-				extension = extension,
-				isTextFile = isTextFile,
-				stringContents = textContents,
-				data = byteContents
-			};
+			return new OpenedFile(filename, byteContents);
 #endif
 		}
 
 		public void OpenFile(SupportedFileType[] supportedTypes) {
 
 #if UNITY_IOS
-			string encodedUTIs = EncodeUTIs(supportedTypes.Select(x => x.AppleUTI).ToArray());
-			pluginOpenFile(encodedUTIs);
+			if (supportedTypes != null && supportedTypes.Length > 0) {
+				string encodedUTIs = EncodeUTIs(supportedTypes.Select(x => x.AppleUTI).ToArray());
+				pluginOpenFile(encodedUTIs);
+			} else {
+				pluginOpenFile(SupportedFileType.Any.AppleUTI);
+			}
+
 #elif UNITY_ANDROID
+
+			string encodedMimeTypes = EncodeMimeTypes(supportedTypes.Select(x => x.MimeType).ToArray());
 
 			AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
 			AndroidJavaObject currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
@@ -152,27 +140,25 @@ namespace Keiwando.NativeFileSO {
 			if (supportedTypes == null || supportedTypes.Length == 0) {
 				nativeFileSO.CallStatic("OpenFile", currentActivity, SupportedFileType.Any.MimeType);
 			} else {
-				nativeFileSO.CallStatic("OpenFile", currentActivity, supportedTypes[0].MimeType);
+				nativeFileSO.CallStatic("OpenFile", currentActivity, encodedMimeTypes);
 			}
 #endif
 		}
 
-		public void SaveFile(string srcPath,
-							 string filename,
-							 string extension) {
+		public void SaveFile(FileToSave file) {
 
 #if UNITY_IOS
 
-			pluginSaveFile(srcPath, filename);
+			pluginSaveFile(file.SrcPath, file.Name);
 
 #elif UNITY_ANDROID
 
-		AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer"); 
-		AndroidJavaObject currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+			AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer"); 
+			AndroidJavaObject currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
 
-		AndroidJavaClass nativeFileSO = new AndroidJavaClass("com.keiwando.lib_nativefileso.NativeFileSO");
+			AndroidJavaClass nativeFileSO = new AndroidJavaClass("com.keiwando.lib_nativefileso.NativeFileSO");
 
-		nativeFileSO.CallStatic("SaveFile", currentActivity, srcPath);
+			nativeFileSO.CallStatic("SaveFile", currentActivity, file.SrcPath, file.MimeType);
 #endif
 		}
 
@@ -180,6 +166,10 @@ namespace Keiwando.NativeFileSO {
 		private string EncodeUTIs(string[] extensions) {
 
 			return string.Join("%", extensions);
+		}
+
+		private string EncodeMimeTypes(string[] extensions) {
+			return string.Join(" ", extensions);
 		}
 	}
 }

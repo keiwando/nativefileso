@@ -45,8 +45,8 @@ public class TestController : MonoBehaviour {
 	private void ShowContents(OpenedFile file) {
 
 		var output = string.Format("File Contents: \n{0}\n --- EOF ---\n{1} bytes\n{2}\n{3}", 
-		                           file.stringContents, file.data.Length, 
-		                           file.name, file.extension);
+		                           file.ToUTF8String(), file.Data.Length, 
+		                           file.Name, file.Extension);
 		Debug.Log(output);
 		textField.text = output;
 	}

@@ -16,11 +16,8 @@
 @interface NativeFileOpenURLBuffer : NSObject <UIDocumentPickerDelegate>
 
 @property (nonatomic) BOOL isFileOpened;
-@property (nonatomic) BOOL isTextFile;
 @property (nonatomic, strong) NSData *data;
-@property (nonatomic, strong) NSString *stringContents;
 @property (nonatomic, strong) NSString *filename;
-@property (nonatomic, strong) NSString *extension;
 
 +(NativeFileOpenURLBuffer *)instance;
 -(void)reset;

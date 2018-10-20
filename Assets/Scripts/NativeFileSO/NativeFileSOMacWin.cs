@@ -38,39 +38,21 @@ namespace Keiwando.NativeFileSO {
 
 			byte[] data = File.ReadAllBytes(path);
 
-			string contents = "";
-			bool isTextFile = true;
-			try {
-				contents = File.ReadAllText(path);
-				isTextFile = false;
-			} catch (Exception e) {
-				Debug.Log(e.StackTrace);
-			}
-
 			var name = Path.GetFileName(path);
-			var extension = Path.GetExtension(path);
 
-			var file = new OpenedFile {
-				name = name,
-				extension = extension,
-				isTextFile = isTextFile,
-				stringContents = contents,
-				data = data
-			};
+			var file = new OpenedFile(name, data);
 
 			FileWasOpened(file);
 		}
 
-		public void SaveFile(string srcPath,
-							 string filename,
-							 string extension) {
+		public void SaveFile(FileToSave file) {
 
-			var pathPtr = _saveFile(filename, extension);
+			var pathPtr = _saveFile(file.Name, file.Extension);
 			var path = Marshal.PtrToStringAnsi(pathPtr);
 
 			Debug.Log("Save Path : " + path);
 
-			File.Copy(srcPath, path);
+			File.Copy(file.SrcPath, path);
 		}
 
 		// MARK: - Helpers

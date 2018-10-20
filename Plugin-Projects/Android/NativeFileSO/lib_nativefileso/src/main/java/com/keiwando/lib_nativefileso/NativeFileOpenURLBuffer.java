@@ -3,11 +3,8 @@ package com.keiwando.lib_nativefileso;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Debug;
 import android.provider.OpenableColumns;
 import android.util.Log;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.*;
 
@@ -19,10 +16,7 @@ public class NativeFileOpenURLBuffer {
     private static final String TEMP_FILE_INFO = "TempFileMeta.txt";
 
     private String filename = "";
-    private String fileExtension = "";
-    private boolean isTextFile = false;
     private byte[] contents = new byte[0];
-    private String textContents = "";
 
     private boolean isFileLoaded = false;
 
@@ -41,21 +35,19 @@ public class NativeFileOpenURLBuffer {
         try {
             stream = resolver.openInputStream(uri);
 
+            if (stream == null) {
+                reset();
+                return;
+            }
+
             ByteArrayOutputStream result = new ByteArrayOutputStream();
             byte[] buffer = new byte[1024];
             int length;
             while ((length = stream.read(buffer)) != -1) {
-                Log.d("Plugin DEBUG", "Buffer Write");
                 result.write(buffer, 0, length);
             }
 
             contents = result.toByteArray();
-            try {
-                textContents = result.toString("UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                textContents = "";
-                isTextFile = false;
-            }
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -66,27 +58,19 @@ public class NativeFileOpenURLBuffer {
             return;
         }
 
-        saveNameAndExtension(uri, resolver);
+        saveName(uri, resolver);
 
         Log.d("Plugin DEBUG", "File is Loaded in Plugin!");
         isFileLoaded = true;
     }
 
-    private void saveNameAndExtension(Uri uri, ContentResolver resolver) {
+    private void saveName(Uri uri, ContentResolver resolver) {
 
         Cursor cursor = resolver.query(uri, null, null, null, null, null);
 
         try {
             if (cursor != null && cursor.moveToFirst()) {
                 filename = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-
-                String[] parts = filename.split("\\.");
-                if (parts.length < 2) {
-                    fileExtension = "";
-                } else {
-                    fileExtension = parts[parts.length - 1];
-                }
-
                 return;
             }
         } catch (Exception e) {
@@ -100,7 +84,6 @@ public class NativeFileOpenURLBuffer {
 
         // Something went wrong
         filename = "";
-        fileExtension = "";
     }
 
     public void saveFileInCacheDir(Uri uri, File cacheDir, ContentResolver resolver) {
@@ -148,12 +131,6 @@ public class NativeFileOpenURLBuffer {
             loadFileFromUri(Uri.fromFile(tempFile), resolver);
 
             this.filename = filename;
-            String[] parts = filename.split("\\.");
-            if (parts.length < 2) {
-                fileExtension = "";
-            } else {
-                fileExtension = parts[parts.length - 1];
-            }
 
             tempFile.delete();
 
@@ -193,31 +170,16 @@ public class NativeFileOpenURLBuffer {
     public void reset() {
 
         isFileLoaded = false;
-        isTextFile = false;
         contents = new byte[0];
-        textContents = "";
         filename = "";
-        fileExtension = "";
     }
 
     public byte[] getByteContents() {
         return contents;
     }
 
-    public String getTextContents() {
-        return textContents;
-    }
-
-    public boolean isTextFile() {
-        return isTextFile;
-    }
-
     public String getFilename() {
         return filename;
-    }
-
-    public String getFileExtension() {
-        return fileExtension;
     }
 
     public boolean isFileLoaded() {

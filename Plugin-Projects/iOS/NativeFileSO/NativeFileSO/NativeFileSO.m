@@ -10,7 +10,7 @@
 
 @implementation NativeFileSO
 
-+ (const char *)fileOpen:(NSString *)UTIs {
++ (void)fileOpen:(NSString *)UTIs {
     
     NSArray *utiStrings = [self decodeUTIs:UTIs];
     UIDocumentPickerViewController *documentPicker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:utiStrings inMode:UIDocumentPickerModeImport];
@@ -20,8 +20,6 @@
     
     UIViewController *topVC = [self topViewController];
     [topVC presentViewController:documentPicker animated:YES completion:^{}];
-    
-    return "";
 }
 
 + (void)fileSave:(NSString *)srcPath

@@ -51,9 +51,7 @@ public final class EnvironmentCompat {
      *         {@link Environment#MEDIA_UNMOUNTABLE}.
      */
     public static String getStorageState(@NonNull File path) {
-        if (Build.VERSION.SDK_INT >= 19) {
-            return Environment.getStorageState(path);
-        }
+
         try {
             final String canonicalPath = path.getCanonicalPath();
             final String canonicalExternal = Environment.getExternalStorageDirectory()

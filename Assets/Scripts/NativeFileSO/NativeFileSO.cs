@@ -29,15 +29,22 @@ namespace Keiwando.NativeFileSO {
 			nativeFileSO.OpenFile(supportedTypes);
 		}
 
+		public void SaveFile(FileToSave file) {
+			nativeFileSO.SaveFile(file);
+		}
+
 		public void SaveFile(string srcPath,
 							 string filename,
 							 string extension) {
 
-			nativeFileSO.SaveFile(srcPath, filename, extension);
+			var file = new FileToSave(srcPath, filename, extension);
+
+			nativeFileSO.SaveFile(file);
 		}
 
 		private void OnFileOpened(OpenedFile file) {
 			Debug.Log("OnFileOpened");
+
 			if (FileWasOpened != null) {
 				FileWasOpened(file);
 			}

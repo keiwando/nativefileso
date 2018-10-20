@@ -8,9 +8,7 @@ namespace Keiwando.NativeFileSO {
 
 		void OpenFile(SupportedFileType[] supportedTypes);
 
-		void SaveFile(string srcPath,
-					  string filename,
-					  string extension);
+		void SaveFile(FileToSave file);
 	}
 }
 

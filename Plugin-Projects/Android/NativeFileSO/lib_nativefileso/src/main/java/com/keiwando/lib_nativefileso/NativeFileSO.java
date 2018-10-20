@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import com.keiwando.lib_nativefileso.androidx.core.content.FileProvider;
-import com.unity3d.player.UnityPlayer;
 
 import java.io.File;
 
@@ -15,16 +14,8 @@ public class NativeFileSO {
 
     private final static NativeFileOpenURLBuffer fileBuffer = NativeFileOpenURLBuffer.getInstance();
 
-    public static String GetFileTextContents() {
-        return fileBuffer.getTextContents();
-    }
-
     public static byte[] GetFileByteContents() {
         return fileBuffer.getByteContents();
-    }
-
-    public static boolean IsTextFile() {
-        return fileBuffer.isTextFile();
     }
 
     public static boolean IsFileLoaded() {
@@ -35,35 +26,30 @@ public class NativeFileSO {
         return fileBuffer.getFilename();
     }
 
-    public static String GetFileExtension() {
-        return fileBuffer.getFileExtension();
-    }
-
     public static void ResetLoadedFile() {
         fileBuffer.reset();
     }
 
-    public static boolean IsTemporaryFileAvailable() {
+    public static boolean IsTemporaryFileAvailable(Activity context) {
 
-        Context context = UnityPlayer.currentActivity;
         return fileBuffer.isTemporaryFileAvailable(context.getCacheDir());
     }
 
-    public static void LoadTemporaryFile() {
-        Context context = UnityPlayer.currentActivity;
+    public static void LoadTemporaryFile(Activity context) {
+
         fileBuffer.loadFromTempDir(context.getCacheDir(), context.getContentResolver());
     }
 
-    public static void OpenFile(Activity context, String mimetype) {
+    public static void OpenFile(Activity context, String mimetypes) {
 
         Intent intent = new Intent(context, NativeFileOpenActivity.class);
-        intent.putExtra("mimetype", mimetype);
+        intent.putExtra("mimetypes", mimetypes);
         intent.putExtra("openedFromNativeFileSO", true);
 
         context.startActivity(intent);
     }
 
-    public static void SaveFile(Context context, String srcPath) {
+    public static void SaveFile(Context context, String srcPath, String mimeType) {
 
         File file = new File(srcPath);
         Uri contentURI = FileProvider.getUriForFile(context, AUTHORITY, file);
@@ -73,8 +59,7 @@ public class NativeFileSO {
         shareIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         shareIntent.putExtra(Intent.EXTRA_STREAM, contentURI);
 
-        // TODO: Set proper file type
-        shareIntent.setType("text/plain");
+        shareIntent.setType(mimeType);
 
         context.startActivity(Intent.createChooser(shareIntent, "Share"));
     }
