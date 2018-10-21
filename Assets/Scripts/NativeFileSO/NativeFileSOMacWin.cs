@@ -4,25 +4,29 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using System.Linq;
 
-namespace Keiwando.NativeFileSO { 
+namespace Keiwando.NativeFileSO {
 
 	public class NativeFileSOMacWin : INativeFileSO {
 
-		private delegate void UnityCallbackPathSelected(string path);
+		public static NativeFileSOMacWin shared = new NativeFileSOMacWin();
+
+		private delegate void UnityCallbackPathSelected(IntPtr path);
 
 #if UNITY_STANDALONE_OSX
-	private const string libname = "NativeFileSOMac";
+		private const string libname = "NativeFileSOMac";
 #elif UNITY_STANDALONE_WIN
 	private const string libname = "";
 #else
 		private const string libname = "NativeFileSO";
 #endif
 
+#if UNITY_STANDALONE_OSX
 		[DllImport(libname)]
-		private static extern void pluginSetCallback(NativeFileSO.UnityCallbackFunction callback);
+		private static extern void pluginSetCallback(UnityCallbackPathSelected callback);
+#endif
 
 		[DllImport(libname)]
-		private static extern IntPtr pluginOpenFile(string extensions);
+		private static extern void pluginOpenFile(string extensions);
 
 		[DllImport(libname)]
 		private static extern IntPtr pluginSaveFile(string name, string extension);
@@ -30,11 +34,34 @@ namespace Keiwando.NativeFileSO {
 
 		public event Action<OpenedFile> FileWasOpened;
 
+		private NativeFileSOMacWin() { }
+
 		public void OpenFile(SupportedFileType[] fileTypes) {
 
 			var extensions = fileTypes.Select(x => x.Extension).ToArray();
 
-			var pathPtr = pluginOpenFile(EncodeExtensions(extensions));
+#if UNITY_STANDALONE_OSX
+			pluginSetCallback(DidSelectPathForOpen);
+#endif
+			pluginOpenFile(EncodeExtensions(extensions));
+		}
+
+		public void OpenFile(SupportedFileType[] supportedTypes, Action<bool, OpenedFile> onOpen) {
+
+		}
+
+		public void SaveFile(FileToSave file) {
+
+			var pathPtr = pluginSaveFile(file.Name, file.Extension);
+			var path = Marshal.PtrToStringAnsi(pathPtr);
+
+			Debug.Log("Save Path : " + path);
+
+			File.Copy(file.SrcPath, path);
+		}
+
+		private static void DidSelectPathForOpen(IntPtr pathPtr) { 
+
 			var path = Marshal.PtrToStringAnsi(pathPtr);
 
 			Debug.Log("Path : " + path);
@@ -50,18 +77,9 @@ namespace Keiwando.NativeFileSO {
 			FileWasOpened(file);
 		}
 
-		public void SaveFile(FileToSave file) {
+		private static void DidSelectPathForSave(IntPtr pathPtr) { 
 
-			var pathPtr = pluginSaveFile(file.Name, file.Extension);
-			var path = Marshal.PtrToStringAnsi(pathPtr);
 
-			Debug.Log("Save Path : " + path);
-
-			File.Copy(file.SrcPath, path);
-		}
-
-		private static void PluginDidOpenFile() { 
-			
 		}
 
 		// MARK: - Helpers

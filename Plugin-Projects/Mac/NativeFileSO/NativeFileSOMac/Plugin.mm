@@ -9,12 +9,17 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 #import "NativeFileSO.h"
+#import "UnityCallbackFunction.h"
 
 extern "C" {
     
-    const char* pluginOpenFile(const char* extensions) {
+    void pluginSetCallback(UnityCallbackFunction callback) {
+        [NativeFileSO setCallback:callback];
+    }
+    
+    void pluginOpenFile(const char* extensions) {
 
-        return [NativeFileSO fileOpen:[NSString stringWithUTF8String:extensions]];
+        [NativeFileSO fileOpen:[NSString stringWithUTF8String:extensions]];
     }
     
     const char* pluginSaveFile(const char* name,

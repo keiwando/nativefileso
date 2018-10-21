@@ -17,6 +17,12 @@
 
 @implementation NativeFileSO
 
+static UnityCallbackFunction callback;
+
++ (void)setCallback:(UnityCallbackFunction)unityCallback {
+    callback = unityCallback;
+}
+
 + (const char *)fileOpen:(NSString *)extensions {
     
     NSArray *fileExtensions = [self extractExtensions:extensions];
@@ -30,7 +36,7 @@
     }
 }
 
-+ (const char *)fileSave:(NSString *)extension
++ (void)fileSave:(NSString *)extension
                     name:(NSString *)name {
     
     NSArray *fileExtensions = [NSArray arrayWithObjects:extension, nil];
@@ -39,17 +45,19 @@
     
     NSWindow *window = [[NSApplication sharedApplication] mainWindow];
     
-    if (window == nil) { return ""; }
+    if (window == nil) { return; }
     
     [panel beginSheetModalForWindow:window completionHandler:^(NSModalResponse response) {
+        
+        NSString *path = @"";
+        
         if (response == NSModalResponseOK) {
-            [panel.URL.path UTF8String];
-        } else {
-            "";
+            path = panel.URL.path;
+        }
+        if (callback != nil) {
+            callback([path UTF8String]);
         }
     }];
-    
-    return "";
 }
 
 + (NSOpenPanel *)createOpenPanel:(NSArray<NSString *> *)fileExtensions {

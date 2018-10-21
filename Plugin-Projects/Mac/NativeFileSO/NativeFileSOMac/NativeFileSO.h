@@ -11,10 +11,13 @@
 
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
+#import "UnityCallbackFunction.h"
 
 @interface NativeFileSO : NSObject
 
-+ (const char *) fileOpen:(NSString *)extensions;
++ (void) setCallback:(UnityCallbackFunction)callback;
+
++ (void) fileOpen:(NSString *)extensions;
 
 + (const char *) fileSave:(NSString *)extension
                      name:(NSString *)name;

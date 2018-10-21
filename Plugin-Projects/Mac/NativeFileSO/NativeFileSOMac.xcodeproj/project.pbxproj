@@ -34,6 +34,7 @@
 		BB4EB5E82152BB8E0059A003 /* NativeFileSO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NativeFileSO.h; sourceTree = "<group>"; };
 		BB4EB5E92152BB8E0059A003 /* NativeFileSO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NativeFileSO.m; sourceTree = "<group>"; };
 		BB4EB5ED2152BBA00059A003 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		BB96E1AF217C83BA00753A6A /* UnityCallbackFunction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UnityCallbackFunction.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +73,7 @@
 				BB4EB5E92152BB8E0059A003 /* NativeFileSO.m */,
 				BB4EB5E72152BB8E0059A003 /* Plugin.mm */,
 				BB4EB5E12152BB7B0059A003 /* Info.plist */,
+				BB96E1AF217C83BA00753A6A /* UnityCallbackFunction.h */,
 			);
 			path = NativeFileSOMac;
 			sourceTree = "<group>";

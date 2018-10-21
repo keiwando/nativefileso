@@ -3,181 +3,94 @@
 
 
 using System;
-using System.Linq;
-using System.IO;
-using System.Runtime.InteropServices;
-using UnityEngine;
+using AOT;
 
 namespace Keiwando.NativeFileSO {
 
-	public class NativeFileSOMobile : INativeFileSO {
+	public class NativeFileSOMobile: INativeFileSO {
 
-
-#if UNITY_IOS
-
-		[DllImport("__Internal")]
-		private static extern void pluginSetCallback(NativeFileSO.UnityCallbackFunction callback);
-
-		[DllImport("__Internal")]
-		private static extern Boolean pluginIsFileLoaded();
-
-		[DllImport("__Internal")]
-		private static extern IntPtr pluginGetData();
-
-		[DllImport("__Internal")]
-		private static extern ulong pluginGetDataByteCount();
-
-		[DllImport("__Internal")]
-		private static extern IntPtr pluginGetFilename();
-
-		[DllImport("__Internal")]
-		private static extern void pluginResetLoadedFile();
-
-		[DllImport("__Internal")]
-		private static extern void pluginOpenFile(string utis);
-
-		[DllImport("__Internal")]
-		private static extern void pluginSaveFile(string srcPath, string name);
-
+		#if UNITY_IOS
+		private INativeFileSOMobile nativeFileSO = NativeFileSOiOS.shared;
 #elif UNITY_ANDROID
-
+		private INativeFileSOMobile nativeFileSO = NativeFileSOAndroid.shared;
+#else
+		private INativeFileSOMobile nativeFileSO = null;
 #endif
+
+		public static NativeFileSOMobile shared = new NativeFileSOMobile();
 
 		public event Action<OpenedFile> FileWasOpened;
 
-		public NativeFileSOMobile() {
+		private Action<bool, OpenedFile> _callback;
+		private bool isBusy = false;
+
+		private NativeFileSOMobile() {
 
 			//Debug.Log("Registering callback on " + NativeFileSOMobileCallback.instance);
 
-			NativeFileSOMobileCallback.instance.FileWasOpened += delegate (OpenedFile file) {
-				if (FileWasOpened != null) {
-					FileWasOpened(file);
-				}
-				Debug.Log("File Was Opened - SOMobile");
+			NativeFileSOUnityEvent.UnityReceivedControl += delegate {
+				TryRetrieveOpenedFile();
+				isBusy = false;
 			};
-
-#if UNITY_IOS
-			pluginSetCallback(NativeFileSOMobileCallback.IOSFileWasOpened);
-#endif
 		}
 
-		public bool LoadIfTemporaryAvailable() {
-#if UNITY_IOS
-			return pluginIsFileLoaded();
-#elif UNITY_ANDROID
-
-			AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-			AndroidJavaClass nativeFileSO = new AndroidJavaClass("com.keiwando.lib_nativefileso.NativeFileSO");
-			AndroidJavaObject currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
-			var isAvailable = nativeFileSO.CallStatic<bool>("IsTemporaryFileAvailable", currentActivity);
-
-			if (isAvailable) {
-				nativeFileSO.CallStatic("LoadTemporaryFile", currentActivity);
-			}
-			Debug.Log("Is Temporary File available: " + isAvailable);
-
-			return isAvailable;
-
-#else
-			return false;
-#endif
-		}
-
-		public bool IsFileOpened() {
-#if UNITY_IOS
-			return pluginIsFileLoaded();
-#elif UNITY_ANDROID
-
-			AndroidJavaClass nativeFileSO = new AndroidJavaClass("com.keiwando.lib_nativefileso.NativeFileSO");
-			return nativeFileSO.CallStatic<bool>("IsFileLoaded");
-#else
-			return false;
-#endif
-		}
-
-		public OpenedFile GetOpenedFile() {
-
-#if UNITY_IOS
-			//string textContents = Marshal.PtrToStringAnsi(pluginGetStringContents());
-			byte[] byteContents = new byte[pluginGetDataByteCount()];
-			Marshal.Copy(pluginGetData(), byteContents, 0, byteContents.Length);
-			//bool isTextFile = pluginIsTextFile();
-			String filename = Marshal.PtrToStringAnsi(pluginGetFilename());
-			//String extension = Marshal.PtrToStringAnsi(pluginGetExtension());
-
-			pluginResetLoadedFile();
-
-			return new OpenedFile(filename, byteContents);
-
-#elif UNITY_ANDROID
-
-			AndroidJavaClass nativeFileSO = new AndroidJavaClass("com.keiwando.lib_nativefileso.NativeFileSO");
-
-			byte[] byteContents = nativeFileSO.CallStatic<byte[]>("GetFileByteContents");
-			string filename = nativeFileSO.CallStatic<string>("GetFileName");
-
-			// Reset the loaded data
-			nativeFileSO.CallStatic("ResetLoadedFile");
-
-			return new OpenedFile(filename, byteContents);
-#else
-			return null;
-#endif
-		}
 
 		public void OpenFile(SupportedFileType[] supportedTypes) {
 
-#if UNITY_IOS
-			if (supportedTypes != null && supportedTypes.Length > 0) {
-				string encodedUTIs = EncodeUTIs(supportedTypes.Select(x => x.AppleUTI).ToArray());
-				pluginOpenFile(encodedUTIs);
-			} else {
-				pluginOpenFile(SupportedFileType.Any.AppleUTI);
-			}
+			if (isBusy) return;
 
-#elif UNITY_ANDROID
+			isBusy = true;
+			nativeFileSO.OpenFile(supportedTypes);
+		}
 
-			string encodedMimeTypes = EncodeMimeTypes(supportedTypes.Select(x => x.MimeType).ToArray());
+		public void OpenFile(SupportedFileType[] supportedTypes, Action<bool, OpenedFile> onOpen) {
 
-			AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-			AndroidJavaObject currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+			if (isBusy) return;
 
-			AndroidJavaClass nativeFileSO = new AndroidJavaClass("com.keiwando.lib_nativefileso.NativeFileSO");
-
-			if (supportedTypes == null || supportedTypes.Length == 0) {
-				nativeFileSO.CallStatic("OpenFile", currentActivity, SupportedFileType.Any.MimeType);
-			} else {
-				nativeFileSO.CallStatic("OpenFile", currentActivity, encodedMimeTypes);
-			}
-#endif
+			_callback = onOpen;
+			OpenFile(supportedTypes);
 		}
 
 		public void SaveFile(FileToSave file) {
 
-#if UNITY_IOS
+			if (isBusy) return;
 
-			pluginSaveFile(file.SrcPath, file.Name);
-
-#elif UNITY_ANDROID
-
-			AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer"); 
-			AndroidJavaObject currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
-
-			AndroidJavaClass nativeFileSO = new AndroidJavaClass("com.keiwando.lib_nativefileso.NativeFileSO");
-
-			nativeFileSO.CallStatic("SaveFile", currentActivity, file.SrcPath, file.MimeType);
-#endif
+			isBusy = true;
+			nativeFileSO.SaveFile(file);
 		}
 
+		private void TryRetrieveOpenedFile() {
 
-		private string EncodeUTIs(string[] extensions) {
+			if (FileWasOpened == null) return;
 
-			return string.Join("%", extensions);
+			nativeFileSO.LoadIfTemporaryFileAvailable();
+
+			if (nativeFileSO.IsFileLoaded()) {
+
+				var file = nativeFileSO.GetOpenedFile();
+
+				SendFileOpenedEvent(true, file);
+			}
 		}
 
-		private string EncodeMimeTypes(string[] extensions) {
-			return string.Join(" ", extensions);
+		private void SendFileOpenedEvent(bool fileWasOpened, OpenedFile file) {
+
+			if (_callback != null) {
+				_callback(fileWasOpened, file);
+				return;
+			}
+
+			if (fileWasOpened && FileWasOpened != null) {
+				FileWasOpened(file);
+			}
 		}
+
+		[MonoPInvokeCallback(typeof(NativeFileSO.UnityCallbackFunction))]
+		internal static void FileWasOpenedCallback() {
+			NativeFileSOMobile.shared.TryRetrieveOpenedFile();
+			NativeFileSOMobile.shared.isBusy = false;
+		}
+
 	}
 }
 

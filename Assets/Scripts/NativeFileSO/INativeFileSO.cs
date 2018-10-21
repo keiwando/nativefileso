@@ -7,6 +7,7 @@ namespace Keiwando.NativeFileSO {
 		event Action<OpenedFile> FileWasOpened;
 
 		void OpenFile(SupportedFileType[] supportedTypes);
+		void OpenFile(SupportedFileType[] supportedTypes, Action<bool, OpenedFile> onOpen);
 
 		void SaveFile(FileToSave file);
 	}

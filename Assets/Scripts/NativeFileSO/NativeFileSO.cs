@@ -31,6 +31,10 @@ namespace Keiwando.NativeFileSO {
 			nativeFileSO.OpenFile(supportedTypes);
 		}
 
+		public void OpenFile(SupportedFileType[] supportedTypes, Action<OpenedFile> onOpen) {
+
+		}
+
 		public void SaveFile(FileToSave file) {
 			nativeFileSO.SaveFile(file);
 		}
