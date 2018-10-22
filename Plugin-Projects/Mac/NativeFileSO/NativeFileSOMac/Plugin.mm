@@ -19,13 +19,13 @@ extern "C" {
     
     void pluginOpenFile(const char* extensions) {
 
-        [NativeFileSO fileOpen:[NSString stringWithUTF8String:extensions]];
+        return [NativeFileSO fileOpen:[NSString stringWithUTF8String:extensions]];
     }
     
-    const char* pluginSaveFile(const char* name,
+    void pluginSaveFile(const char* name,
                           const char* extension) {
         
-        return [NativeFileSO fileSave:[NSString stringWithUTF8String:extension]
+        [NativeFileSO fileSave:[NSString stringWithUTF8String:extension]
                                  name:[NSString stringWithUTF8String:name]];
     }
 }

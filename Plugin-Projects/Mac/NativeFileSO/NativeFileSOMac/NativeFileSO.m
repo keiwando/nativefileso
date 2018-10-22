@@ -23,17 +23,24 @@ static UnityCallbackFunction callback;
     callback = unityCallback;
 }
 
-+ (const char *)fileOpen:(NSString *)extensions {
++ (void)fileOpen:(NSString *)extensions {
     
     NSArray *fileExtensions = [self extractExtensions:extensions];
     NSOpenPanel* panel = [self createOpenPanel:fileExtensions];
-    NSModalResponse response = [panel runModal];
     
-    if (response == NSModalResponseOK) {
-        return [panel.URL.path UTF8String];
-    } else {
-        return "";
-    }
+    NSWindow *window = [[NSApplication sharedApplication] mainWindow];
+    
+    if (window == nil) { return; }
+    
+    [panel beginSheetModalForWindow:window completionHandler:^(NSModalResponse response){
+        if (callback == nil) return;
+        
+        if (response == NSModalResponseOK) {
+            callback(YES, [panel.URL.path UTF8String]);
+        } else {
+            callback(NO, [@"" UTF8String]);
+        }
+    }];
 }
 
 + (void)fileSave:(NSString *)extension
@@ -49,13 +56,12 @@ static UnityCallbackFunction callback;
     
     [panel beginSheetModalForWindow:window completionHandler:^(NSModalResponse response) {
         
-        NSString *path = @"";
+        if (callback == nil) return;
         
         if (response == NSModalResponseOK) {
-            path = panel.URL.path;
-        }
-        if (callback != nil) {
-            callback([path UTF8String]);
+            callback(YES, [panel.URL.path UTF8String]);
+        } else {
+            callback(NO, [@"" UTF8String]);
         }
     }];
 }
@@ -79,11 +85,13 @@ static UnityCallbackFunction callback;
     
     NSSavePanel *panel = [NSSavePanel savePanel];
     
-    [panel setCanCreateDirectories:NO];
+    [panel setCanCreateDirectories:YES];
     [panel setAllowedFileTypes:fileExtensions];
     [panel setFloatingPanel:YES];
     [panel setCanCreateDirectories:YES];
     [panel setNameFieldStringValue:name];
+    [panel setExtensionHidden:NO];
+    [panel setCanSelectHiddenExtension:NO];
     
     return panel;
 }

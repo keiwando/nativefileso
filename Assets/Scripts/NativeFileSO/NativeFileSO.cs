@@ -11,7 +11,7 @@ namespace Keiwando.NativeFileSO {
 		public event Action<OpenedFile> FileWasOpened;
 
 #if UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX
-	private static INativeFileSO nativeFileSO = new NativeFileSOMacWin();
+		private static INativeFileSO nativeFileSO = NativeFileSOMacWin.shared;
 #elif UNITY_IOS || UNITY_ANDROID
 		private static INativeFileSO nativeFileSO = new NativeFileSOMobile();
 #else
@@ -31,7 +31,7 @@ namespace Keiwando.NativeFileSO {
 			nativeFileSO.OpenFile(supportedTypes);
 		}
 
-		public void OpenFile(SupportedFileType[] supportedTypes, Action<OpenedFile> onOpen) {
+		public void OpenFile(SupportedFileType[] supportedTypes, Action<bool, OpenedFile> onOpen) {
 
 		}
 

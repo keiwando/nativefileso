@@ -198,7 +198,7 @@ GameObject:
   - component: {fileID: 122645186}
   - component: {fileID: 122645187}
   m_Layer: 0
-  m_Name: NativeFileSOMobileCallback
+  m_Name: NativeFileSOUnityEvent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -225,7 +225,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 122645185}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee19d6919920140cb94c7f2ab56c2393, type: 3}
+  m_Script: {fileID: 11500000, guid: 1a3d947cc21ca4044949453517e9e801, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &253169008

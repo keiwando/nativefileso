@@ -19,7 +19,7 @@
 
 + (void) fileOpen:(NSString *)extensions;
 
-+ (const char *) fileSave:(NSString *)extension
++ (void) fileSave:(NSString *)extension
                      name:(NSString *)name;
 
 @end

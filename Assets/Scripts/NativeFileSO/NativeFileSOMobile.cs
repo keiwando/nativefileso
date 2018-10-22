@@ -61,8 +61,6 @@ namespace Keiwando.NativeFileSO {
 
 		private void TryRetrieveOpenedFile() {
 
-			if (FileWasOpened == null) return;
-
 			nativeFileSO.LoadIfTemporaryFileAvailable();
 
 			if (nativeFileSO.IsFileLoaded()) {
@@ -70,6 +68,8 @@ namespace Keiwando.NativeFileSO {
 				var file = nativeFileSO.GetOpenedFile();
 
 				SendFileOpenedEvent(true, file);
+			} else {
+				SendFileOpenedEvent(false, null);
 			}
 		}
 
@@ -77,6 +77,7 @@ namespace Keiwando.NativeFileSO {
 
 			if (_callback != null) {
 				_callback(fileWasOpened, file);
+				_callback = null;
 				return;
 			}
 
@@ -87,8 +88,8 @@ namespace Keiwando.NativeFileSO {
 
 		[MonoPInvokeCallback(typeof(NativeFileSO.UnityCallbackFunction))]
 		internal static void FileWasOpenedCallback() {
-			NativeFileSOMobile.shared.TryRetrieveOpenedFile();
-			NativeFileSOMobile.shared.isBusy = false;
+			shared.TryRetrieveOpenedFile();
+			shared.isBusy = false;
 		}
 
 	}
