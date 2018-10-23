@@ -1,8 +1,9 @@
-﻿using System;
+﻿#if UNITY_STANDALONE_WIN
+
+using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using UnityEngine;
 using Ookii.Dialogs;
 
 namespace Keiwando.NativeFileSO {
@@ -113,3 +114,5 @@ namespace Keiwando.NativeFileSO {
 		}
 	}
 }
+
+#endif
