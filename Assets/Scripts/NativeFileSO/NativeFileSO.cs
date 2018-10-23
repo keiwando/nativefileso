@@ -43,7 +43,7 @@ namespace Keiwando.NativeFileSO {
 							 string filename,
 							 string extension) {
 
-			var file = new FileToSave(srcPath, filename, extension);
+			var file = new FileToSave(srcPath, string.Format("{0}.{1}", filename, extension), extension);
 
 			nativeFileSO.SaveFile(file);
 		}

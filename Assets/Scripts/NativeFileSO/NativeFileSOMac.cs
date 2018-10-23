@@ -76,11 +76,8 @@ namespace Keiwando.NativeFileSO {
 
 			Debug.Log("Path : " + path);
 
-			byte[] data = File.ReadAllBytes(path);
-			var name = Path.GetFileName(path);
-			var file = new OpenedFile(name, data);
-
-			shared.SendFileOpenedEvent(true, file);
+			shared.SendFileOpenedEvent(true, NativeFileSOMacWin.FileFromPath(path));
+			shared.isBusy = false;
 		}
 
 		private static void DidSelectPathForSave(bool pathSelected, IntPtr pathPtr) {
@@ -90,6 +87,8 @@ namespace Keiwando.NativeFileSO {
 				return;
 			}
 
+			shared.isBusy = false;
+
 			var toSave = shared._cachedFileToSave;
 			if (toSave == null) return;
 
@@ -97,7 +96,7 @@ namespace Keiwando.NativeFileSO {
 
 			Debug.Log("Save Path : " + path);
 
-			File.Copy(toSave.SrcPath, path);
+			NativeFileSOMacWin.SaveFileToPath(toSave, path);
 		}
 
 		private void SelectionWasCancelled() {

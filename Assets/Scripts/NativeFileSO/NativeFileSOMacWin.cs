@@ -25,7 +25,11 @@ namespace Keiwando.NativeFileSO {
 
 		private NativeFileSOMacWin() {
 
-			nativeFileSO.FileWasOpened += FileWasOpened;
+			nativeFileSO.FileWasOpened += delegate(OpenedFile file) {
+				if (FileWasOpened != null) {
+					FileWasOpened(file);
+				}
+			};
 		}
 
 		public void OpenFile(SupportedFileType[] fileTypes) {
@@ -42,9 +46,14 @@ namespace Keiwando.NativeFileSO {
 		}
 
 		// MARK: - Helpers
-		private string EncodeExtensions(string[] extensions) {
+		public static OpenedFile FileFromPath(string path) {
+			byte[] data = File.ReadAllBytes(path);
+			var name = Path.GetFileName(path);
+			return new OpenedFile(name, data);
+		}
 
-			return string.Join("%", extensions);
+		public static void SaveFileToPath(FileToSave file, string path) {
+			File.Copy(file.SrcPath, path);
 		}
 	}
 }

@@ -30,7 +30,8 @@ public class TestController : MonoBehaviour {
 	private void ExportTest() {
 
 		var testFilePath = Path.Combine(Application.persistentDataPath, "Test.evol");
-		NativeFileSO.shared.SaveFile(testFilePath, "Test", "evol");
+		var fileToSave = new FileToSave(testFilePath, "Test.evol", CustomFileTypes.evol);
+		NativeFileSO.shared.SaveFile(fileToSave);
 	}
 
 	private void ImportTest() {
