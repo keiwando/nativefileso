@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if UNITY_STANDALONE_OSX
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Linq;
@@ -65,6 +66,36 @@ namespace Keiwando.NativeFileSO {
 			pluginSaveFile(file.Name, file.Extension);
 		}
 
+		// MARK: - INativeFileSODesktop
+
+		public void OpenFiles(SupportedFileType[] fileTypes, bool canSelectMultiple,
+					   string title, string directory, 
+					   Action<bool, OpenedFile[]> onCompletion) {
+
+		}
+
+		public OpenedFile[] OpenFilesSync(SupportedFileType[] fileTypes, bool canSelectMultiple, 
+								   string title, string directory) {
+
+		}
+
+		public void SelectOpenPaths(SupportedFileType[] fileTypes, bool canSelectMultiple,
+							 string title, string directory,
+							 Action<bool, string[]> onCompletion) {
+
+		}
+
+		public string[] SelectOpenPathsSync(SupportedFileType[] fileTypes, bool canSelectMultiple,
+									 string title, string directory) {
+
+		}
+
+		public void SaveFile(FileToSave file, string title, string directory) {
+			// TODO: Implement
+		}
+
+		// MARK: - Private Functions
+
 		private static void DidSelectPathForOpen(bool pathSelected, IntPtr pathPtr) {
 
 			if (!pathSelected) {
@@ -126,3 +157,4 @@ namespace Keiwando.NativeFileSO {
 		}
 	}
 }
+#endif

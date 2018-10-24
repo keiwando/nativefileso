@@ -2,9 +2,11 @@
 
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Ookii.Dialogs;
+using UnityEngine;
 
 namespace Keiwando.NativeFileSO {
 
@@ -21,54 +23,108 @@ namespace Keiwando.NativeFileSO {
 		private static extern IntPtr GetActiveWindow();
 
 		public static NativeFileSOWindows shared = new NativeFileSOWindows();
-		
-		public event Action<OpenedFile> FileWasOpened;
 
-		private Action<bool, OpenedFile> _callback;
+		private static OpenedFile[] _noFiles = new OpenedFile[0];
+		private static string[] _noPaths = new string[0];
+
 		private bool isBusy = false;
 
-		public void OpenFile(SupportedFileType[] supportedTypes) { 
-			
-			if (isBusy) { return; }
-			isBusy = true;
+		public void OpenFile(SupportedFileType[] fileTypes, Action<bool, OpenedFile> onCompletion) { 
 
-			var dialog = new VistaOpenFileDialog();
-			
-			dialog.Multiselect = false;
-
-			if (supportedTypes != null && supportedTypes.Length > 0) {
-				dialog.Filter = EncodeFilters(supportedTypes);
+			var openedFiles = OpenFilesSync(fileTypes, false);
+		
+			if (onCompletion != null) {
+				if (openedFiles.Length > 0) {
+					onCompletion(true, openedFiles[0]);
+				} else {
+					onCompletion(false, null);
+				}
 			}
-
-			var result = dialog.ShowDialog(new Win32Window(GetActiveWindow()));
-
-			if (result == DialogResult.OK) {
-				var path = dialog.FileName;
-				SendFileOpenedEvent(true, NativeFileSOMacWin.FileFromPath(path));
-			} else {
-				SelectionWasCancelled();
-			}
-
-			dialog.Dispose();
-			isBusy = false;
 		}
 
-		public void OpenFile(SupportedFileType[] supportedTypes, Action<bool, OpenedFile> onOpen) { 
-			
-			if (isBusy) return;
-
-			_callback = onOpen;
-			OpenFile(supportedTypes);
+		public void OpenFiles(SupportedFileType[] supportedTypes, Action<bool, OpenedFile[]> onCompletion) {
+			OpenFiles(supportedTypes, true, "", "", onCompletion);
 		}
 
 		public void SaveFile(FileToSave file) { 
 			
+			SaveFile(file, "", "");
+		}
+
+		// MARK: - INativeFileSODesktop
+
+		public void OpenFiles(SupportedFileType[] fileTypes, bool canSelectMultiple,
+					   		  string title, string directory, 
+					   		  Action<bool, OpenedFile[]> onCompletion) {
+			
+			var openedFiles = OpenFilesSync(fileTypes);
+			isBusy = false;
+			var filesWereOpened = openedFiles.Length != 0;
+			if (onCompletion != null) {
+				onCompletion(filesWereOpened, openedFiles);
+			}
+		}
+
+		public OpenedFile[] OpenFilesSync(SupportedFileType[] fileTypes, bool canSelectMultiple = true, 
+								   		  string title = "", string directory = "") {			
+
+			var paths = SelectOpenPathsSync(fileTypes, canSelectMultiple, title, directory);
+			var openedFiles = new List<OpenedFile>();
+			
+			foreach (var path in paths) {
+				var file = NativeFileSOMacWin.FileFromPath(path);
+				if (file != null) {
+					openedFiles.Add(file);
+				}
+			}
+			isBusy = false;
+
+			return openedFiles.ToArray();
+		}
+
+		public void SelectOpenPaths(SupportedFileType[] fileTypes, bool canSelectMultiple,
+							 		string title, string directory,
+							 		Action<bool, string[]> onCompletion) {
+			
+			var paths = SelectOpenPathsSync(fileTypes, canSelectMultiple, title, directory);
+			isBusy = false;
+			if (onCompletion != null) {
+				var pathsSelected = paths.Length != 0;
+				onCompletion(pathsSelected, paths);
+			} 
+		}
+
+		public string[] SelectOpenPathsSync(SupportedFileType[] fileTypes, bool canSelectMultiple = true,
+									 		string title = "", string directory = "") {
+
+			if (isBusy) { return _noPaths; }
+			isBusy = true;
+
+			var dialog = new VistaOpenFileDialog();
+			
+			dialog.Multiselect = canSelectMultiple;
+			dialog.Title = title;
+			dialog.FileName = directory;
+			//dialog.RestoreDirectory = true;
+
+			if (fileTypes != null && fileTypes.Length > 0) {
+				dialog.Filter = EncodeFilters(fileTypes);
+			}
+
+			var result = dialog.ShowDialog(new Win32Window(GetActiveWindow()));
+			isBusy = false;
+
+			return result == DialogResult.OK ? dialog.FileNames : _noPaths;
+		}
+
+		public void SaveFile(FileToSave file, string title, string directory) {
+
 			if (isBusy) return;
 			isBusy = true;
 
 			var dialog = new VistaSaveFileDialog();
 			
-			dialog.FileName = file.Name;
+			dialog.FileName = directory + @"\" + file.Name;
 			dialog.DefaultExt = file.Extension;
 			if (dialog.DefaultExt.Length > 0) {
 				dialog.AddExtension = true;
@@ -78,32 +134,19 @@ namespace Keiwando.NativeFileSO {
 				dialog.Filter = EncodeFilters(new []{ file.FileType });
 			}
 
+			dialog.Title = title;
+			dialog.InitialDirectory = directory;
+			dialog.RestoreDirectory = true;
+
 			var result = dialog.ShowDialog(new Win32Window(GetActiveWindow()));
 			if (result == DialogResult.OK) {
 				NativeFileSOMacWin.SaveFileToPath(file, dialog.FileName);
-			} else {
-				SelectionWasCancelled();
 			}
+			dialog.Dispose();
 			isBusy = false;
 		}
 
-		private void SelectionWasCancelled() {
-
-			isBusy = false;
-			SendFileOpenedEvent(false, null);
-		}
-
-		private void SendFileOpenedEvent(bool fileWasOpened, OpenedFile file) {
-
-			if (_callback != null) {
-				_callback(fileWasOpened, file);
-				return;
-			}
-
-			if (fileWasOpened && FileWasOpened != null) {
-				FileWasOpened(file);
-			}
-		}
+		// MARK: - Private Helpers
 
 		private String EncodeFilters(SupportedFileType[] types) {
 			return string.Join("|", types.Select(delegate(SupportedFileType x){

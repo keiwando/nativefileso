@@ -4,10 +4,8 @@ namespace Keiwando.NativeFileSO {
 
 	public interface INativeFileSO {
 
-		event Action<OpenedFile> FileWasOpened;
-
-		void OpenFile(SupportedFileType[] supportedTypes);
-		void OpenFile(SupportedFileType[] supportedTypes, Action<bool, OpenedFile> onOpen);
+		void OpenFile(SupportedFileType[] supportedTypes, Action<bool, OpenedFile> onCompletion);
+		void OpenFiles(SupportedFileType[] supportedTypes, Action<bool, OpenedFile[]> onCompletion);
 
 		void SaveFile(FileToSave file);
 	}

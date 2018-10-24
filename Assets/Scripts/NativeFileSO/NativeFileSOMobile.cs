@@ -51,6 +51,10 @@ namespace Keiwando.NativeFileSO {
 			OpenFile(supportedTypes);
 		}
 
+		public void OpenFiles(SupportedFileType[] supportedTypes, Action<bool, OpenedFile[]> onOpen) {
+			// TODO: Implement
+		}
+
 		public void SaveFile(FileToSave file) {
 
 			if (isBusy) return;
@@ -60,6 +64,8 @@ namespace Keiwando.NativeFileSO {
 		}
 
 		private void TryRetrieveOpenedFile() {
+
+			if (nativeFileSO == null) return;
 
 			nativeFileSO.LoadIfTemporaryFileAvailable();
 

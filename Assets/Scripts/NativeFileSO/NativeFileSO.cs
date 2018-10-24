@@ -8,31 +8,24 @@ namespace Keiwando.NativeFileSO {
 
 		public delegate void UnityCallbackFunction();
 
-		public event Action<OpenedFile> FileWasOpened;
-
 #if UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX
 		private static INativeFileSO nativeFileSO = NativeFileSOMacWin.shared;
 #elif UNITY_IOS || UNITY_ANDROID
-		private static INativeFileSO nativeFileSO = new NativeFileSOMobile();
+		private static INativeFileSO nativeFileSO = NativeFileSOMobile.shared;
 #else
 	private static INativeFileSO nativeFileSO = null;
 #endif
 
 		public static readonly NativeFileSO shared = new NativeFileSO();
 
-		private NativeFileSO() {
+		private NativeFileSO() {}
 
-			nativeFileSO.FileWasOpened += OnFileOpened;
-
+		public void OpenFile(SupportedFileType[] supportedTypes, Action<bool, OpenedFile> onCompletion) {
+			nativeFileSO.OpenFile(supportedTypes, onCompletion);
 		}
 
-		public void OpenFile(SupportedFileType[] supportedTypes) {
-
-			nativeFileSO.OpenFile(supportedTypes);
-		}
-
-		public void OpenFile(SupportedFileType[] supportedTypes, Action<bool, OpenedFile> onOpen) {
-
+		public void OpenFiles(SupportedFileType[] supportedTypes, Action<bool, OpenedFile[]> onCompletion) {
+			nativeFileSO.OpenFiles(supportedTypes, onCompletion);
 		}
 
 		public void SaveFile(FileToSave file) {
@@ -48,12 +41,8 @@ namespace Keiwando.NativeFileSO {
 			nativeFileSO.SaveFile(file);
 		}
 
-		private void OnFileOpened(OpenedFile file) {
-			Debug.Log("OnFileOpened");
-
-			if (FileWasOpened != null) {
-				FileWasOpened(file);
-			}
+		public void SaveFile(string srcPath) {
+			nativeFileSO.SaveFile(new FileToSave(srcPath));
 		}
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using Keiwando.NativeFileSO;
@@ -21,17 +22,25 @@ public class TestController : MonoBehaviour {
 		exportTestButton.onClick.AddListener(() => ExportTest());
 		importTestButton.onClick.AddListener(() => ImportTest());
 
-		NativeFileSO.shared.FileWasOpened += delegate(OpenedFile file) {
+		NativeFileSOMobile.shared.FileWasOpened += delegate(OpenedFile file) {
 
 			ShowContents(file);
 		};
 	}
 
+	void Update() {
+		if (Input.GetKeyDown(KeyCode.Alpha1)) {
+			SaveTestTitleDirectory();
+		} else if (Input.GetKeyDown(KeyCode.Alpha2)) {
+			OpenPathsTest();
+		} else if (Input.GetKeyDown(KeyCode.Alpha3)) {
+			OpenFilesTest();
+		}
+	}
+
 	private void ExportTest() {
 
-		var testFilePath = Path.Combine(Application.persistentDataPath, "Test.evol");
-		var fileToSave = new FileToSave(testFilePath, "Test.evol", CustomFileTypes.evol);
-		NativeFileSO.shared.SaveFile(fileToSave);
+		NativeFileSO.shared.SaveFile(GetFileToSave());
 	}
 
 	private void ImportTest() {
@@ -40,7 +49,42 @@ public class TestController : MonoBehaviour {
 			CustomFileTypes.creat, CustomFileTypes.evol
 		};
 
-		NativeFileSO.shared.OpenFile(types);
+		NativeFileSO.shared.OpenFile(types, delegate(bool wasFileOpened, OpenedFile file){
+			if(wasFileOpened) {
+				ShowContents(file);
+			}
+		});
+	}
+
+	private void SaveTestTitleDirectory() {
+		NativeFileSOMacWin.shared.SaveFile(GetFileToSave(), "Custom Title", @"C:\Users");
+	}
+
+	private void OpenPathsTest() {
+		NativeFileSOMacWin.shared.SelectOpenPaths(new []{ SupportedFileType.Any }, true, 
+								"Custom Title", @"C:\Users", delegate(bool werePathsSelected, string[] paths){
+			if (werePathsSelected) {
+				textField.text = string.Format("Selected paths:\n{0}", string.Join("\n", paths));
+			} else {
+				textField.text = "Path selection was cancelled.";
+			}
+		});
+	}
+
+	private void OpenFilesTest() {
+		NativeFileSOMacWin.shared.OpenFiles(new []{ SupportedFileType.Any }, true, 
+								"Custom Title", @"C:\Users", delegate(bool wereFilesSelected, OpenedFile[] files){
+			if (wereFilesSelected) {
+				textField.text = string.Format("Selected file contents:\n{0}", string.Join("\n", files.Select(x => x.ToUTF8String()).ToArray()));
+			} else {
+				textField.text = "File selection was cancelled.";
+			}
+		});
+	}
+
+	private FileToSave GetFileToSave() {
+		var testFilePath = Path.Combine(Application.persistentDataPath, "Test.evol");
+		return new FileToSave(testFilePath, "Test.evol", CustomFileTypes.evol);
 	}
 
 	private void ShowContents(OpenedFile file) {
