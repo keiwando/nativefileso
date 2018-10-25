@@ -78,7 +78,7 @@ namespace Keiwando.NativeFileSO {
 		}
 
 		public static void SaveFileToPath(FileToSave file, string path) {
-			File.Copy(file.SrcPath, path);
+			File.Copy(file.SrcPath, path, true);
 		}
 	}
 }

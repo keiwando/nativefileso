@@ -145,15 +145,13 @@ namespace Keiwando.NativeFileSO {
 			}
 
 			dialog.Title = title;
-			dialog.InitialDirectory = directory;
-			dialog.RestoreDirectory = true;
 
 			var result = dialog.ShowDialog(new Win32Window(GetActiveWindow()));
+			isBusy = false;
 			if (result == DialogResult.OK) {
 				NativeFileSOMacWin.SaveFileToPath(file, dialog.FileName);
 			}
 			dialog.Dispose();
-			isBusy = false;
 		}
 
 		// MARK: - Private Helpers
