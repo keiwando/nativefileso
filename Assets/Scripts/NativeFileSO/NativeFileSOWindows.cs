@@ -1,6 +1,7 @@
 ﻿#if UNITY_STANDALONE_WIN
 
 using System;
+using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -104,9 +105,13 @@ namespace Keiwando.NativeFileSO {
 			
 			dialog.Multiselect = canSelectMultiple;
 			dialog.Title = title;
-			dialog.FileName = directory;
-			//dialog.RestoreDirectory = true;
 
+			if (string.IsNullOrEmpty(directory)) {
+				dialog.RestoreDirectory = true;
+			} else {
+				dialog.FileName = EnsureStringEndsWith(directory, Path.DirectorySeparatorChar.ToString());
+			}
+			
 			if (fileTypes != null && fileTypes.Length > 0) {
 				dialog.Filter = EncodeFilters(fileTypes);
 			}
@@ -124,7 +129,12 @@ namespace Keiwando.NativeFileSO {
 
 			var dialog = new VistaSaveFileDialog();
 			
-			dialog.FileName = directory + @"\" + file.Name;
+			if (string.IsNullOrEmpty(directory)) {
+				dialog.RestoreDirectory = true;
+			} else {
+				dialog.FileName = CreateFilenameForSaveDialog(directory, file.Name);
+			}
+
 			dialog.DefaultExt = file.Extension;
 			if (dialog.DefaultExt.Length > 0) {
 				dialog.AddExtension = true;
@@ -148,7 +158,25 @@ namespace Keiwando.NativeFileSO {
 
 		// MARK: - Private Helpers
 
-		private String EncodeFilters(SupportedFileType[] types) {
+		private string CreateFilenameForSaveDialog(string directory, string name) {
+
+			var sep = Path.DirectorySeparatorChar.ToString();
+			if (!directory.EndsWith(sep)) {
+				return string.Format("{0}{1}{2}", directory, sep, name);
+			} else {
+				return string.Format("{0}{1}", directory, name);
+			}
+		}
+
+		private string EnsureStringEndsWith(string self, string end) {
+			if(!self.EndsWith(end)) {
+				return self + end;
+			} else {
+				return self;
+			}
+		}
+
+		private string EncodeFilters(SupportedFileType[] types) {
 			return string.Join("|", types.Select(delegate(SupportedFileType x){
 				var ext = x.Extension.Equals(string.Empty) ? "*" : x.Extension;
 				return string.Format("{0} (*.{1})|*.{1}", x.Name, ext);

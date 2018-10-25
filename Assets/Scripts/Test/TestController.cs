@@ -46,7 +46,7 @@ public class TestController : MonoBehaviour {
 	private void ImportTest() {
 
 		var types = new SupportedFileType[] { 
-			CustomFileTypes.creat, CustomFileTypes.evol
+			CustomFileTypes.creat, CustomFileTypes.evol, SupportedFileType.Any
 		};
 
 		NativeFileSO.shared.OpenFile(types, delegate(bool wasFileOpened, OpenedFile file){
