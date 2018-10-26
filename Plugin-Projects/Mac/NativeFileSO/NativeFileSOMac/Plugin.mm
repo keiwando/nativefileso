@@ -17,15 +17,51 @@ extern "C" {
         [NativeFileSO setCallback:callback];
     }
     
-    void pluginOpenFile(const char* extensions) {
+    void pluginOpenFile(const char *extensions,
+                        bool canSelectMultiple,
+                        const char *title,
+                        const char *directory) {
 
-        return [NativeFileSO fileOpen:[NSString stringWithUTF8String:extensions]];
+        [NativeFileSO fileOpen:[NativeFileSO optionalString:extensions]
+             canSelectMultiple:canSelectMultiple
+                         title:[NativeFileSO optionalString:title]
+                     directory:[NativeFileSO optionalString:directory]];
     }
     
-    void pluginSaveFile(const char* name,
-                          const char* extension) {
+    char** pluginOpenFileSync(const char *extensions,
+                            bool canSelectMultiple,
+                            const char *title,
+                            const char *directory) {
         
-        [NativeFileSO fileSave:[NSString stringWithUTF8String:extension]
-                                 name:[NSString stringWithUTF8String:name]];
+        return [NativeFileSO fileOpenSync:[NativeFileSO optionalString:extensions]
+                        canSelectMultiple:canSelectMultiple
+                                    title:[NativeFileSO optionalString:title]
+                                directory:[NativeFileSO optionalString:directory]];
+    }
+    
+    void pluginSaveFile(const char *name,
+                        const char *extension,
+                        const char *title,
+                        const char *directory) {
+        
+        [NativeFileSO fileSave:[NativeFileSO optionalString:extension]
+                          name:[NativeFileSO optionalString:name]
+                         title:[NativeFileSO optionalString:title]
+                     directory:[NativeFileSO optionalString:directory]];
+    }
+    
+    char* pluginSaveFileSync(const char *name,
+                             const char *extension,
+                             const char *title,
+                             const char *directory) {
+        
+        return [NativeFileSO fileSaveSync:[NativeFileSO optionalString:extension]
+                                     name:[NativeFileSO optionalString:name]
+                                    title:[NativeFileSO optionalString:title]
+                                directory:[NativeFileSO optionalString:directory]];
+    }
+    
+    void pluginFreeMemory() {
+        [NativeFileSO freeDynamicMemory];
     }
 }

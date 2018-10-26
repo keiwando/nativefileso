@@ -1,8 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.InteropServices;
+using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 
 namespace Keiwando.NativeFileSO {
 
@@ -73,8 +72,21 @@ namespace Keiwando.NativeFileSO {
 				var name = Path.GetFileName(path);
 				return new OpenedFile(name, data);
 			} catch (Exception e) {
+				Debug.Log(e.StackTrace);
 				return null;
 			}
+		}
+
+		public static OpenedFile[] FilesFromPaths(string[] paths) {
+			var files = new List<OpenedFile>();
+
+			foreach (var path in paths) {
+				var file = FileFromPath(path);
+				if (file != null) {
+					files.Add(file);
+				}
+			}
+			return files.ToArray();
 		}
 
 		public static void SaveFileToPath(FileToSave file, string path) {

@@ -13,8 +13,8 @@ namespace Keiwando.NativeFileSO {
 
 		public FileToSave(string srcPath, SupportedFileType fileType = null) {
 			this.SrcPath = srcPath;
-			this.Name = System.IO.Path.GetFileName(srcPath);
-			this.Extension = System.IO.Path.GetExtension(srcPath);
+			this.Name = Path.GetFileName(srcPath);
+			this.Extension = GetExtension(srcPath);
 			this.MimeType = "*/*";
 			this.FileType = fileType;
 		}
@@ -23,7 +23,7 @@ namespace Keiwando.NativeFileSO {
 			: this(srcPath, fileType) {
 
 			this.Name = newName;
-			this.Extension = System.IO.Path.GetExtension(newName);
+			this.Extension = GetExtension(srcPath);
 		}
 
 		public FileToSave(string srcPath, string newName, string extension, 
@@ -33,6 +33,15 @@ namespace Keiwando.NativeFileSO {
 			this.Extension = extension;
 			this.MimeType = mimetype;
 			this.FileType = fileType;
+		}
+
+		private static string GetExtension(string path) {
+			var fullExtension = Path.GetExtension(path);
+			if (fullExtension.StartsWith(".")) {
+				return fullExtension.Substring(1);
+			} else {
+				return fullExtension;
+			}
 		}
 	}
 }

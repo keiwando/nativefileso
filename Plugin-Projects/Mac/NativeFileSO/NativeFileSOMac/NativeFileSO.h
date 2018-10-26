@@ -17,10 +17,30 @@
 
 + (void) setCallback:(UnityCallbackFunction)callback;
 
-+ (void) fileOpen:(NSString *)extensions;
++ (void) fileOpen:(NSString *)extensions
+canSelectMultiple:(bool)canSelectMultiple
+            title:(NSString *)title
+        directory:(NSString *)directory;
+
++ (char **) fileOpenSync:(NSString *)extensions
+       canSelectMultiple:(bool)canSelectMultiple
+                   title:(NSString *)title
+               directory:(NSString *)directory;
 
 + (void) fileSave:(NSString *)extension
-                     name:(NSString *)name;
+                name:(NSString *)name
+                title:(NSString *)title
+            directory:(NSString *)directory;
+
+
++ (char *) fileSaveSync:(NSString *)extension
+                   name:(NSString *)name
+                  title:(NSString *)title
+              directory:(NSString *)directory;
+
++ (void) freeDynamicMemory;
+
++ (NSString *) optionalString:(const char *)cString;
 
 @end
 

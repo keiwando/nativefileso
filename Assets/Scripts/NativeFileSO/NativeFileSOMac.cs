@@ -1,6 +1,6 @@
 ﻿#if UNITY_STANDALONE_OSX
 using System;
-using System.IO;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Linq;
 using UnityEngine;
@@ -10,60 +10,70 @@ namespace Keiwando.NativeFileSO {
 	public class NativeFileSOMac: INativeFileSODesktop {
 
 		[DllImport("NativeFileSOMac")]
-		private static extern void pluginSetCallback(UnityCallbackPathSelected callback);
+		private static extern void pluginSetCallback(UnityCallbackPathsSelected callback);
 
 		[DllImport("NativeFileSOMac")]
-		private static extern void pluginOpenFile(string extensions);
+		private static extern void pluginOpenFile(string extensions, 
+		                                          bool canSelectMultiple, 
+		                                          string title, 
+		                                          string directory);
 
 		[DllImport("NativeFileSOMac")]
-		private static extern void pluginSaveFile(string name, string extension);
+		private static extern IntPtr[] pluginOpenFileSync(string extensions,
+												  	  bool canSelectMultiple,
+												  	  string title,
+												  	  string directory);
 
-		private delegate void UnityCallbackPathSelected(bool pathSelected, IntPtr path);
+		[DllImport("NativeFileSOMac")]
+		private static extern void pluginSaveFile(string name, 
+		                                          string extension, 
+		                                          string title, 
+		                                          string directory);
+
+		[DllImport("NativeFileSOMac")]
+		private static extern IntPtr pluginSaveFileSync(string name,
+												  	  string extension,
+												 	  string title,
+												  	  string directory);
+
+		[DllImport("NativeFileSOMac")]
+		private static extern void pluginFreeMemory();
+
+		private delegate void UnityCallbackPathsSelected(bool pathsSelected, IntPtr[] paths);
 
 		public static NativeFileSOMac shared = new NativeFileSOMac();
 
-		public event Action<OpenedFile> FileWasOpened;
+		private static string[] _noPaths = new string[0];
+		private static OpenedFile[] _noFiles = new OpenedFile[0];
 
-		private Action<bool, OpenedFile> _callback;
 		private bool isBusy = false;
 		private FileToSave _cachedFileToSave;
+		private Action<bool, OpenedFile[]> _filesCallback;
+		private Action<bool, string[]> _pathsCallback;
 
-		private NativeFileSOMac() {
-			NativeFileSOUnityEvent.UnityReceivedControl += delegate {
-				SendFileOpenedEvent(false, null);
-				isBusy = false;
-				_cachedFileToSave = null;
-			};
+		public void OpenFile(SupportedFileType[] supportedTypes, 
+		                     Action<bool, OpenedFile> onCompletion) {
+
+			OpenFiles(supportedTypes, false, null, null, 
+			          delegate(bool wasOpened, OpenedFile[] files) {
+
+				if (wasOpened) {
+					onCompletion(true, files[0]);
+			  	} else {
+				  onCompletion(false, null);			
+				}
+			});
 		}
 
-		public void OpenFile(SupportedFileType[] fileTypes) {
+		public void OpenFiles(SupportedFileType[] supportedTypes,
+							 Action<bool, OpenedFile[]> onCompletion) {
 
-			if (isBusy) return;
-			isBusy = true;
-
-			var extensions = fileTypes.Select(x => x.Extension).ToArray();
-
-			pluginSetCallback(DidSelectPathForOpen);
-			pluginOpenFile(EncodeExtensions(extensions));
-		}
-
-		public void OpenFile(SupportedFileType[] supportedTypes, Action<bool, OpenedFile> onOpen) {
-
-			if (isBusy) return;
-
-			_callback = onOpen;
-			OpenFile(supportedTypes);
+			OpenFiles(supportedTypes, true, null, null, onCompletion);
 		}
 
 		public void SaveFile(FileToSave file) {
 
-			if (isBusy) return;
-			isBusy = true;
-
-			pluginSetCallback(DidSelectPathForSave);
-
-			_cachedFileToSave = file;
-			pluginSaveFile(file.Name, file.Extension);
+			SaveFile(file, null, null);
 		}
 
 		// MARK: - INativeFileSODesktop
@@ -72,89 +82,184 @@ namespace Keiwando.NativeFileSO {
 					   string title, string directory, 
 					   Action<bool, OpenedFile[]> onCompletion) {
 
+			if (isBusy) return;
+			isBusy = true;
+
+			_filesCallback = onCompletion;
+			var extensions = EncodeExtensions(fileTypes);
+
+			pluginSetCallback(DidSelectPathsForOpenFileCB);
+			pluginOpenFile(extensions, false, null, null);
 		}
 
 		public OpenedFile[] OpenFilesSync(SupportedFileType[] fileTypes, bool canSelectMultiple, 
 								   string title, string directory) {
 
+			var paths = SelectOpenPathsSync(fileTypes, canSelectMultiple, title, directory);
+			var files = new List<OpenedFile>();
+
+			for (int i = 0; i < paths.Length; i++) {
+				files.Add(NativeFileSOMacWin.FileFromPath(paths[i]));
+			}
+
+			return files.ToArray();
 		}
 
 		public void SelectOpenPaths(SupportedFileType[] fileTypes, bool canSelectMultiple,
 							 string title, string directory,
 							 Action<bool, string[]> onCompletion) {
 
+			if (isBusy) return;
+			isBusy = true;
+
+			_pathsCallback = onCompletion;
+			var extensions = EncodeExtensions(fileTypes);
+
+			pluginSetCallback(DidSelectPathsFoPathsCB);
+			pluginOpenFile(extensions, false, null, null);
 		}
 
 		public string[] SelectOpenPathsSync(SupportedFileType[] fileTypes, bool canSelectMultiple,
-									 string title, string directory) {
+									 		string title, string directory) {
 
+			if (isBusy) { return _noPaths; }
+			isBusy = true;
+
+			var pathPtrs = pluginOpenFileSync(EncodeExtensions(fileTypes), canSelectMultiple, title, directory);
+			isBusy = false;
+
+			if (pathPtrs == null) { return _noPaths; }
+			return MarshalPaths(pathPtrs);
 		}
 
 		public void SaveFile(FileToSave file, string title, string directory) {
-			// TODO: Implement
+
+			if (isBusy) return;
+			isBusy = true;
+
+			pluginSetCallback(DidSelectPathForSaveCB);
+
+			_cachedFileToSave = file;
+			pluginSaveFile(file.Name, file.Extension, null, null);
 		}
 
-		// MARK: - Private Functions
+		public void SelectSavePath(FileToSave file,
+								   string title, string directory,
+								   Action<bool, string> onCompletion) { 
+		
+			if (isBusy) { return; }
+			isBusy = true;
 
-		private static void DidSelectPathForOpen(bool pathSelected, IntPtr pathPtr) {
+			pluginSetCallback(DidSelectPathsFoPathsCB);
 
-			if (!pathSelected) {
-				shared.SelectionWasCancelled();
-				return;
-			}
-
-			var path = Marshal.PtrToStringAnsi(pathPtr);
-
-			Debug.Log("Path : " + path);
-
-			shared.SendFileOpenedEvent(true, NativeFileSOMacWin.FileFromPath(path));
-			shared.isBusy = false;
+			_pathsCallback = delegate (bool selected, string[] paths) {
+				var path = paths.Length > 0 ? paths[0] : null;
+				onCompletion(selected, path);
+			};
+			_cachedFileToSave = file;
+			pluginSaveFile(file.Name, file.Extension, title, directory);
 		}
 
-		private static void DidSelectPathForSave(bool pathSelected, IntPtr pathPtr) {
+		public string SelectSavePathSync(FileToSave file,
+										 string title, 
+		                                 string directory) { 
 
-			if (!pathSelected) {
-				shared.SelectionWasCancelled();
-				return;
+			if (isBusy) { return null; }
+			isBusy = true;
+
+			var pathPtr = pluginSaveFileSync(file.Name, file.Extension, title, directory);
+			isBusy = false;
+
+			return Marshal.PtrToStringAnsi(pathPtr);
+		}
+
+		// MARK: - Callbacks
+
+		private static void DidSelectPathsForOpenFileCB(bool pathsSelected, IntPtr[] pathPtrs) {
+			shared.DidSelectPathsForOpenFile(pathsSelected, pathPtrs);
+		}
+
+		private static void DidSelectPathsFoPathsCB(bool pathsSelected, IntPtr[] pathPtrs) {
+			shared.DidSelectPathsFoPaths(pathsSelected, pathPtrs);
+		}
+
+		private static void DidSelectPathForSaveCB(bool pathsSelected, IntPtr[] pathPtrs) {
+			shared.DidSelectPathForSave(pathsSelected, pathPtrs);
+		}
+
+		private void DidSelectPathsForOpenFile(bool pathsSelected, IntPtr[] pathPtrs) {
+
+			isBusy = false;
+
+			if (_filesCallback == null) { return; }
+
+			if (pathsSelected) {
+				var paths = MarshalPaths(pathPtrs);
+				var files = NativeFileSOMacWin.FilesFromPaths(paths);
+
+				pluginFreeMemory();
+
+				if (files.Length > 0) {
+					_filesCallback(true, files);
+				} else {
+					_filesCallback(false, _noFiles);
+				}
+			} else {
+				_filesCallback(false, _noFiles);
 			}
+		}
 
-			shared.isBusy = false;
+		private void DidSelectPathsFoPaths(bool pathsSelected, IntPtr[] pathPtrs) {
 
-			var toSave = shared._cachedFileToSave;
-			if (toSave == null) return;
+			isBusy = false;
 
-			var path = Marshal.PtrToStringAnsi(pathPtr);
+			if (_pathsCallback == null) { return; }
+
+			if (pathsSelected) {
+				var paths = MarshalPaths(pathPtrs);
+				pluginFreeMemory();
+				_pathsCallback(true, paths);
+			} else {
+				_pathsCallback(false, _noPaths);
+			}
+		}
+
+		private void DidSelectPathForSave(bool pathsSelected, IntPtr[] pathPtrs) {
+
+			isBusy = false;
+			Debug.Log("Callback");
+
+			var toSave = _cachedFileToSave;
+			if (toSave == null || !pathsSelected) return;
+
+			var path = Marshal.PtrToStringAnsi(pathPtrs[0]);
+			pluginFreeMemory();
 
 			Debug.Log("Save Path : " + path);
 
 			NativeFileSOMacWin.SaveFileToPath(toSave, path);
 		}
 
-		private void SelectionWasCancelled() {
-
-			isBusy = false;
-			_cachedFileToSave = null;
-			SendFileOpenedEvent(false, null);
-		}
-
-		private void SendFileOpenedEvent(bool fileWasOpened, OpenedFile file) {
-
-			if (_callback != null) {
-				_callback(fileWasOpened, file);
-				return;
+		private string[] MarshalPaths(IntPtr[] pathPtrs) { 
+			
+			var paths = new string[pathPtrs.Length];
+			for (int i = 0; i < pathPtrs.Length; i++) {
+				paths[i] = Marshal.PtrToStringAnsi(pathPtrs[i]);
 			}
 
-			if (fileWasOpened && FileWasOpened != null) {
-				FileWasOpened(file);
-			}
-			isBusy = false;
+			return paths;
 		}
 
-		// MARK: - Helpers
 		private string EncodeExtensions(string[] extensions) {
 
 			return string.Join("%", extensions);
 		}
+
+		private string EncodeExtensions(SupportedFileType[] fileTypes) { 
+
+			var extensions = fileTypes.Select(x => x.Extension).ToArray();
+			return EncodeExtensions(extensions);
+		} 
 	}
 }
 #endif
