@@ -22,7 +22,7 @@ canSelectMultiple:(bool)canSelectMultiple
             title:(NSString *)title
         directory:(NSString *)directory;
 
-+ (char **) fileOpenSync:(NSString *)extensions
++ (char *) fileOpenSync:(NSString *)extensions
        canSelectMultiple:(bool)canSelectMultiple
                    title:(NSString *)title
                directory:(NSString *)directory;

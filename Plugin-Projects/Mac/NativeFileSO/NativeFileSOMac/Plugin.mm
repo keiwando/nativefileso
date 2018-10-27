@@ -28,7 +28,7 @@ extern "C" {
                      directory:[NativeFileSO optionalString:directory]];
     }
     
-    char** pluginOpenFileSync(const char *extensions,
+    char* pluginOpenFileSync(const char *extensions,
                             bool canSelectMultiple,
                             const char *title,
                             const char *directory) {

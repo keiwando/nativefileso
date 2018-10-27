@@ -15,6 +15,14 @@ public class TestController : MonoBehaviour {
 	[SerializeField]
 	private Text textField;
 
+#if UNITY_STANDALONE_WIN
+	private const string testDirectory = @"C:\Users";
+#elif UNITY_STANDALONE_OSX
+	private const string testDirectory = @"~/Desktop";
+#else
+	private const string testDirectory = "";
+#endif
+
 	void Start () {
 
 		FileWriter.WriteTestFile(Application.persistentDataPath);
@@ -35,6 +43,8 @@ public class TestController : MonoBehaviour {
 			OpenPathsTest();
 		} else if (Input.GetKeyDown(KeyCode.Alpha3)) {
 			OpenFilesTest();
+		} else if (Input.GetKeyDown(KeyCode.Alpha4)) {
+			OpenPathsTestSync();
 		}
 	}
 
@@ -57,12 +67,12 @@ public class TestController : MonoBehaviour {
 	}
 
 	private void SaveTestTitleDirectory() {
-		NativeFileSOMacWin.shared.SaveFile(GetFileToSave(), "Custom Title", @"C:\Users");
+		NativeFileSOMacWin.shared.SaveFile(GetFileToSave(), "Custom Title", testDirectory);
 	}
 
 	private void OpenPathsTest() {
 		NativeFileSOMacWin.shared.SelectOpenPaths(new []{ SupportedFileType.Any }, true, 
-								"Custom Title", @"C:\Users", delegate(bool werePathsSelected, string[] paths){
+		                                          "Custom Title", testDirectory, delegate(bool werePathsSelected, string[] paths){
 			if (werePathsSelected) {
 				textField.text = string.Format("Selected paths:\n{0}", string.Join("\n", paths));
 			} else {
@@ -71,9 +81,19 @@ public class TestController : MonoBehaviour {
 		});
 	}
 
+	private void OpenPathsTestSync() {
+		var paths = NativeFileSOMacWin.shared.SelectOpenPathsSync(new[] { SupportedFileType.Any }, true,
+												  "Custom Title", null);
+		if (paths.Length > 0) {
+			textField.text = string.Format("Selected paths:\n{0}", string.Join("\n", paths));
+		} else {
+			textField.text = "Path selection was cancelled.";
+		}
+	}
+
 	private void OpenFilesTest() {
 		NativeFileSOMacWin.shared.OpenFiles(new []{ SupportedFileType.Any }, true, 
-								"Custom Title", @"C:\Users", delegate(bool wereFilesSelected, OpenedFile[] files){
+		                                    "Custom Title", testDirectory, delegate(bool wereFilesSelected, OpenedFile[] files){
 			if (wereFilesSelected) {
 				textField.text = string.Format("Selected file contents:\n{0}", string.Join("\n", files.Select(x => x.ToUTF8String()).ToArray()));
 			} else {

@@ -11,7 +11,9 @@ namespace Keiwando.NativeFileSO {
 
 		public static NativeFileSOAndroid shared = new NativeFileSOAndroid();
 
+#pragma warning disable 0067
 		public event Action<OpenedFile> FileWasOpened;
+#pragma warning restore 0067
 
 		private AndroidJavaObject Activity { 
 			get {

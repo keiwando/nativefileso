@@ -19,7 +19,7 @@ namespace Keiwando.NativeFileSO {
 		                                          string directory);
 
 		[DllImport("NativeFileSOMac")]
-		private static extern IntPtr[] pluginOpenFileSync(string extensions,
+		private static extern IntPtr pluginOpenFileSync(string extensions,
 												  	  bool canSelectMultiple,
 												  	  string title,
 												  	  string directory);
@@ -39,7 +39,12 @@ namespace Keiwando.NativeFileSO {
 		[DllImport("NativeFileSOMac")]
 		private static extern void pluginFreeMemory();
 
-		private delegate void UnityCallbackPathsSelected(bool pathsSelected, IntPtr[] paths);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+		private delegate void UnityCallbackPathsSelected(
+			bool pathsSelected,
+			[MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr, SizeParamIndex = 2)]
+		    string[] paths, 
+		    int pathCount);
 
 		public static NativeFileSOMac shared = new NativeFileSOMac();
 
@@ -89,7 +94,7 @@ namespace Keiwando.NativeFileSO {
 			var extensions = EncodeExtensions(fileTypes);
 
 			pluginSetCallback(DidSelectPathsForOpenFileCB);
-			pluginOpenFile(extensions, false, null, null);
+			pluginOpenFile(extensions, canSelectMultiple, title, directory);
 		}
 
 		public OpenedFile[] OpenFilesSync(SupportedFileType[] fileTypes, bool canSelectMultiple, 
@@ -116,7 +121,7 @@ namespace Keiwando.NativeFileSO {
 			var extensions = EncodeExtensions(fileTypes);
 
 			pluginSetCallback(DidSelectPathsFoPathsCB);
-			pluginOpenFile(extensions, false, null, null);
+			pluginOpenFile(extensions, canSelectMultiple, title, directory);
 		}
 
 		public string[] SelectOpenPathsSync(SupportedFileType[] fileTypes, bool canSelectMultiple,
@@ -125,11 +130,13 @@ namespace Keiwando.NativeFileSO {
 			if (isBusy) { return _noPaths; }
 			isBusy = true;
 
-			var pathPtrs = pluginOpenFileSync(EncodeExtensions(fileTypes), canSelectMultiple, title, directory);
+			var pathPtr = pluginOpenFileSync(EncodeExtensions(fileTypes), canSelectMultiple, title, directory);
+			pluginFreeMemory();
 			isBusy = false;
 
-			if (pathPtrs == null) { return _noPaths; }
-			return MarshalPaths(pathPtrs);
+			var paths = Marshal.PtrToStringAnsi(pathPtr); 
+			if (paths == null) { return _noPaths; }
+			return paths.Split((char)28);
 		}
 
 		public void SaveFile(FileToSave file, string title, string directory) {
@@ -140,7 +147,7 @@ namespace Keiwando.NativeFileSO {
 			pluginSetCallback(DidSelectPathForSaveCB);
 
 			_cachedFileToSave = file;
-			pluginSaveFile(file.Name, file.Extension, null, null);
+			pluginSaveFile(file.Name, file.Extension, title, directory);
 		}
 
 		public void SelectSavePath(FileToSave file,
@@ -168,6 +175,7 @@ namespace Keiwando.NativeFileSO {
 			isBusy = true;
 
 			var pathPtr = pluginSaveFileSync(file.Name, file.Extension, title, directory);
+			pluginFreeMemory();
 			isBusy = false;
 
 			return Marshal.PtrToStringAnsi(pathPtr);
@@ -175,29 +183,33 @@ namespace Keiwando.NativeFileSO {
 
 		// MARK: - Callbacks
 
-		private static void DidSelectPathsForOpenFileCB(bool pathsSelected, IntPtr[] pathPtrs) {
-			shared.DidSelectPathsForOpenFile(pathsSelected, pathPtrs);
+		private static void DidSelectPathsForOpenFileCB(bool pathsSelected, 
+		                                                string[] paths, 
+		                                                int pathCount) {
+			shared.DidSelectPathsForOpenFile(pathsSelected, paths);
 		}
 
-		private static void DidSelectPathsFoPathsCB(bool pathsSelected, IntPtr[] pathPtrs) {
-			shared.DidSelectPathsFoPaths(pathsSelected, pathPtrs);
+		private static void DidSelectPathsFoPathsCB(bool pathsSelected,
+													string[] paths,
+													int pathCount) {
+			shared.DidSelectPathsFoPaths(pathsSelected, paths);
 		}
 
-		private static void DidSelectPathForSaveCB(bool pathsSelected, IntPtr[] pathPtrs) {
-			shared.DidSelectPathForSave(pathsSelected, pathPtrs);
+		private static void DidSelectPathForSaveCB(bool pathsSelected,
+												   string[] paths,
+												   int pathCount) {
+			shared.DidSelectPathForSave(pathsSelected, paths);
 		}
 
-		private void DidSelectPathsForOpenFile(bool pathsSelected, IntPtr[] pathPtrs) {
+		private void DidSelectPathsForOpenFile(bool pathsSelected, string[] paths) {
 
 			isBusy = false;
 
 			if (_filesCallback == null) { return; }
 
 			if (pathsSelected) {
-				var paths = MarshalPaths(pathPtrs);
+				//var paths = MarshalPaths(pathPtrs);
 				var files = NativeFileSOMacWin.FilesFromPaths(paths);
-
-				pluginFreeMemory();
 
 				if (files.Length > 0) {
 					_filesCallback(true, files);
@@ -209,22 +221,21 @@ namespace Keiwando.NativeFileSO {
 			}
 		}
 
-		private void DidSelectPathsFoPaths(bool pathsSelected, IntPtr[] pathPtrs) {
+		private void DidSelectPathsFoPaths(bool pathsSelected, string[] paths) {
 
 			isBusy = false;
 
 			if (_pathsCallback == null) { return; }
 
 			if (pathsSelected) {
-				var paths = MarshalPaths(pathPtrs);
-				pluginFreeMemory();
+				//var paths = MarshalPaths(pathPtrs);
 				_pathsCallback(true, paths);
 			} else {
 				_pathsCallback(false, _noPaths);
 			}
 		}
 
-		private void DidSelectPathForSave(bool pathsSelected, IntPtr[] pathPtrs) {
+		private void DidSelectPathForSave(bool pathsSelected, string[] paths) {
 
 			isBusy = false;
 			Debug.Log("Callback");
@@ -232,23 +243,23 @@ namespace Keiwando.NativeFileSO {
 			var toSave = _cachedFileToSave;
 			if (toSave == null || !pathsSelected) return;
 
-			var path = Marshal.PtrToStringAnsi(pathPtrs[0]);
-			pluginFreeMemory();
+			//var path = Marshal.PtrToStringAnsi(pathPtrs[0]);
+			var path = paths[0];
 
 			Debug.Log("Save Path : " + path);
 
 			NativeFileSOMacWin.SaveFileToPath(toSave, path);
 		}
 
-		private string[] MarshalPaths(IntPtr[] pathPtrs) { 
+		//private string[] MarshalPaths(IntPtr[] pathPtrs) { 
 			
-			var paths = new string[pathPtrs.Length];
-			for (int i = 0; i < pathPtrs.Length; i++) {
-				paths[i] = Marshal.PtrToStringAnsi(pathPtrs[i]);
-			}
+		//	var paths = new string[pathPtrs.Length];
+		//	for (int i = 0; i < pathPtrs.Length; i++) {
+		//		paths[i] = Marshal.PtrToStringAnsi(pathPtrs[i]);
+		//	}
 
-			return paths;
-		}
+		//	return paths;
+		//}
 
 		private string EncodeExtensions(string[] extensions) {
 

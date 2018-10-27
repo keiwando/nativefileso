@@ -46,22 +46,23 @@ canSelectMultiple:(bool)canSelectMultiple
             NSArray *URLs = panel.URLs;
             NSMutableArray *paths = [NSMutableArray arrayWithCapacity:URLs.count];
             for (int i = 0; i < (int)URLs.count; i++) {
-                [paths addObject:URLs[i]];
+                [paths addObject:[URLs[i] path]];
             }
             _bufferedPaths = [self copyStrings:paths];
             
             if (_bufferedPaths) {
-                callback(YES, _bufferedPaths);
+                callback(YES, _bufferedPaths, (int)paths.count);
             } else {
-                callback(NO, nil);
+                callback(NO, nil, 0);
             }
         } else {
-            callback(NO, nil);
+            callback(NO, nil, 0);
         }
+        [self freeDynamicMemory];
     }];
 }
 
-+ (char **) fileOpenSync:(NSString *)extensions
++ (char *) fileOpenSync:(NSString *)extensions
       canSelectMultiple:(bool)canSelectMultiple
                   title:(NSString *)title
               directory:(NSString *)directory {
@@ -78,15 +79,18 @@ canSelectMultiple:(bool)canSelectMultiple
         NSArray *URLs = panel.URLs;
         NSMutableArray *paths = [NSMutableArray arrayWithCapacity:URLs.count];
         for (int i = 0; i < (int)URLs.count; i++) {
-            [paths addObject:URLs[i]];
+            [paths addObject:[URLs[i] path]];
         }
-        _bufferedPaths = [self copyStrings:paths];
+        NSString *pathsString = [paths componentsJoinedByString:[NSString stringWithFormat:@"%c", 28]];
+        //_bufferedPaths = [self copyStrings:@[pathsString]];
+        //return (char *)[paths[0] UTF8String];
+        return (char *)[pathsString UTF8String];
         
-        if (_bufferedPaths) {
-            return _bufferedPaths;
-        } else {
-            return nil;
-        }
+//        if (_bufferedPaths) {
+//            return _bufferedPaths[0];
+//        } else {
+//            return nil;
+//        }
     } else {
         return nil;
     }
@@ -102,7 +106,6 @@ canSelectMultiple:(bool)canSelectMultiple
                                           name:name
                                          title:title
                                      directory:directory];
-    //NSModalResponse response = [panel runModal];
     
     NSWindow *window = [[NSApplication sharedApplication] mainWindow];
     
@@ -110,10 +113,7 @@ canSelectMultiple:(bool)canSelectMultiple
     
     [panel beginSheetModalForWindow:window completionHandler:^(NSModalResponse response) {
         
-        NSLog(@"Sheet modal ended.");
-        
         if (callback == nil) {
-            NSLog(@"No callback set.");
             return;
         }
         
@@ -121,18 +121,15 @@ canSelectMultiple:(bool)canSelectMultiple
             NSArray *paths = @[panel.URL.path];
             _bufferedPaths = [self copyStrings:paths];
             
-            char *testPaths[] = { "~/Desktop/TestPath.evol" };
-            
             if (_bufferedPaths) {
-                callback(YES, testPaths);
-                //callback(YES, _bufferedPaths);
+                callback(YES, _bufferedPaths, (int)paths.count);
             } else {
-                callback(NO, nil);
+                callback(NO, nil, 0);
             }
         } else {
-            NSLog(@"File Save Canceled!");
-            callback(NO, nil);
+            callback(NO, nil, 0);
         }
+        [self freeDynamicMemory];
     }];
 }
 
@@ -171,7 +168,6 @@ canSelectMultiple:(bool)canSelectMultiple
     NSOpenPanel *panel = [NSOpenPanel openPanel];
     
     [panel setCanChooseDirectories:NO];
-    [panel setAllowedFileTypes:fileExtensions];
     [panel setFloatingPanel:NO];
     [panel setCanChooseFiles:TRUE];
     [panel setCanCreateDirectories:YES];
@@ -188,6 +184,12 @@ canSelectMultiple:(bool)canSelectMultiple
         }
     }
     
+    if (fileExtensions.count == 0 || [fileExtensions containsObject:@"*"]) {
+        [panel setAllowedFileTypes:nil];
+    } else {
+        [panel setAllowedFileTypes:fileExtensions];
+    }
+    
     return panel;
 }
 
@@ -199,12 +201,11 @@ canSelectMultiple:(bool)canSelectMultiple
     NSSavePanel *panel = [NSSavePanel savePanel];
     
     [panel setCanCreateDirectories:YES];
-    [panel setAllowedFileTypes:fileExtensions];
     [panel setFloatingPanel:NO];
     [panel setCanCreateDirectories:YES];
     [panel setNameFieldStringValue:name];
     [panel setExtensionHidden:NO];
-    [panel setCanSelectHiddenExtension:YES];
+    [panel setCanSelectHiddenExtension:NO];
     
     if (title != nil) {
         [panel setTitle:title];
@@ -215,6 +216,12 @@ canSelectMultiple:(bool)canSelectMultiple
         if (directoryURL != nil) {
             [panel setDirectoryURL:directoryURL];
         }
+    }
+    
+    if (fileExtensions.count == 0 || [fileExtensions containsObject:@"*"]) {
+        [panel setAllowedFileTypes:nil];
+    } else {
+        [panel setAllowedFileTypes:fileExtensions];
     }
     
     return panel;
@@ -240,12 +247,14 @@ canSelectMultiple:(bool)canSelectMultiple
         
         for (NSUInteger i = 0; i < strCount; i++) {
             NSString *str = strings[i];
-            char *copy = (char *)malloc([str lengthOfBytesUsingEncoding:NSUTF8StringEncoding] + 1);
+            const size_t len = [str lengthOfBytesUsingEncoding:NSUTF8StringEncoding] + 1;
+            char *copy = (char *)malloc(len);
             
             if (!copy) {
                 NSLog(@"Could not allocate enough memory for the string copy at index %lu", (unsigned long)i);
                 copies[i] = (char*)[@"" UTF8String];
             } else {
+                strncpy(copy, [str UTF8String], len);
                 copies[i] = copy;
             }
         }
@@ -255,6 +264,8 @@ canSelectMultiple:(bool)canSelectMultiple
 }
 
 + (void) freeDynamicMemory {
+    
+    if (_bufferedPaths == nil) { return; }
     
     int count = (int)( sizeof(_bufferedPaths) / sizeof(char *));
     for (int i = 0; i < count; i++) {
