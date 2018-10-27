@@ -82,15 +82,8 @@ canSelectMultiple:(bool)canSelectMultiple
             [paths addObject:[URLs[i] path]];
         }
         NSString *pathsString = [paths componentsJoinedByString:[NSString stringWithFormat:@"%c", 28]];
-        //_bufferedPaths = [self copyStrings:@[pathsString]];
-        //return (char *)[paths[0] UTF8String];
-        return (char *)[pathsString UTF8String];
         
-//        if (_bufferedPaths) {
-//            return _bufferedPaths[0];
-//        } else {
-//            return nil;
-//        }
+        return (char *)[pathsString UTF8String];
     } else {
         return nil;
     }
@@ -133,7 +126,7 @@ canSelectMultiple:(bool)canSelectMultiple
     }];
 }
 
-+ (char *) fileSaveSync:(NSString *)extension
++ (const char *) fileSaveSync:(NSString *)extension
                    name:(NSString *)name
                   title:(NSString *)title
               directory:(NSString *)directory {
@@ -147,16 +140,17 @@ canSelectMultiple:(bool)canSelectMultiple
     NSModalResponse response = [panel runModal];
     
     if (response == NSModalResponseOK) {
-        NSArray *paths = @[panel.URL.path];
-        _bufferedPaths = [self copyStrings:paths];
+        //NSArray *paths = @[panel.URL.path];
+        //_bufferedPaths = [self copyStrings:paths];
         
-        if (_bufferedPaths) {
-            return _bufferedPaths[0];
-        } else {
-            return (char *)[@"" UTF8String];
-        }
+//        if (_bufferedPaths) {
+//            return _bufferedPaths[0];
+//        } else {
+//            return (char *)[@"" UTF8String];
+//        }
+        return [panel.URL.path UTF8String];
     } else {
-        return (char *)[@"" UTF8String];
+        return nil;
     }
 }
 

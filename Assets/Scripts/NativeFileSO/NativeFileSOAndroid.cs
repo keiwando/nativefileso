@@ -1,4 +1,4 @@
-﻿#define UNITY_ANDROID
+﻿//#define UNITY_ANDROID
 using System;
 using System.Linq;
 

@@ -4,12 +4,13 @@
 
 using System;
 using AOT;
+using UnityEngine;
 
 namespace Keiwando.NativeFileSO {
 
 	public class NativeFileSOMobile: INativeFileSO {
 
-		#if UNITY_IOS
+#if UNITY_IOS
 		private INativeFileSOMobile nativeFileSO = NativeFileSOiOS.shared;
 #elif UNITY_ANDROID
 		private INativeFileSOMobile nativeFileSO = NativeFileSOAndroid.shared;
@@ -68,9 +69,10 @@ namespace Keiwando.NativeFileSO {
 			if (nativeFileSO == null) return;
 
 			nativeFileSO.LoadIfTemporaryFileAvailable();
+			Debug.Log("TryRetrieveOpenedFile");
 
 			if (nativeFileSO.IsFileLoaded()) {
-
+				Debug.Log("nativeFileSO.IsFileLoaded");
 				var file = nativeFileSO.GetOpenedFile();
 
 				SendFileOpenedEvent(true, file);

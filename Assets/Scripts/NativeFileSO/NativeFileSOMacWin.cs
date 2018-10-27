@@ -37,32 +37,56 @@ namespace Keiwando.NativeFileSO {
 
 		// MARK: - Desktop Only functionality
 
-		public void OpenFiles(SupportedFileType[] fileTypes, bool canSelectMultiple,
-					   		  string title, string directory, 
+		public void OpenFiles(SupportedFileType[] fileTypes, 
+		                      bool canSelectMultiple,
+					   		  string title, 
+		                      string directory, 
 					   		  Action<bool, OpenedFile[]> onCompletion) {
+			
 			nativeFileSO.OpenFiles(fileTypes, canSelectMultiple, title, directory, onCompletion);
 		}
 
-		public OpenedFile[] OpenFilesSync(SupportedFileType[] fileTypes, bool canSelectMultiple, 
-								   		  string title, string directory) {
+		public OpenedFile[] OpenFilesSync(SupportedFileType[] fileTypes, 
+		                                  bool canSelectMultiple, 
+								   		  string title, 
+		                                  string directory) {
+			
 			return nativeFileSO.OpenFilesSync(fileTypes, canSelectMultiple, title, directory);
 		}
 
-		public void SelectOpenPaths(SupportedFileType[] fileTypes, bool canSelectMultiple,
-							 		string title, string directory,
+		public void SelectOpenPaths(SupportedFileType[] fileTypes, 
+		                            bool canSelectMultiple,
+							 		string title, 
+		                            string directory,
 							 		Action<bool, string[]> onCompletion) {
+			
 			nativeFileSO.SelectOpenPaths(fileTypes, canSelectMultiple, title, directory, onCompletion);
 		}
 
-		public string[] SelectOpenPathsSync(SupportedFileType[] fileTypes, bool canSelectMultiple,
-									 string title, string directory) {
+		public string[] SelectOpenPathsSync(SupportedFileType[] fileTypes, 
+		                                    bool canSelectMultiple,
+									 		string title, 
+		                                    string directory) {
+			
 			return nativeFileSO.SelectOpenPathsSync(fileTypes, canSelectMultiple, title, directory);
 		}
 
 		public void SaveFile(FileToSave file, string title, string directory) {
 			nativeFileSO.SaveFile(file, title, directory);
 		}
-		
+
+		public void SelectSavePath(FileToSave file,
+								   string title,
+								   string directory,
+								   Action<bool, string> onCompletion) {
+			nativeFileSO.SelectSavePath(file, title, directory, onCompletion);
+		}
+
+		public string SelectSavePathSync(FileToSave file,
+								  		 string title,
+										 string directory) {
+			return nativeFileSO.SelectSavePathSync(file, title, directory);
+		}
 
 		// MARK: - Helpers
 		public static OpenedFile FileFromPath(string path) {

@@ -12,7 +12,7 @@
         </activity>
         <provider
                 android:name="com.keiwando.lib_nativefileso.androidx.core.content.FileProvider"
-                android:authorities="com.keiwando.nativefileso.provider"
+                android:authorities="com.keiwando.nativefileso.${applicationId}.provider"
                 android:exported="false"
                 android:grantUriPermissions="true">
             <meta-data

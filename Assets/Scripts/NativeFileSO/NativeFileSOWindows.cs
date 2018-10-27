@@ -1,4 +1,5 @@
-﻿#if UNITY_STANDALONE_WIN
+﻿//#define UNITY_STANDALONE_WIN
+#if UNITY_STANDALONE_WIN
 
 using System;
 using System.IO;
@@ -152,6 +153,49 @@ namespace Keiwando.NativeFileSO {
 				NativeFileSOMacWin.SaveFileToPath(file, dialog.FileName);
 			}
 			dialog.Dispose();
+		}
+
+		public void SelectSavePath(FileToSave file,
+								   string title,
+								   string directory,
+								   Action<bool, string> onCompletion) {
+
+			var path = SelectSavePathSync(file, title, directory);
+			if (onCompletion != null) {
+				onCompletion(path != null, path);
+			}
+		}
+
+		public string SelectSavePathSync(FileToSave file,
+								  		 string title,
+										 string directory) {
+
+			if (isBusy) { return null; }
+			isBusy = true;
+
+			var dialog = new VistaSaveFileDialog();
+
+			if (string.IsNullOrEmpty(directory)) {
+				dialog.RestoreDirectory = true;
+			} else {
+				dialog.FileName = CreateFilenameForSaveDialog(directory, file.Name);
+			}
+
+			dialog.DefaultExt = file.Extension;
+			if (dialog.DefaultExt.Length > 0) {
+				dialog.AddExtension = true;
+				dialog.SupportMultiDottedExtensions = true;
+			}
+			if (file.FileType != null) {
+				dialog.Filter = EncodeFilters(new[] { file.FileType });
+			}
+
+			dialog.Title = title;
+
+			var result = dialog.ShowDialog(new Win32Window(GetActiveWindow()));
+			isBusy = false;
+
+			return result == DialogResult.OK ? dialog.FileName : null;
 		}
 
 		// MARK: - Private Helpers

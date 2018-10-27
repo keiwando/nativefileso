@@ -23,6 +23,10 @@ public class NativeFileOpenActivity extends Activity {
 
             String encodedTypes = lastIntent.getStringExtra("mimetypes");
             intent.setType("*/*");
+            boolean canOpenMultiple = lastIntent.getBooleanExtra("canOpenMultiple", false);
+            if (canOpenMultiple) {
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+            }
 
             if (encodedTypes != null && !encodedTypes.equals("")) {
                 String[] mimeTypes = encodedTypes.split(" ");

@@ -45,6 +45,8 @@ public class TestController : MonoBehaviour {
 			OpenFilesTest();
 		} else if (Input.GetKeyDown(KeyCode.Alpha4)) {
 			OpenPathsTestSync();
+		} else if (Input.GetKeyDown(KeyCode.Alpha5)) {
+			SavePathsTestSync();
 		}
 	}
 
@@ -86,6 +88,15 @@ public class TestController : MonoBehaviour {
 												  "Custom Title", null);
 		if (paths.Length > 0) {
 			textField.text = string.Format("Selected paths:\n{0}", string.Join("\n", paths));
+		} else {
+			textField.text = "Path selection was cancelled.";
+		}
+	}
+
+	private void SavePathsTestSync() {
+		var path = NativeFileSOMacWin.shared.SelectSavePathSync(GetFileToSave(), "Save Path Sync", testDirectory);
+		if (path != null) {
+			textField.text = string.Format("Selected paths:\n{0}", path);
 		} else {
 			textField.text = "Path selection was cancelled.";
 		}
