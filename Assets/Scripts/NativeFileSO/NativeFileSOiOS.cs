@@ -2,6 +2,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Linq;
+using UnityEngine;
 
 #if UNITY_IOS
 
@@ -11,7 +12,7 @@ namespace Keiwando.NativeFileSO {
 
 		[StructLayout(LayoutKind.Sequential)]
 		private struct NativeOpenedFile {
-			public string filename;
+			public IntPtr filename;
 			public IntPtr data;
 			public int dataLength;
 		}
@@ -47,13 +48,16 @@ namespace Keiwando.NativeFileSO {
 			var numOfLoadedFiles = pluginGetNumberOfOpenedFiles();
 			if (numOfLoadedFiles == 0) return _noFiles;
 
+			Debug.Log(string.Format("Files loaded: {0}", numOfLoadedFiles));
+
 			var files = new OpenedFile[numOfLoadedFiles];
 			for (int i = 0; i < numOfLoadedFiles; i++) {
+				Debug.Log(string.Format("Current index: {0}", i));
 				var nativeOpenedFile = pluginGetOpenedFileAtIndex(i);
 
 				byte[] byteContents = new byte[nativeOpenedFile.dataLength];
 				Marshal.Copy(nativeOpenedFile.data, byteContents, 0, byteContents.Length);
-				string filename = nativeOpenedFile.filename;
+				string filename = Marshal.PtrToStringAnsi(nativeOpenedFile.filename);
 
 				files[i] = new OpenedFile(filename, byteContents);
 			}

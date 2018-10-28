@@ -19,7 +19,9 @@
 +(NativeFileOpenURLBuffer *)instance;
 -(void)reset;
 -(void)loadBufferFromURLs:(NSArray<NSURL *> *)URLs;
+-(void)addToBufferFromURL:(NSURL *)URL;
 -(void)setCallback:(UnityCallbackFunction)callback;
+-(void)sendCallback;
 -(int)getNumberOfOpenedFiles;
 -(struct NativeFileSOOpenedFile)getOpenedFileAtIndex:(int)index;
 

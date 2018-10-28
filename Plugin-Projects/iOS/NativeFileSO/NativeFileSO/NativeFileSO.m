@@ -17,7 +17,10 @@
     UIDocumentPickerViewController *documentPicker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:utiStrings inMode:UIDocumentPickerModeImport];
     
     documentPicker.delegate = [NativeFileOpenURLBuffer instance];
-    documentPicker.allowsMultipleSelection = allowsMultiple;
+    
+    if (@available(iOS 11.0, *)) {
+        documentPicker.allowsMultipleSelection = allowsMultiple;
+    }
     
     UIViewController *topVC = [self topViewController];
     [topVC presentViewController:documentPicker animated:YES completion:^{}];
@@ -33,6 +36,10 @@
     UIActivityViewController *activityViewController = [[UIActivityViewController alloc]
                                                         initWithActivityItems:@[url]
                                                         applicationActivities:nil];
+    
+    [activityViewController setCompletionWithItemsHandler:^(NSString *activityType, BOOL completed, NSArray *returnedItems, NSError *error){
+        [[NativeFileOpenURLBuffer instance] sendCallback];
+    }];
     
     UIViewController *topVC = [self topViewController];
     

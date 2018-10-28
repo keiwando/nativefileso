@@ -62,7 +62,7 @@
             options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
     
     NSLog(@"Override openURL");
-    [[NativeFileOpenURLBuffer instance] loadBufferFromURL:url];
+    [[NativeFileOpenURLBuffer instance] addToBufferFromURL:url];
     
     return [self native_file_open_copy_application:app openURL:url options:options];
 }
@@ -81,7 +81,7 @@
 {
     NSLog(@"[OverrideAppDelegate application:%@ openURL:%@ sourceApplication:%@ annotation:%@]", application, url, sourceApplication, annotation);
     
-    [[NativeFileOpenURLBuffer instance] loadBufferFromURL:url];
+    [[NativeFileOpenURLBuffer instance] addToBufferFromURL:url];
     
     return [self native_file_open_copy_application:application
                                                  openURL:url
