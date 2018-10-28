@@ -17,20 +17,12 @@ extern "C" {
         [[NativeFileOpenURLBuffer instance] setCallback:callback];
     }
     
-    const BOOL pluginIsFileLoaded() {
-        return [NativeFileOpenURLBuffer instance].isFileOpened;
+    int pluginGetNumberOfOpenedFiles() {
+        return [[NativeFileOpenURLBuffer instance] getNumberOfOpenedFiles];
     }
     
-    const void* pluginGetData() {
-        return [[NativeFileOpenURLBuffer instance] data].bytes;
-    }
-    
-    const unsigned long pluginGetDataByteCount() {
-        return [[NativeFileOpenURLBuffer instance] data].length;
-    }
-    
-    const char* pluginGetFilename() {
-        return [[[NativeFileOpenURLBuffer instance] filename] UTF8String];
+    NativeFileSOOpenedFile pluginGetOpenedFileAtIndex(int i) {
+        return [[NativeFileOpenURLBuffer instance] getOpenedFileAtIndex:i];
     }
     
     void pluginResetLoadedFile() {
@@ -38,9 +30,10 @@ extern "C" {
     }
     
     
-    void pluginOpenFile(const char* utis) {
+    void pluginOpenFile(const char* utis, bool canSelectMultiple) {
         
-        [NativeFileSO fileOpen:[NSString stringWithUTF8String:utis]];
+        [NativeFileSO fileOpen:[NSString stringWithUTF8String:utis]
+                allowsMultiple:canSelectMultiple];
     }
     
     void pluginSaveFile(const char* srcPath,

@@ -10,13 +10,14 @@
 
 @implementation NativeFileSO
 
-+ (void)fileOpen:(NSString *)UTIs {
++ (void)fileOpen:(NSString *)UTIs
+  allowsMultiple:(bool)allowsMultiple {
     
     NSArray *utiStrings = [self decodeUTIs:UTIs];
     UIDocumentPickerViewController *documentPicker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:utiStrings inMode:UIDocumentPickerModeImport];
     
     documentPicker.delegate = [NativeFileOpenURLBuffer instance];
-    documentPicker.allowsMultipleSelection = NO;
+    documentPicker.allowsMultipleSelection = allowsMultiple;
     
     UIViewController *topVC = [self topViewController];
     [topVC presentViewController:documentPicker animated:YES completion:^{}];

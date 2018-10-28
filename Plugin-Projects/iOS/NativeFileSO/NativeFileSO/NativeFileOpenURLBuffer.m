@@ -5,15 +5,21 @@
 //  Created by Keiwan Donyagard on 16.10.18.
 //  Copyright © 2018 Keiwan Donyagard. All rights reserved.
 //
-// Based on: https://github.com/eppz/Unity.Blog.Override_App_Delegate/blob/3.3/iOS/Override_iOS/Override_iOS/DeepLink.m
 //
 
 #import "NativeFileOpenURLBuffer.h"
 
-__strong NativeFileOpenURLBuffer *_nativeFileOpenURLInstance;
-__strong UnityCallbackFunction _nativeFileSOUnityCallback;
+@interface NativeFileOpenURLBuffer () {
+    
+    NSMutableArray<NSValue *> *_openedFiles;
+}
+
+@end
 
 @implementation NativeFileOpenURLBuffer
+
+static NativeFileOpenURLBuffer *_nativeFileOpenURLInstance;
+static UnityCallbackFunction _nativeFileSOUnityCallback;
 
 +(void)load {
     _nativeFileOpenURLInstance = [NativeFileOpenURLBuffer new];
@@ -30,37 +36,60 @@ __strong UnityCallbackFunction _nativeFileSOUnityCallback;
 }
 
 -(void)reset {
-    self.data = [NSData new];
-    self.filename = @"";
-    self.isFileOpened = NO;
+    if (_openedFiles != nil) {
+        [_openedFiles removeAllObjects];
+    } else {
+        _openedFiles = [[NSMutableArray alloc] init];
+    }
 }
 
--(void)loadBufferFromURL:(NSURL *)URL {
+-(void)loadBufferFromURLs:(NSArray<NSURL *> *)URLs {
     
-    self.data = [NSData dataWithContentsOfURL:URL];
-    self.filename = URL.lastPathComponent ? : @"";
+    [_openedFiles removeAllObjects];
     
-    self.isFileOpened = self.data != nil;
-    self.data = self.data ? : [NSData new];
+    for (int i = 0; i < URLs.count; i++) {
+        struct NativeFileSOOpenedFile openedFile = [self loadFileFromURL:URLs[i]];
+        NSValue *val = [NSValue valueWithBytes:&openedFile objCType:@encode(struct NativeFileSOOpenedFile)];
+        [_openedFiles addObject:val];
+    }
     
     //NSLog(@"Loaded file from buffer: %s", self.isFileOpened ? @"true" : @"false");
     
-    if (self.isFileOpened && _nativeFileSOUnityCallback) {
+    if ([_openedFiles count] > 0 && _nativeFileSOUnityCallback) {
         _nativeFileSOUnityCallback();
     }
+}
+
+-(struct NativeFileSOOpenedFile)loadFileFromURL:(NSURL *)URL {
+    
+    NSData *data = [NSData dataWithContentsOfURL:URL];
+    NSString *filename = URL.lastPathComponent ? : @"";
+    
+    struct NativeFileSOOpenedFile file;
+    file.filename = [filename UTF8String];
+    file.data = data.bytes;
+    file.dataLength = (int)data.length;
+    
+    return file;
 }
 
 -(void)setCallback:(UnityCallbackFunction) callback {
     _nativeFileSOUnityCallback = callback;
 }
 
+-(int)getNumberOfOpenedFiles {
+    return (int)_openedFiles.count;
+}
+
+-(struct NativeFileSOOpenedFile)getOpenedFileAtIndex:(int)index {
+    struct NativeFileSOOpenedFile file;
+    [_openedFiles[index] getValue:&file];
+    return file;
+}
+
 - (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
     
-    NSURL *url = urls.firstObject;
-    if (url == nil) {
-        return;
-    }
-    [self loadBufferFromURL:url];
+    [self loadBufferFromURLs:urls];
 }
 
 @end

@@ -52,6 +52,7 @@
 		BB9ADE1321732E1800C7C911 /* NativeFileSO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NativeFileSO.m; sourceTree = "<group>"; };
 		BB9ADE1B21732EEA00C7C911 /* Plugin.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = Plugin.mm; sourceTree = "<group>"; };
 		BBA5E1F9217B27A500B1B34D /* UnityCallbackFunction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UnityCallbackFunction.h; sourceTree = "<group>"; };
+		BBA9E3AA2186133200319E78 /* NativeFileSOOpenedFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NativeFileSOOpenedFile.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,6 +104,7 @@
 				BB68A62B21766EA300CBCFE5 /* NativeFileOpenURLBuffer.h */,
 				BB68A62C21766FEF00CBCFE5 /* NativeFileOpenURLBuffer.m */,
 				BBA5E1F9217B27A500B1B34D /* UnityCallbackFunction.h */,
+				BBA9E3AA2186133200319E78 /* NativeFileSOOpenedFile.h */,
 			);
 			path = NativeFileSO;
 			sourceTree = "<group>";

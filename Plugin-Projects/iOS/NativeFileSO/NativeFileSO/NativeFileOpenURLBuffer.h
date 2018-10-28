@@ -12,17 +12,16 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import "UnityCallbackFunction.h"
+#import "NativeFileSOOpenedFile.h"
 
 @interface NativeFileOpenURLBuffer : NSObject <UIDocumentPickerDelegate>
 
-@property (nonatomic) BOOL isFileOpened;
-@property (nonatomic, strong) NSData *data;
-@property (nonatomic, strong) NSString *filename;
-
 +(NativeFileOpenURLBuffer *)instance;
 -(void)reset;
--(void)loadBufferFromURL:(NSURL *)URL;
+-(void)loadBufferFromURLs:(NSArray<NSURL *> *)URLs;
 -(void)setCallback:(UnityCallbackFunction)callback;
+-(int)getNumberOfOpenedFiles;
+-(struct NativeFileSOOpenedFile)getOpenedFileAtIndex:(int)index;
 
 @end
 

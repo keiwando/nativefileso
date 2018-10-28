@@ -9,63 +9,69 @@ namespace Keiwando.NativeFileSO {
 
 	public class NativeFileSOiOS: INativeFileSOMobile {
 
+		[StructLayout(LayoutKind.Sequential)]
+		private struct NativeOpenedFile {
+			public string filename;
+			public IntPtr data;
+			public int dataLength;
+		}
+
 		public static NativeFileSOiOS shared = new NativeFileSOiOS();
 
 		[DllImport("__Internal")]
 		private static extern void pluginSetCallback(NativeFileSO.UnityCallbackFunction callback);
 
 		[DllImport("__Internal")]
-		private static extern Boolean pluginIsFileLoaded();
+		private static extern int pluginGetNumberOfOpenedFiles();
 
 		[DllImport("__Internal")]
-		private static extern IntPtr pluginGetData();
-
-		[DllImport("__Internal")]
-		private static extern ulong pluginGetDataByteCount();
-
-		[DllImport("__Internal")]
-		private static extern IntPtr pluginGetFilename();
+		private static extern NativeOpenedFile pluginGetOpenedFileAtIndex(int i);
 
 		[DllImport("__Internal")]
 		private static extern void pluginResetLoadedFile();
 
 		[DllImport("__Internal")]
-		private static extern void pluginOpenFile(string utis);
+		private static extern void pluginOpenFile(string utis, bool canSelectMultiple);
 
 		[DllImport("__Internal")]
 		private static extern void pluginSaveFile(string srcPath, string name);
+
+		private static OpenedFile[] _noFiles = new OpenedFile[0];
 
 		private NativeFileSOiOS() {
 			pluginSetCallback(NativeFileSOMobile.FileWasOpenedCallback);
 		}
 
-		public bool IsFileLoaded() { 
-			return pluginIsFileLoaded();
-		}
-
 		public OpenedFile[] GetOpenedFiles() {
 
-			if (!IsFileLoaded()) {
-				return null;
+			var numOfLoadedFiles = pluginGetNumberOfOpenedFiles();
+			if (numOfLoadedFiles == 0) return _noFiles;
+
+			var files = new OpenedFile[numOfLoadedFiles];
+			for (int i = 0; i < numOfLoadedFiles; i++) {
+				var nativeOpenedFile = pluginGetOpenedFileAtIndex(i);
+
+				byte[] byteContents = new byte[nativeOpenedFile.dataLength];
+				Marshal.Copy(nativeOpenedFile.data, byteContents, 0, byteContents.Length);
+				string filename = nativeOpenedFile.filename;
+
+				files[i] = new OpenedFile(filename, byteContents);
 			}
-			
-			byte[] byteContents = new byte[pluginGetDataByteCount()];
-			Marshal.Copy(pluginGetData(), byteContents, 0, byteContents.Length);
-			String filename = Marshal.PtrToStringAnsi(pluginGetFilename());
 
 			pluginResetLoadedFile();
 
-			return new[] { new OpenedFile(filename, byteContents) };
+			return files;
 		}
 
-		public void OpenFiles(SupportedFileType[] supportedTypes, bool canSelectMultiple) { 
+		public void OpenFiles(SupportedFileType[] supportedTypes, bool canSelectMultiple) {
+
+			var encodedUTIs = SupportedFileType.Any.AppleUTI;
 
 			if (supportedTypes != null && supportedTypes.Length > 0) {
-				string encodedUTIs = EncodeUTIs(supportedTypes.Select(x => x.AppleUTI).ToArray());
-				pluginOpenFile(encodedUTIs);
-			} else {
-				pluginOpenFile(SupportedFileType.Any.AppleUTI);
+				encodedUTIs = EncodeUTIs(supportedTypes.Select(x => x.AppleUTI).ToArray());
 			}
+
+			pluginOpenFile(encodedUTIs, canSelectMultiple);
 		}
 
 		public void SaveFile(FileToSave file) { 

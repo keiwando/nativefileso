@@ -12,7 +12,8 @@
 
 @interface NativeFileSO : NSObject
 
-+ (void) fileOpen:(NSString *)UTIs;
++ (void) fileOpen:(NSString *)UTIs
+   allowsMultiple:(bool)allowsMultiple;
 
 + (void) fileSave:(NSString *)srcPath
                 //extension:(NSString *)extension
