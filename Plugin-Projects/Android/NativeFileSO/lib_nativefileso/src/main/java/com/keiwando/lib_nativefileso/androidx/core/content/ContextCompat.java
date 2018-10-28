@@ -71,6 +71,7 @@ import static android.content.Context.WIFI_P2P_SERVICE;
 import static android.content.Context.WIFI_SERVICE;
 import static android.content.Context.WINDOW_SERVICE;
 import android.accounts.AccountManager;
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.AppOpsManager;
@@ -221,6 +222,7 @@ public class ContextCompat {
      * See {@link android.content.Context#startActivity(Intent, android.os.Bundle)}
      * @return true if the underlying API was available and the call was successful, false otherwise
      */
+    @SuppressLint("ObsoleteSdkInt")
     public static boolean startActivities(@NonNull Context context, @NonNull Intent[] intents,
                                           @Nullable Bundle options) {
         if (Build.VERSION.SDK_INT >= 16) {
@@ -247,6 +249,7 @@ public class ContextCompat {
      *                supplied here; there are no supported definitions for
      *                building it manually.
      */
+    @SuppressLint("ObsoleteSdkInt")
     public static void startActivity(@NonNull Context context, @NonNull Intent intent,
                                      @Nullable Bundle options) {
         if (Build.VERSION.SDK_INT >= 16) {
@@ -446,6 +449,7 @@ public class ContextCompat {
      * @return Drawable An object that can be used to draw this resource.
      */
     @Nullable
+    @SuppressLint("ObsoleteSdkInt")
     @SuppressWarnings("deprecation")
     public static Drawable getDrawable(@NonNull Context context, @DrawableRes int id) {
         if (Build.VERSION.SDK_INT >= 21) {
@@ -718,6 +722,7 @@ public class ContextCompat {
         return LegacyServiceMapHolder.SERVICES.get(serviceClass);
     }
     /** Nested class provides lazy initialization only when needed. */
+    @SuppressLint("ObsoleteSdkInt")
     private static final class LegacyServiceMapHolder {
         static final HashMap<Class<?>, String> SERVICES = new HashMap<>();
         static {

@@ -11,10 +11,6 @@ namespace Keiwando.NativeFileSO {
 
 		public static NativeFileSOAndroid shared = new NativeFileSOAndroid();
 
-#pragma warning disable 0067
-		public event Action<OpenedFile> FileWasOpened;
-#pragma warning restore 0067
-
 		private AndroidJavaObject Activity { 
 			get {
 				if (_activity == null) {
@@ -37,41 +33,40 @@ namespace Keiwando.NativeFileSO {
 		}
 		private AndroidJavaClass _javaNativeSO;
 
+		private static OpenedFile[] _noFiles = new OpenedFile[0];
+
 		private NativeFileSOAndroid() { }
 
-		public void LoadIfTemporaryFileAvailable() { 
-			
-			var isAvailable = JavaNativeSO.CallStatic<bool>("IsTemporaryFileAvailable", Activity);
+		public OpenedFile[] GetOpenedFiles() { 
 
-			if (isAvailable) {
-				JavaNativeSO.CallStatic("LoadTemporaryFile", Activity);
+			JavaNativeSO.CallStatic("LoadTemporaryFiles", Activity);
+			int numberOfLoadedFiles = JavaNativeSO.CallStatic<int>("GetNumberOfLoadedFiles");
+
+			if (numberOfLoadedFiles == 0) { return _noFiles; }
+
+			OpenedFile[] openedFiles = new OpenedFile[numberOfLoadedFiles];
+			for (int i = 0; i < openedFiles.Length; i++) {
+				AndroidJavaObject loadedFile = JavaNativeSO.CallStatic<AndroidJavaObject>("GetLoadedFileAtIndex", i);
+				string filename = loadedFile.Call<string>("getFilename");
+				byte[] data = loadedFile.Call<byte[]>("getData");
+				openedFiles[i] = new OpenedFile(filename, data);
 			}
-			Debug.Log("Is Temporary File available: " + isAvailable);
-		}
-
-		public bool IsFileLoaded() { 
-			return JavaNativeSO.CallStatic<bool>("IsFileLoaded");
-		}
-
-		public OpenedFile GetOpenedFile() { 
-			byte[] byteContents = JavaNativeSO.CallStatic<byte[]>("GetFileByteContents");
-			string filename = JavaNativeSO.CallStatic<string>("GetFileName");
 
 			// Reset the loaded data
-			JavaNativeSO.CallStatic("ResetLoadedFile");
+			JavaNativeSO.CallStatic("FreeMemory");
 
-			return new OpenedFile(filename, byteContents);
+			return openedFiles;
 		}
 
-		public void OpenFile(SupportedFileType[] supportedTypes) { 
+		public void OpenFiles(SupportedFileType[] supportedTypes, bool canSelectMultiple) {
 
-			string encodedMimeTypes = EncodeMimeTypes(supportedTypes.Select(x => x.MimeType).ToArray());
-
-			if (supportedTypes == null || supportedTypes.Length == 0) {
-				JavaNativeSO.CallStatic("OpenFile", Activity, SupportedFileType.Any.MimeType);
-			} else {
-				JavaNativeSO.CallStatic("OpenFile", Activity, encodedMimeTypes);
+			string encodedMimeTypes = SupportedFileType.Any.MimeType;
+			if (supportedTypes != null || supportedTypes.Length != 0) { 
+				encodedMimeTypes = EncodeMimeTypes(supportedTypes.Select(x => x.MimeType).ToArray());
 			}
+
+			string methodName = canSelectMultiple ? "OpenFiles" : "OpenFile";
+			JavaNativeSO.CallStatic(methodName, Activity, encodedMimeTypes);
 		}
 
 		public void SaveFile(FileToSave file) { 

@@ -179,7 +179,8 @@ namespace Keiwando.NativeFileSO {
 
 			return string.Format(@"
 	<intent-filter>
-    	<action android:name=""android.intent.action.SEND""/>
+    	<action android:name=""android.intent.action.SEND""/> 
+		<action android:name=""android.intent.action.SEND_MULTIPLE""/> 
 		<category android:name=""android.intent.category.DEFAULT""/>
 		<data android:mimeType=""{0}""/>
 	</intent-filter>", mimeType);

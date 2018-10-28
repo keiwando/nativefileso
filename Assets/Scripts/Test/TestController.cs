@@ -23,16 +23,21 @@ public class TestController : MonoBehaviour {
 	private const string testDirectory = "";
 #endif
 
+	private SupportedFileType[] testTypes = new SupportedFileType[] {
+			CustomFileTypes.creat, CustomFileTypes.evol, SupportedFileType.Any
+	};
+
 	void Start () {
 
 		FileWriter.WriteTestFile(Application.persistentDataPath);
 
 		exportTestButton.onClick.AddListener(() => ExportTest());
-		importTestButton.onClick.AddListener(() => ImportTest());
+		//importTestButton.onClick.AddListener(() => ImportTest());
+		importTestButton.onClick.AddListener(() => ImportMultipleTest());
 
-		NativeFileSOMobile.shared.FileWasOpened += delegate(OpenedFile file) {
+		NativeFileSOMobile.shared.FilesWereOpened += delegate(OpenedFile[] files) {
 
-			ShowContents(file);
+			ShowContents(files);
 		};
 	}
 
@@ -57,13 +62,18 @@ public class TestController : MonoBehaviour {
 
 	private void ImportTest() {
 
-		var types = new SupportedFileType[] { 
-			CustomFileTypes.creat, CustomFileTypes.evol, SupportedFileType.Any
-		};
-
-		NativeFileSO.shared.OpenFile(types, delegate(bool wasFileOpened, OpenedFile file){
+		NativeFileSO.shared.OpenFile(testTypes, delegate(bool wasFileOpened, OpenedFile file){
 			if(wasFileOpened) {
 				ShowContents(file);
+			}
+		});
+	}
+
+	private void ImportMultipleTest() {
+
+		NativeFileSO.shared.OpenFiles(testTypes, delegate (bool wereFilesOpened, OpenedFile[] files) {
+			if (wereFilesOpened) {
+				ShowContents(files);
 			}
 		});
 	}
@@ -106,7 +116,8 @@ public class TestController : MonoBehaviour {
 		NativeFileSOMacWin.shared.OpenFiles(new []{ SupportedFileType.Any }, true, 
 		                                    "Custom Title", testDirectory, delegate(bool wereFilesSelected, OpenedFile[] files){
 			if (wereFilesSelected) {
-				textField.text = string.Format("Selected file contents:\n{0}", string.Join("\n", files.Select(x => x.ToUTF8String()).ToArray()));
+				string fileContents = string.Join("\n", files.Select(x => x.ToUTF8String()).ToArray());
+				textField.text = string.Format("Selected file contents:\n{0}", fileContents);
 			} else {
 				textField.text = "File selection was cancelled.";
 			}
@@ -118,11 +129,24 @@ public class TestController : MonoBehaviour {
 		return new FileToSave(testFilePath, "Test.evol", CustomFileTypes.evol);
 	}
 
-	private void ShowContents(OpenedFile file) {
+	private void ShowContents(OpenedFile[] files) {
+		if (files.Length == 0) {
+			ShowContents(files[0]);
+			return;
+		} 
+			
+		string output = string.Join("\n", files.Select(x => x.ToUTF8String()).ToArray());
 
-		var output = string.Format("File Contents: \n{0}\n --- EOF ---\n{1} bytes\n{2}\n{3}", 
-		                           file.ToUTF8String(), file.Data.Length, 
-		                           file.Name, file.Extension);
+		Debug.Log(output);
+		textField.text = output;
+	}
+
+	private void ShowContents(OpenedFile file) { 
+
+		string output = string.Format("File Contents: \n{0}\n --- EOF ---\n{1} bytes\n{2}\n{3}",
+								   file.ToUTF8String(), file.Data.Length,
+								   file.Name, file.Extension);
+
 		Debug.Log(output);
 		textField.text = output;
 	}

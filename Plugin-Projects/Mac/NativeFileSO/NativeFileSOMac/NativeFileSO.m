@@ -127,9 +127,9 @@ canSelectMultiple:(bool)canSelectMultiple
 }
 
 + (const char *) fileSaveSync:(NSString *)extension
-                   name:(NSString *)name
-                  title:(NSString *)title
-              directory:(NSString *)directory {
+                         name:(NSString *)name
+                        title:(NSString *)title
+                    directory:(NSString *)directory {
     
     NSArray *fileExtensions = [NSArray arrayWithObjects:extension, nil];
     NSSavePanel* panel = [self createSavePanel:fileExtensions

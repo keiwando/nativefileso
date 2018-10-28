@@ -15,6 +15,7 @@
  */
 package com.keiwando.lib_nativefileso.androidx.core.app;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.PendingIntent;
@@ -63,6 +64,7 @@ public class ActivityOptionsCompat {
      * @return Returns a new ActivityOptions object that you can use to supply
      * these options as the options Bundle when starting an activity.
      */
+    @SuppressLint("ObsoleteSdkInt")
     @NonNull
     public static ActivityOptionsCompat makeCustomAnimation(@NonNull Context context,
                                                             int enterResId, int exitResId) {
@@ -92,6 +94,7 @@ public class ActivityOptionsCompat {
      * @return Returns a new ActivityOptions object that you can use to supply
      * these options as the options Bundle when starting an activity.
      */
+    @SuppressLint("ObsoleteSdkInt")
     @NonNull
     public static ActivityOptionsCompat makeScaleUpAnimation(@NonNull View source,
                                                              int startX, int startY, int startWidth, int startHeight) {
@@ -143,6 +146,7 @@ public class ActivityOptionsCompat {
      * @return Returns a new ActivityOptions object that you can use to supply
      * these options as the options Bundle when starting an activity.
      */
+    @SuppressLint("ObsoleteSdkInt")
     @NonNull
     public static ActivityOptionsCompat makeThumbnailScaleUpAnimation(@NonNull View source,
                                                                       @NonNull Bitmap thumbnail, int startX, int startY) {

@@ -20,9 +20,9 @@ namespace Keiwando.NativeFileSO {
 
 		public static NativeFileSOMobile shared = new NativeFileSOMobile();
 
-		public event Action<OpenedFile> FileWasOpened;
+		public event Action<OpenedFile[]> FilesWereOpened;
 
-		private Action<bool, OpenedFile> _callback;
+		private Action<bool, OpenedFile[]> _callback;
 		private bool isBusy = false;
 
 		private NativeFileSOMobile() {
@@ -35,25 +35,24 @@ namespace Keiwando.NativeFileSO {
 			};
 		}
 
-
-		public void OpenFile(SupportedFileType[] supportedTypes) {
-
-			if (isBusy) return;
-
-			isBusy = true;
-			nativeFileSO.OpenFile(supportedTypes);
-		}
-
 		public void OpenFile(SupportedFileType[] supportedTypes, Action<bool, OpenedFile> onOpen) {
 
 			if (isBusy) return;
 
-			_callback = onOpen;
-			OpenFile(supportedTypes);
+			_callback = delegate (bool wasOpened, OpenedFile[] openedFiles) {
+				if (onOpen != null) {
+					onOpen(wasOpened, wasOpened ? openedFiles[0] : null);
+				}
+			};
+			nativeFileSO.OpenFiles(supportedTypes, false);
 		}
 
 		public void OpenFiles(SupportedFileType[] supportedTypes, Action<bool, OpenedFile[]> onOpen) {
-			// TODO: Implement
+
+			if (isBusy) return;
+			_callback = onOpen;
+
+			nativeFileSO.OpenFiles(supportedTypes, true);
 		}
 
 		public void SaveFile(FileToSave file) {
@@ -68,20 +67,11 @@ namespace Keiwando.NativeFileSO {
 
 			if (nativeFileSO == null) return;
 
-			nativeFileSO.LoadIfTemporaryFileAvailable();
-			Debug.Log("TryRetrieveOpenedFile");
-
-			if (nativeFileSO.IsFileLoaded()) {
-				Debug.Log("nativeFileSO.IsFileLoaded");
-				var file = nativeFileSO.GetOpenedFile();
-
-				SendFileOpenedEvent(true, file);
-			} else {
-				SendFileOpenedEvent(false, null);
-			}
+			var files = nativeFileSO.GetOpenedFiles();
+			SendFileOpenedEvent(files.Length > 0, files);
 		}
 
-		private void SendFileOpenedEvent(bool fileWasOpened, OpenedFile file) {
+		private void SendFileOpenedEvent(bool fileWasOpened, OpenedFile[] file) {
 
 			if (_callback != null) {
 				_callback(fileWasOpened, file);
@@ -89,8 +79,8 @@ namespace Keiwando.NativeFileSO {
 				return;
 			}
 
-			if (fileWasOpened && FileWasOpened != null) {
-				FileWasOpened(file);
+			if (fileWasOpened && FilesWereOpened != null) {
+				FilesWereOpened(file);
 			}
 		}
 

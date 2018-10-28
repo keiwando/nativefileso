@@ -7,19 +7,15 @@ import android.provider.OpenableColumns;
 import android.util.Log;
 
 import java.io.*;
+import java.util.ArrayList;
 
 public class NativeFileOpenURLBuffer {
 
     private static final NativeFileOpenURLBuffer instance = new NativeFileOpenURLBuffer();
 
     private static final String NATIVE_SO_DIR = "NativeFileSO";
-    private static final String TEMP_FILE_INFO = "TempFileMeta.txt";
 
-    private String filename = "";
-    private byte[] contents = new byte[0];
-
-    private boolean isFileLoaded = false;
-
+    private ArrayList<OpenedFile> openedFiles = new ArrayList<>();
 
     private NativeFileOpenURLBuffer(){}
 
@@ -27,7 +23,25 @@ public class NativeFileOpenURLBuffer {
         return instance;
     }
 
-    public void loadFileFromUri(Uri uri, ContentResolver resolver) {
+    public void refreshBufferWithFileFromUri(Uri uri, ContentResolver resolver) {
+        openedFiles.clear();
+        OpenedFile file = loadFileFromUri(uri, resolver);
+        if (file != null) {
+            openedFiles.add(file);
+        }
+    }
+
+    public void refreshBufferWithUris(ArrayList<Uri> uris, ContentResolver resolver) {
+        openedFiles.clear();
+        for(Uri uri : uris) {
+            OpenedFile file = loadFileFromUri(uri, resolver);
+            if (file != null) {
+                openedFiles.add(file);
+            }
+        }
+    }
+
+    public OpenedFile loadFileFromUri(Uri uri, ContentResolver resolver) {
 
         Log.d("Plugin DEBUG", "Start loading file");
 
@@ -36,8 +50,7 @@ public class NativeFileOpenURLBuffer {
             stream = resolver.openInputStream(uri);
 
             if (stream == null) {
-                reset();
-                return;
+                return null;
             }
 
             ByteArrayOutputStream result = new ByteArrayOutputStream();
@@ -47,31 +60,30 @@ public class NativeFileOpenURLBuffer {
                 result.write(buffer, 0, length);
             }
 
-            contents = result.toByteArray();
+            byte[] data = result.toByteArray();
+            String filename = getFilenameFromUri(uri, resolver);
+
+            Log.d("Plugin DEBUG", "A file was loaded in Plugin!");
+
+            return new OpenedFile(filename, data);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            return;
+            return null;
         } catch (IOException e) {
             e.printStackTrace();
             Log.d("Plugin DEBUG", "EXCEPTION: File did not finish loading!");
-            return;
+            return null;
         }
-
-        saveName(uri, resolver);
-
-        Log.d("Plugin DEBUG", "File is Loaded in Plugin!");
-        isFileLoaded = true;
     }
 
-    private void saveName(Uri uri, ContentResolver resolver) {
+    private String getFilenameFromUri(Uri uri, ContentResolver resolver) {
 
         Cursor cursor = resolver.query(uri, null, null, null, null, null);
 
         try {
             if (cursor != null && cursor.moveToFirst()) {
-                filename = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                return;
+                return cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -83,32 +95,31 @@ public class NativeFileOpenURLBuffer {
         }
 
         // Something went wrong
-        filename = "";
+        return "Unnamed";
     }
 
-    public void saveFileInCacheDir(Uri uri, File cacheDir, ContentResolver resolver) {
+    public void saveFilesInCacheDir(ArrayList<Uri> uris, File cacheDir, ContentResolver resolver) {
 
         File nativeSODir = new File(cacheDir, NATIVE_SO_DIR);
         nativeSODir.mkdirs();
-        loadFileFromUri(uri, resolver);
-        File tempFile = new File(nativeSODir, filename);
+        clearDirectory(nativeSODir);
 
-        File metafile = new File(nativeSODir, TEMP_FILE_INFO);
+        for (Uri uri : uris) {
 
-        try {
+            OpenedFile openedFile = loadFileFromUri(uri, resolver);
+            File tempFile = new File(nativeSODir, openedFile.getFilename());
 
-            FileOutputStream out = new FileOutputStream(tempFile);
-            out.write(contents);
-            out.close();
+            try {
 
-            out = new FileOutputStream(metafile);
-            out.write(filename.getBytes());
-            out.close();
+                FileOutputStream out = new FileOutputStream(tempFile);
+                out.write(openedFile.getData());
+                out.close();
 
-            Log.d("Plugin DEBUG", "Saved in Cache Dir");
+                Log.d("Plugin DEBUG", "Saved in Cache Dir");
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -116,73 +127,39 @@ public class NativeFileOpenURLBuffer {
 
         File nativeSODir = new File(cacheDir, NATIVE_SO_DIR);
         nativeSODir.mkdirs();
-        File metafile = new File(nativeSODir, TEMP_FILE_INFO);
 
-        try {
-            FileInputStream in = new FileInputStream(metafile);
-            int length = (int)metafile.length();
-            byte[] bytes = new byte[length];
-            in.read(bytes);
-            in.close();
+        for (File file : nativeSODir.listFiles()) {
 
-            String filename = new String(bytes);
-            File tempFile = new File(nativeSODir, filename);
-
-            loadFileFromUri(Uri.fromFile(tempFile), resolver);
-
-            this.filename = filename;
-
-            tempFile.delete();
-
-            Log.d("Plugin DEBUG", "Loaded from Cache Dir");
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            reset();
-            return;
+            OpenedFile openedFile = loadFileFromUri(Uri.fromFile(file), resolver);
+            if (openedFile != null) {
+                openedFiles.add(openedFile);
+                Log.d("Plugin DEBUG", "Loaded file from Cache Dir");
+                file.delete();
+            }
         }
     }
 
-    public boolean isTemporaryFileAvailable(File cacheDir) {
+    public void freeMemory() {
+        openedFiles.clear();
+    }
 
-        File nativeSODir = new File(cacheDir, NATIVE_SO_DIR);
-        nativeSODir.mkdirs();
-        File metafile = new File(nativeSODir, TEMP_FILE_INFO);
-
-        try {
-            FileInputStream in = new FileInputStream(metafile);
-            int length = (int)metafile.length();
-            byte[] bytes = new byte[length];
-            in.read(bytes);
-            in.close();
-
-            String filename = new String(bytes);
-            File tempFile = new File(nativeSODir, filename);
-
-            return tempFile.exists() && !tempFile.isDirectory();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
+    /*
+    * Non-recursive!
+    */
+    private void clearDirectory(File directory) {
+        File[] files = directory.listFiles();
+        if (files == null) {
+            for (File f : files) {
+                f.delete();
+            }
         }
     }
 
-    public void reset() {
-
-        isFileLoaded = false;
-        contents = new byte[0];
-        filename = "";
+    public int getNumberOfLoadedFiles() {
+        return openedFiles.size();
     }
 
-    public byte[] getByteContents() {
-        return contents;
-    }
-
-    public String getFilename() {
-        return filename;
-    }
-
-    public boolean isFileLoaded() {
-        return isFileLoaded;
+    public OpenedFile getOpenedFileAtIndex(int index) {
+        return openedFiles.get(index);
     }
 }

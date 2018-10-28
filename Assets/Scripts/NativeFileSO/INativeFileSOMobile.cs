@@ -2,14 +2,10 @@
 namespace Keiwando.NativeFileSO {
 
 	public interface INativeFileSOMobile {
-
-		event Action<OpenedFile> FileWasOpened;
-
-		void OpenFile(SupportedFileType[] supportedTypes);
+		
+		void OpenFiles(SupportedFileType[] supportedTypes, bool canSelectMultiple);
 		void SaveFile(FileToSave file);
 
-		bool IsFileLoaded();
-		void LoadIfTemporaryFileAvailable();
-		OpenedFile GetOpenedFile();
+		OpenedFile[] GetOpenedFiles();
 	}
 }

@@ -9,8 +9,6 @@ namespace Keiwando.NativeFileSO {
 
 	public class NativeFileSOiOS: INativeFileSOMobile {
 
-		public event Action<OpenedFile> FileWasOpened;
-
 		public static NativeFileSOiOS shared = new NativeFileSOiOS();
 
 		[DllImport("__Internal")]
@@ -45,7 +43,7 @@ namespace Keiwando.NativeFileSO {
 			return pluginIsFileLoaded();
 		}
 
-		public OpenedFile GetOpenedFile() {
+		public OpenedFile[] GetOpenedFiles() {
 
 			if (!IsFileLoaded()) {
 				return null;
@@ -57,10 +55,10 @@ namespace Keiwando.NativeFileSO {
 
 			pluginResetLoadedFile();
 
-			return new OpenedFile(filename, byteContents);
+			return new[] { new OpenedFile(filename, byteContents) };
 		}
 
-		public void OpenFile(SupportedFileType[] supportedTypes) { 
+		public void OpenFiles(SupportedFileType[] supportedTypes, bool canSelectMultiple) { 
 
 			if (supportedTypes != null && supportedTypes.Length > 0) {
 				string encodedUTIs = EncodeUTIs(supportedTypes.Select(x => x.AppleUTI).ToArray());

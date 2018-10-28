@@ -14,7 +14,7 @@ public class NativeFileSO {
 
     private final static NativeFileOpenURLBuffer fileBuffer = NativeFileOpenURLBuffer.getInstance();
 
-    public static byte[] GetFileByteContents() {
+    /*public static byte[] GetFileByteContents() {
         return fileBuffer.getByteContents();
     }
 
@@ -31,13 +31,24 @@ public class NativeFileSO {
     }
 
     public static boolean IsTemporaryFileAvailable(Activity context) {
-
         return fileBuffer.isTemporaryFileAvailable(context.getCacheDir());
-    }
+    }*/
 
-    public static void LoadTemporaryFile(Activity context) {
+    public static void LoadTemporaryFiles(Activity context) {
 
         fileBuffer.loadFromTempDir(context.getCacheDir(), context.getContentResolver());
+    }
+
+    public static int GetNumberOfLoadedFiles() {
+        return fileBuffer.getNumberOfLoadedFiles();
+    }
+
+    public static OpenedFile GetLoadedFileAtIndex(int i) {
+        return fileBuffer.getOpenedFileAtIndex(i);
+    }
+
+    public static void FreeMemory() {
+        fileBuffer.freeMemory();
     }
 
     public static void OpenFile(Activity context, String mimetypes) {
@@ -53,6 +64,7 @@ public class NativeFileSO {
 
         Intent intent = new Intent(context, NativeFileOpenActivity.class);
         intent.putExtra("mimetypes", mimetypes);
+        intent.putExtra("openedFromNativeFileSO", true);
         intent.putExtra("canOpenMultiple", true);
 
         context.startActivity(intent);
