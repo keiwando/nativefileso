@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Keiwando.NativeFileSO {
 
-	public class NativeFileSOMobile: INativeFileSO {
+	public class NativeFileSOMobile : INativeFileSO {
 
 #if UNITY_IOS
 		private INativeFileSOMobile nativeFileSO = NativeFileSOiOS.shared;
@@ -26,13 +26,14 @@ namespace Keiwando.NativeFileSO {
 		private bool isBusy = false;
 
 		private NativeFileSOMobile() {
-
-			//Debug.Log("Registering callback on " + NativeFileSOMobileCallback.instance);
+			
+#if !UNITY_EDITOR
 
 			NativeFileSOUnityEvent.UnityReceivedControl += delegate {
 				TryRetrieveOpenedFile();
 				isBusy = false;
 			};
+#endif
 		}
 
 		public void OpenFile(SupportedFileType[] supportedTypes, Action<bool, OpenedFile> onOpen) {
@@ -73,6 +74,8 @@ namespace Keiwando.NativeFileSO {
 
 		private void SendFileOpenedEvent(bool fileWasOpened, OpenedFile[] file) {
 
+
+
 			if (_callback != null) {
 				_callback(fileWasOpened, file);
 				_callback = null;
@@ -84,7 +87,7 @@ namespace Keiwando.NativeFileSO {
 			}
 		}
 
-		[MonoPInvokeCallback(typeof(NativeFileSO.UnityCallbackFunction))]
+		[MonoPInvokeCallback(typeof(NativeFileSOiOS.UnityCallbackFunction))]
 		internal static void FileWasOpenedCallback() {
 			shared.TryRetrieveOpenedFile();
 			shared.isBusy = false;

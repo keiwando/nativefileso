@@ -48,21 +48,17 @@ canSelectMultiple:(bool)canSelectMultiple
             for (int i = 0; i < (int)URLs.count; i++) {
                 [paths addObject:[URLs[i] path]];
             }
-            _bufferedPaths = [self copyStrings:paths];
+            NSString *pathsString = [paths componentsJoinedByString:[NSString stringWithFormat:@"%c", 28]];
             
-            if (_bufferedPaths) {
-                callback(YES, _bufferedPaths, (int)paths.count);
-            } else {
-                callback(NO, nil, 0);
-            }
+            [self sendCallback:YES paths:[pathsString UTF8String]];
         } else {
-            callback(NO, nil, 0);
+            [self sendCallback:NO paths:nil];
         }
         [self freeDynamicMemory];
     }];
 }
 
-+ (char *) fileOpenSync:(NSString *)extensions
++ (const char *) fileOpenSync:(NSString *)extensions
       canSelectMultiple:(bool)canSelectMultiple
                   title:(NSString *)title
               directory:(NSString *)directory {
@@ -83,7 +79,7 @@ canSelectMultiple:(bool)canSelectMultiple
         }
         NSString *pathsString = [paths componentsJoinedByString:[NSString stringWithFormat:@"%c", 28]];
         
-        return (char *)[pathsString UTF8String];
+        return [pathsString UTF8String];
     } else {
         return nil;
     }
@@ -111,16 +107,10 @@ canSelectMultiple:(bool)canSelectMultiple
         }
         
         if (response == NSModalResponseOK) {
-            NSArray *paths = @[panel.URL.path];
-            _bufferedPaths = [self copyStrings:paths];
             
-            if (_bufferedPaths) {
-                callback(YES, _bufferedPaths, (int)paths.count);
-            } else {
-                callback(NO, nil, 0);
-            }
+            [self sendCallback:YES paths:[panel.URL.path UTF8String]];
         } else {
-            callback(NO, nil, 0);
+            [self sendCallback:NO paths:nil];
         }
         [self freeDynamicMemory];
     }];
@@ -140,14 +130,6 @@ canSelectMultiple:(bool)canSelectMultiple
     NSModalResponse response = [panel runModal];
     
     if (response == NSModalResponseOK) {
-        //NSArray *paths = @[panel.URL.path];
-        //_bufferedPaths = [self copyStrings:paths];
-        
-//        if (_bufferedPaths) {
-//            return _bufferedPaths[0];
-//        } else {
-//            return (char *)[@"" UTF8String];
-//        }
         return [panel.URL.path UTF8String];
     } else {
         return nil;
@@ -274,5 +256,16 @@ canSelectMultiple:(bool)canSelectMultiple
 + (NSString *) optionalString:(const char *)cString {
     return cString == nil ? nil : [NSString stringWithUTF8String:cString];
 }
+
++ (void) sendCallback:(bool)pathsSelected
+                paths:(const char *)paths {
+    
+    if (callback != nil) {
+        dispatch_async(dispatch_get_main_queue(), ^(void){
+            callback(pathsSelected, paths);
+        });
+    }
+}
+
 
 @end

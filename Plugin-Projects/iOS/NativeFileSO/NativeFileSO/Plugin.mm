@@ -21,8 +21,19 @@ extern "C" {
         return [[NativeFileOpenURLBuffer instance] getNumberOfOpenedFiles];
     }
     
-    NativeFileSOOpenedFile pluginGetOpenedFileAtIndex(int i) {
-        return [[NativeFileOpenURLBuffer instance] getOpenedFileAtIndex:i];
+    const char* pluginGetFilenameForFileAtIndex(int i) {
+        NativeFileSOOpenedFile *file = [[NativeFileOpenURLBuffer instance] getOpenedFileAtIndex:i];
+        return [file.filename UTF8String];
+    }
+    
+    unsigned long pluginGetDataLengthForFileAtIndex(int i) {
+        NativeFileSOOpenedFile *file = [[NativeFileOpenURLBuffer instance] getOpenedFileAtIndex:i];
+        return file.data.length;
+    }
+    
+    const void *pluginGetDataForFileAtIndex(int i) {
+        NativeFileSOOpenedFile *file = [[NativeFileOpenURLBuffer instance] getOpenedFileAtIndex:i];
+        return file.data.bytes;
     }
     
     void pluginResetLoadedFile() {

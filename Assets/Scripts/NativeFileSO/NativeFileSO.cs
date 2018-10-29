@@ -6,9 +6,7 @@ namespace Keiwando.NativeFileSO {
 
 	public class NativeFileSO : INativeFileSO {
 
-		public delegate void UnityCallbackFunction();
-
-#if UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX
+#if UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_EDITOR
 		private static INativeFileSO nativeFileSO = NativeFileSOMacWin.shared;
 #elif UNITY_IOS || UNITY_ANDROID
 		private static INativeFileSO nativeFileSO = NativeFileSOMobile.shared;

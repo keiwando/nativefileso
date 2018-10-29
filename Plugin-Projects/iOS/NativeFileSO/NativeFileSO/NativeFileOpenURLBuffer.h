@@ -23,7 +23,7 @@
 -(void)setCallback:(UnityCallbackFunction)callback;
 -(void)sendCallback;
 -(int)getNumberOfOpenedFiles;
--(struct NativeFileSOOpenedFile)getOpenedFileAtIndex:(int)index;
+-(NativeFileSOOpenedFile *)getOpenedFileAtIndex:(int)index;
 
 @end
 

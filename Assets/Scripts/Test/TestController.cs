@@ -7,10 +7,7 @@ using Keiwando.NativeFileSO;
 public class TestController : MonoBehaviour {
 
 	[SerializeField]
-	private Button exportTestButton;
-
-	[SerializeField]
-	private Button importTestButton;
+	private Button buttonTemplate;
 
 	[SerializeField]
 	private Text textField;
@@ -23,17 +20,19 @@ public class TestController : MonoBehaviour {
 	private const string testDirectory = "";
 #endif
 
-	private SupportedFileType[] testTypes = new SupportedFileType[] {
-			CustomFileTypes.creat, CustomFileTypes.evol, SupportedFileType.Any
-	};
+	private const string testTitle = "Custom Title";
 
-	void Start () {
+	private SupportedFileType[] testTypes = SupportedFilePreferences.supportedFileTypes;
+
+	void Start() {
 
 		FileWriter.WriteTestFile(Application.persistentDataPath);
 
-		exportTestButton.onClick.AddListener(() => ExportTest());
-		//importTestButton.onClick.AddListener(() => ImportTest());
-		importTestButton.onClick.AddListener(() => ImportMultipleTest());
+#if UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX
+		SetupDesktop();
+#elif UNITY_IOS || UNITY_ANDROID
+		SetupMobile();
+#endif
 
 		NativeFileSOMobile.shared.FilesWereOpened += delegate(OpenedFile[] files) {
 
@@ -41,26 +40,114 @@ public class TestController : MonoBehaviour {
 		};
 	}
 
-	void Update() {
-		if (Input.GetKeyDown(KeyCode.Alpha1)) {
-			SaveTestTitleDirectory();
-		} else if (Input.GetKeyDown(KeyCode.Alpha2)) {
-			OpenPathsTest();
-		} else if (Input.GetKeyDown(KeyCode.Alpha3)) {
-			OpenFilesTest();
-		} else if (Input.GetKeyDown(KeyCode.Alpha4)) {
-			OpenPathsTestSync();
-		} else if (Input.GetKeyDown(KeyCode.Alpha5)) {
-			SavePathsTestSync();
-		}
+	private void SetupMobile() {
+
+		buttonTemplate.gameObject.SetActive(true);
+
+		Debug.Log("Setting up Mobile");
+
+		var shareButton = Instantiate(buttonTemplate, buttonTemplate.transform.parent);
+		SetButtonTitle(shareButton, "Share");
+		shareButton.onClick.AddListener(delegate () {
+			SaveFileTest();	
+		});
+
+		var openButton = Instantiate(buttonTemplate, buttonTemplate.transform.parent);
+		SetButtonTitle(openButton, "Open One");
+		openButton.onClick.AddListener(delegate () {
+			OpenSingleFileTest();
+		});
+
+		var openMultipleButton = Instantiate(buttonTemplate, buttonTemplate.transform.parent);
+		SetButtonTitle(openMultipleButton, "Open Multiple");
+		openMultipleButton.onClick.AddListener(delegate () {
+			OpenMultipleTest();
+		});
+
+		buttonTemplate.gameObject.SetActive(false);
 	}
 
-	private void ExportTest() {
+	private void SetupDesktop() { 
+	
+		buttonTemplate.gameObject.SetActive(true);
+
+		Debug.Log("Setting up Desktop");
+
+		var shareButton = Instantiate(buttonTemplate, buttonTemplate.transform.parent);
+		SetButtonTitle(shareButton, "Save");
+		shareButton.onClick.AddListener(delegate () {
+			SaveFileTest();
+		});
+
+		var openButton = Instantiate(buttonTemplate, buttonTemplate.transform.parent);
+		SetButtonTitle(openButton, "Open One");
+		openButton.onClick.AddListener(delegate () {
+			OpenSingleFileTest();
+		});
+
+		var openMultipleButton = Instantiate(buttonTemplate, buttonTemplate.transform.parent);
+		SetButtonTitle(openMultipleButton, "Open Multiple");
+		openMultipleButton.onClick.AddListener(delegate () {
+			OpenMultipleTest();
+		});
+
+		// Additional DesktopAPI
+		var openMultipleDesktopButton = Instantiate(buttonTemplate, buttonTemplate.transform.parent);
+		SetButtonTitle(openMultipleDesktopButton, "Open files with title and dir.");
+		openMultipleDesktopButton.onClick.AddListener(delegate () {
+			OpenMultipleTest();
+		});
+
+		var openMultipleSyncDesktopButton = Instantiate(buttonTemplate, buttonTemplate.transform.parent);
+		SetButtonTitle(openMultipleSyncDesktopButton, "Open files with title and dir. (sync)");
+		openMultipleSyncDesktopButton.onClick.AddListener(delegate () {
+			OpenFilesDesktopSyncTest();
+		});
+
+		var openPathsDesktopButton = Instantiate(buttonTemplate, buttonTemplate.transform.parent);
+		SetButtonTitle(openPathsDesktopButton, "Select open paths");
+		openPathsDesktopButton.onClick.AddListener(delegate () {
+			OpenPathsDesktopTest();
+		});
+
+		var openPathsSyncDesktopButton = Instantiate(buttonTemplate, buttonTemplate.transform.parent);
+		SetButtonTitle(openPathsSyncDesktopButton, "Select open paths (sync)");
+		openPathsSyncDesktopButton.onClick.AddListener(delegate () {
+			OpenPathsDesktopSyncTest();
+		});
+
+		var saveTitleDirectoryDesktopButton = Instantiate(buttonTemplate, buttonTemplate.transform.parent);
+		SetButtonTitle(saveTitleDirectoryDesktopButton, "Save File with title and dir.");
+		saveTitleDirectoryDesktopButton.onClick.AddListener(delegate () {
+			SaveTitleDirectoryDesktopTest();
+		});
+
+		var savePathDesktopButton = Instantiate(buttonTemplate, buttonTemplate.transform.parent);
+		SetButtonTitle(savePathDesktopButton, "Select save path");
+		savePathDesktopButton.onClick.AddListener(delegate () {
+			SavePathDesktopTest();
+		});
+
+		var savePathSyncDesktopButton = Instantiate(buttonTemplate, buttonTemplate.transform.parent);
+		SetButtonTitle(savePathSyncDesktopButton, "Select save path (sync)");
+		savePathSyncDesktopButton.onClick.AddListener(delegate () {
+			SavePathDesktopSyncTest();
+		});
+
+		buttonTemplate.gameObject.SetActive(false);
+	}
+
+	private void SetButtonTitle(Button button, string title) {
+
+		button.GetComponentInChildren<Text>().text = title;
+	}
+
+	private void SaveFileTest() {
 
 		NativeFileSO.shared.SaveFile(GetFileToSave());
 	}
 
-	private void ImportTest() {
+	private void OpenSingleFileTest() {
 
 		NativeFileSO.shared.OpenFile(testTypes, delegate(bool wasFileOpened, OpenedFile file){
 			if(wasFileOpened) {
@@ -69,7 +156,7 @@ public class TestController : MonoBehaviour {
 		});
 	}
 
-	private void ImportMultipleTest() {
+	private void OpenMultipleTest() {
 
 		NativeFileSO.shared.OpenFiles(testTypes, delegate (bool wereFilesOpened, OpenedFile[] files) {
 			if (wereFilesOpened) {
@@ -78,24 +165,44 @@ public class TestController : MonoBehaviour {
 		});
 	}
 
-	private void SaveTestTitleDirectory() {
-		NativeFileSOMacWin.shared.SaveFile(GetFileToSave(), "Custom Title", testDirectory);
+	private void OpenFilesDesktopTest() {
+		NativeFileSOMacWin.shared.OpenFiles(testTypes, true,
+		    testTitle, testDirectory, delegate (bool wereFilesSelected, OpenedFile[] files) {
+				if (wereFilesSelected) {
+					ShowContents(files);
+				} else {
+					textField.text = "File selection was cancelled.";
+				}
+			});
 	}
 
-	private void OpenPathsTest() {
-		NativeFileSOMacWin.shared.SelectOpenPaths(new []{ SupportedFileType.Any }, true, 
-		                                          "Custom Title", testDirectory, delegate(bool werePathsSelected, string[] paths){
-			if (werePathsSelected) {
-				textField.text = string.Format("Selected paths:\n{0}", string.Join("\n", paths));
-			} else {
-				textField.text = "Path selection was cancelled.";
-			}
-		});
+	private void OpenFilesDesktopSyncTest() {
+
+		var files = NativeFileSOMacWin.shared.OpenFilesSync(testTypes, true, testTitle, testDirectory);
+
+		if (files.Length > 0) {
+			ShowContents(files);
+		} else { 
+			textField.text = "File selection was cancelled.";
+		}
 	}
 
-	private void OpenPathsTestSync() {
-		var paths = NativeFileSOMacWin.shared.SelectOpenPathsSync(new[] { SupportedFileType.Any }, true,
-												  "Custom Title", null);
+	private void OpenPathsDesktopTest() {
+		NativeFileSOMacWin.shared.SelectOpenPaths(testTypes, true,
+		  testTitle, testDirectory, delegate (bool werePathsSelected, string[] paths) {
+			  if (werePathsSelected) {
+				  textField.text = string.Format("Selected paths:\n{0}", string.Join("\n", paths));
+			  } else {
+				  textField.text = "Path selection was cancelled.";
+			  }
+		  });
+	}
+
+	/// <summary>
+	/// Note: No custom directory : Should remember previous directory
+	/// </summary>
+	private void OpenPathsDesktopSyncTest() {
+		var paths = NativeFileSOMacWin.shared.SelectOpenPathsSync(testTypes, true, testTitle, null);
 		if (paths.Length > 0) {
 			textField.text = string.Format("Selected paths:\n{0}", string.Join("\n", paths));
 		} else {
@@ -103,7 +210,22 @@ public class TestController : MonoBehaviour {
 		}
 	}
 
-	private void SavePathsTestSync() {
+	private void SaveTitleDirectoryDesktopTest() {
+		NativeFileSOMacWin.shared.SaveFile(GetFileToSave(), testTitle, testDirectory);
+	}
+
+	private void SavePathDesktopTest() {
+
+		NativeFileSOMacWin.shared.SelectSavePath(GetFileToSave(), testTitle, testDirectory, delegate (bool didSelectPath, string savePath) {
+			if (didSelectPath) {
+				textField.text = string.Format("Selected paths:\n{0}", savePath);
+			} else {
+				textField.text = "Path selection was cancelled.";
+			}	
+		});
+	}
+
+	private void SavePathDesktopSyncTest() {
 		var path = NativeFileSOMacWin.shared.SelectSavePathSync(GetFileToSave(), "Save Path Sync", testDirectory);
 		if (path != null) {
 			textField.text = string.Format("Selected paths:\n{0}", path);
@@ -112,21 +234,11 @@ public class TestController : MonoBehaviour {
 		}
 	}
 
-	private void OpenFilesTest() {
-		NativeFileSOMacWin.shared.OpenFiles(new []{ SupportedFileType.Any }, true, 
-		                                    "Custom Title", testDirectory, delegate(bool wereFilesSelected, OpenedFile[] files){
-			if (wereFilesSelected) {
-				string fileContents = string.Join("\n", files.Select(x => x.ToUTF8String()).ToArray());
-				textField.text = string.Format("Selected file contents:\n{0}", fileContents);
-			} else {
-				textField.text = "File selection was cancelled.";
-			}
-		});
-	}
+
 
 	private FileToSave GetFileToSave() {
-		var testFilePath = Path.Combine(Application.persistentDataPath, "Test.evol");
-		return new FileToSave(testFilePath, "Test.evol", CustomFileTypes.evol);
+		var testFilePath = Path.Combine(Application.persistentDataPath, "NativeFileSOTest.txt");
+		return new FileToSave(testFilePath, "NativeFileSOTest.txt", SupportedFileType.PlainText);
 	}
 
 	private void ShowContents(OpenedFile[] files) {
@@ -135,16 +247,20 @@ public class TestController : MonoBehaviour {
 			return;
 		} 
 			
-		string output = string.Join("\n", files.Select(x => x.ToUTF8String()).ToArray());
+		string output = string.Join("\n", files.Select(delegate(OpenedFile file) { 
+			return file.Data.Length > 1500000 ? "File > 1.5MB ... contents not shown" : file.ToUTF8String();
+		}).ToArray());
 
 		Debug.Log(output);
 		textField.text = output;
 	}
 
-	private void ShowContents(OpenedFile file) { 
+	private void ShowContents(OpenedFile file) {
+
+		string contents = file.Data.Length > 1500000 ? "File > 1.5MB ... contents not shown" : file.ToUTF8String();
 
 		string output = string.Format("File Contents: \n{0}\n --- EOF ---\n{1} bytes\n{2}\n{3}",
-								   file.ToUTF8String(), file.Data.Length,
+								   contents, file.Data.Length,
 								   file.Name, file.Extension);
 
 		Debug.Log(output);

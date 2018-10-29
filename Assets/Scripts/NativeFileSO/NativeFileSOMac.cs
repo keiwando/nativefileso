@@ -1,4 +1,4 @@
-﻿#if UNITY_STANDALONE_OSX
+﻿#if UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -42,9 +42,8 @@ namespace Keiwando.NativeFileSO {
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		private delegate void UnityCallbackPathsSelected(
 			bool pathsSelected,
-			[MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr, SizeParamIndex = 2)]
-		    string[] paths, 
-		    int pathCount);
+			[MarshalAs(UnmanagedType.LPStr)]
+		    string paths);
 
 		public static NativeFileSOMac shared = new NativeFileSOMac();
 
@@ -184,21 +183,18 @@ namespace Keiwando.NativeFileSO {
 		// MARK: - Callbacks
 
 		private static void DidSelectPathsForOpenFileCB(bool pathsSelected, 
-		                                                string[] paths, 
-		                                                int pathCount) {
-			shared.DidSelectPathsForOpenFile(pathsSelected, paths);
+		                                                string paths) {
+			shared.DidSelectPathsForOpenFile(pathsSelected, paths != null ? paths.Split((char)28) : _noPaths);
 		}
 
 		private static void DidSelectPathsFoPathsCB(bool pathsSelected,
-													string[] paths,
-													int pathCount) {
-			shared.DidSelectPathsFoPaths(pathsSelected, paths);
+													string paths) {
+			shared.DidSelectPathsFoPaths(pathsSelected, paths != null ? paths.Split((char)28) : _noPaths);
 		}
 
 		private static void DidSelectPathForSaveCB(bool pathsSelected,
-												   string[] paths,
-												   int pathCount) {
-			shared.DidSelectPathForSave(pathsSelected, paths);
+												   string paths) {
+			shared.DidSelectPathForSave(pathsSelected, paths != null ? paths.Split((char)28) : _noPaths);
 		}
 
 		private void DidSelectPathsForOpenFile(bool pathsSelected, string[] paths) {
@@ -250,16 +246,6 @@ namespace Keiwando.NativeFileSO {
 
 			NativeFileSOMacWin.SaveFileToPath(toSave, path);
 		}
-
-		//private string[] MarshalPaths(IntPtr[] pathPtrs) { 
-			
-		//	var paths = new string[pathPtrs.Length];
-		//	for (int i = 0; i < pathPtrs.Length; i++) {
-		//		paths[i] = Marshal.PtrToStringAnsi(pathPtrs[i]);
-		//	}
-
-		//	return paths;
-		//}
 
 		private string EncodeExtensions(string[] extensions) {
 

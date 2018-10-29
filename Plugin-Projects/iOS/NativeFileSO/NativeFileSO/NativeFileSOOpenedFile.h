@@ -9,10 +9,14 @@
 #ifndef NativeFileSOOpenedFile_h
 #define NativeFileSOOpenedFile_h
 
-struct NativeFileSOOpenedFile {
-    const char *filename;
-    const void *data;
-    int dataLength;
-};
+@interface NativeFileSOOpenedFile : NSObject
+
+@property (readonly, nonatomic, strong) NSString *filename;
+@property (readonly, nonatomic, strong) NSData *data;
+
+-(id)initWithFilename:(NSString *)filename
+                 data:(NSData *)data;
+
+@end
 
 #endif /* NativeFileSOOpenedFile_h */

@@ -8,25 +8,26 @@ using UnityEngine;
 
 namespace Keiwando.NativeFileSO {
 
-	public class NativeFileSOiOS: INativeFileSOMobile {
+	public class NativeFileSOiOS : INativeFileSOMobile {
 
-		[StructLayout(LayoutKind.Sequential)]
-		private struct NativeOpenedFile {
-			public IntPtr filename;
-			public IntPtr data;
-			public int dataLength;
-		}
+		public delegate void UnityCallbackFunction();
 
 		public static NativeFileSOiOS shared = new NativeFileSOiOS();
 
 		[DllImport("__Internal")]
-		private static extern void pluginSetCallback(NativeFileSO.UnityCallbackFunction callback);
+		private static extern void pluginSetCallback(UnityCallbackFunction callback);
 
 		[DllImport("__Internal")]
 		private static extern int pluginGetNumberOfOpenedFiles();
 
 		[DllImport("__Internal")]
-		private static extern NativeOpenedFile pluginGetOpenedFileAtIndex(int i);
+		private static extern IntPtr pluginGetFilenameForFileAtIndex(int i);
+
+		[DllImport("__Internal")]
+		private static extern IntPtr pluginGetDataForFileAtIndex(int i);
+
+		[DllImport("__Internal")]
+		private static extern ulong pluginGetDataLengthForFileAtIndex(int i);
 
 		[DllImport("__Internal")]
 		private static extern void pluginResetLoadedFile();
@@ -40,7 +41,9 @@ namespace Keiwando.NativeFileSO {
 		private static OpenedFile[] _noFiles = new OpenedFile[0];
 
 		private NativeFileSOiOS() {
+#if !UNITY_EDITOR
 			pluginSetCallback(NativeFileSOMobile.FileWasOpenedCallback);
+#endif
 		}
 
 		public OpenedFile[] GetOpenedFiles() {
@@ -52,12 +55,10 @@ namespace Keiwando.NativeFileSO {
 
 			var files = new OpenedFile[numOfLoadedFiles];
 			for (int i = 0; i < numOfLoadedFiles; i++) {
-				Debug.Log(string.Format("Current index: {0}", i));
-				var nativeOpenedFile = pluginGetOpenedFileAtIndex(i);
 
-				byte[] byteContents = new byte[nativeOpenedFile.dataLength];
-				Marshal.Copy(nativeOpenedFile.data, byteContents, 0, byteContents.Length);
-				string filename = Marshal.PtrToStringAnsi(nativeOpenedFile.filename);
+				byte[] byteContents = new byte[pluginGetDataLengthForFileAtIndex(i)];
+				Marshal.Copy(pluginGetDataForFileAtIndex(i), byteContents, 0, byteContents.Length);
+				string filename = Marshal.PtrToStringAnsi(pluginGetFilenameForFileAtIndex(i));
 
 				files[i] = new OpenedFile(filename, byteContents);
 			}

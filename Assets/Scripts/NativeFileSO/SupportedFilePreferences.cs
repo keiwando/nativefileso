@@ -8,11 +8,14 @@ namespace Keiwando.NativeFileSO {
 		/// </summary>
 		public static readonly SupportedFileType[] supportedFileTypes = new SupportedFileType[] {
 			
-			SupportedFileType.PlainText,
+
 
 			// TODO: Remove from final build
 			CustomFileTypes.creat,
-			CustomFileTypes.evol
+			CustomFileTypes.evol,
+
+			SupportedFileType.PDF,
+			SupportedFileType.JPEG
 		};
 	}
 }

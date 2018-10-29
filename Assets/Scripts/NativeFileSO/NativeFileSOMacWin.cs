@@ -7,9 +7,9 @@ namespace Keiwando.NativeFileSO {
 
 	public class NativeFileSOMacWin : INativeFileSO {
 
-#if UNITY_STANDALONE_OSX
+#if UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
 		private INativeFileSODesktop nativeFileSO = NativeFileSOMac.shared;
-#elif UNITY_STANDALONE_WIN
+#elif UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
 		private INativeFileSODesktop nativeFileSO = NativeFileSOWindows.shared;
 #else
 		private INativeFileSODesktop nativeFileSO = null;

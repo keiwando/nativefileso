@@ -11,7 +11,7 @@
 
 @interface NativeFileOpenURLBuffer () {
     
-    NSMutableArray<NSValue *> *_openedFiles;
+    NSMutableArray<NativeFileSOOpenedFile *> *_openedFiles;
 }
 
 @end
@@ -52,34 +52,25 @@ static UnityCallbackFunction _nativeFileSOUnityCallback;
     }
     
     if ([_openedFiles count] > 0 && _nativeFileSOUnityCallback) {
-        _nativeFileSOUnityCallback();
+        
+        dispatch_async(dispatch_get_main_queue(), ^(void){
+            _nativeFileSOUnityCallback();
+        });
     }
 }
 
 -(void)addToBufferFromURL:(NSURL *)URL {
     
-    struct NativeFileSOOpenedFile *openedFile = [self loadFileFromURL:URL];
-    NSValue *val = [NSValue valueWithPointer:openedFile];
-    //NSValue *val = [NSValue valueWithBytes:&openedFile objCType:@encode(struct NativeFileSOOpenedFile)];
-    [_openedFiles addObject:val];
+    NativeFileSOOpenedFile *openedFile = [self loadFileFromURL:URL];
+    [_openedFiles addObject:openedFile];
 }
 
--(struct NativeFileSOOpenedFile *)loadFileFromURL:(NSURL *)URL {
+-(NativeFileSOOpenedFile *)loadFileFromURL:(NSURL *)URL {
     
     NSData *data = [NSData dataWithContentsOfURL:URL];
     NSString *filename = URL.lastPathComponent ? : @"";
     
-    struct NativeFileSOOpenedFile *file = malloc(sizeof(struct NativeFileSOOpenedFile));
-    
-    NSUInteger len = [filename lengthOfBytesUsingEncoding:NSASCIIStringEncoding];
-    
-    file->filename = malloc(len);
-    strncpy((char *)file->filename, [filename UTF8String], len);
-    //file.filename = [filename UTF8String];
-    file->data = data.bytes;
-    file->dataLength = (int)data.length;
-    
-    NSLog(@"Filename before boxing: %s", filename);
+    NativeFileSOOpenedFile *file = [[NativeFileSOOpenedFile alloc] initWithFilename:filename data:data];
     
     return file;
 }
@@ -90,7 +81,9 @@ static UnityCallbackFunction _nativeFileSOUnityCallback;
 
 -(void)sendCallback {
     if (_nativeFileSOUnityCallback) {
-        _nativeFileSOUnityCallback();
+        dispatch_async(dispatch_get_main_queue(), ^(void){
+            _nativeFileSOUnityCallback();
+        });
     }
 }
 
@@ -98,13 +91,11 @@ static UnityCallbackFunction _nativeFileSOUnityCallback;
     return (int)_openedFiles.count;
 }
 
--(struct NativeFileSOOpenedFile)getOpenedFileAtIndex:(int)index {
-    struct NativeFileSOOpenedFile *file = malloc(sizeof(struct NativeFileSOOpenedFile));
-    [_openedFiles[index] getValue:file];
-    
-    //file->filename = "Testname";
-    NSLog(@"Filename after unboxing: %s", file->filename);
-    return *file;
+-(NativeFileSOOpenedFile *)getOpenedFileAtIndex:(int)index {
+    if (index >= _openedFiles.count) {
+        return nil;
+    }
+    return _openedFiles[index];
 }
 
 - (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
