@@ -55,19 +55,23 @@ namespace Keiwando.NativeFileSO {
 				typesDict.SetString("LSHandlerRank", supportedType.Owner ? "Owner" : "Default");
 
 				var contentTypesArray = typesDict.CreateArray("LSItemContentTypes");
-				contentTypesArray.AddString(supportedType.AppleUTI);
+				foreach (var uti in supportedType.AppleUTI.Split('|')) {
+					contentTypesArray.AddString(uti);
+				}
 
 				var exportedTypesDict = exportedTypesArray.AddDict();
 				if (supportedType.Owner) {
 					// Export the File Type
 
-					var conformsToArray = exportedTypesDict.CreateArray("UTTypeConformsTo");
-					// TODO: Retrieve from supportedType
-					conformsToArray.AddString("public.plain-text");
-					conformsToArray.AddString("public.text");
+					if (!string.IsNullOrEmpty(supportedType.AppleConformsToUTI)) { 
+						var conformsToArray = exportedTypesDict.CreateArray("UTTypeConformsTo");
+						foreach (var conformanceUTI in supportedType.AppleConformsToUTI.Split('|')) {
+							conformsToArray.AddString(conformanceUTI);
+						}
+					}
 
 					exportedTypesDict.SetString("UTTypeDescription", supportedType.Name);
-					exportedTypesDict.SetString("UTTypeIdentifier", supportedType.AppleUTI);
+					exportedTypesDict.SetString("UTTypeIdentifier", supportedType.AppleUTI.Split('|')[0]);
 
 					var tagSpecificationDict = exportedTypesDict.CreateDict("UTTypeTagSpecification");
 					tagSpecificationDict.SetString("public.filename-extension", supportedType.Extension);

@@ -9,7 +9,7 @@
 #ifndef UnityCallbackFunction_h
 #define UnityCallbackFunction_h
 
-typedef void (*UnityCallbackFunction)(bool pathsSelected, const char *paths);
+typedef void (*UnityCallbackFunction)(bool pathsSelected, const char *paths, unsigned long length);
 
 
 #endif /* UnityCallbackFunction_h */

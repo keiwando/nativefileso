@@ -96,6 +96,7 @@ namespace Keiwando.NativeFileSO {
 				var name = Path.GetFileName(path);
 				return new OpenedFile(name, data);
 			} catch (Exception e) {
+				Debug.Log(string.Format("Path:\n{0}", path));
 				Debug.Log(e.StackTrace);
 				return null;
 			}

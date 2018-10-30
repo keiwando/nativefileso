@@ -23,8 +23,22 @@ namespace Keiwando.NativeFileSO {
 		/// The Uniform Type Identifier used for file association on iOS.
 		/// See https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/understanding_utis/understand_utis_declare/understand_utis_declare.html#//apple_ref/doc/uid/TP40001319-CH204-SW1
 		/// for more info.
+		/// 
+		/// Separate multiple UTIs with a pipe (|).
 		/// </summary>
 		public string AppleUTI;
+
+
+		/// <summary>
+		/// Set this value if you are declaring a custom file type that conforms
+		/// to an existing UTI. 
+		/// 
+		/// For example, if you have a custom text file type, set this value
+		/// to public.plain-text
+		/// 
+		/// Separate multiple UTIs with a pipe (|).
+		/// </summary>
+		public string AppleConformsToUTI = "";
 
 		/// <summary>
 		/// The MimeType of the file. On Android, only the MimeType is relevant
@@ -38,7 +52,7 @@ namespace Keiwando.NativeFileSO {
 			Name = "Any",
 			Extension = "*",
 			Owner = false,
-			AppleUTI = "public.item",
+			AppleUTI = "public.item|public.content",
 			MimeType = "*/*"
 		};
 

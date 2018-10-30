@@ -24,7 +24,11 @@ public class TestController : MonoBehaviour {
 
 	private SupportedFileType[] testTypes = SupportedFilePreferences.supportedFileTypes;
 
+	private System.Threading.Thread mainThread;
+
 	void Start() {
+
+		mainThread = System.Threading.Thread.CurrentThread;
 
 		FileWriter.WriteTestFile(Application.persistentDataPath);
 
@@ -95,7 +99,7 @@ public class TestController : MonoBehaviour {
 		var openMultipleDesktopButton = Instantiate(buttonTemplate, buttonTemplate.transform.parent);
 		SetButtonTitle(openMultipleDesktopButton, "Open files with title and dir.");
 		openMultipleDesktopButton.onClick.AddListener(delegate () {
-			OpenMultipleTest();
+			OpenFilesDesktopTest();
 		});
 
 		var openMultipleSyncDesktopButton = Instantiate(buttonTemplate, buttonTemplate.transform.parent);
@@ -144,13 +148,24 @@ public class TestController : MonoBehaviour {
 
 	private void SaveFileTest() {
 
+		// TODO: Remove One Call
+		NativeFileSO.shared.SaveFile(GetFileToSave());
 		NativeFileSO.shared.SaveFile(GetFileToSave());
 	}
 
 	private void OpenSingleFileTest() {
 
 		NativeFileSO.shared.OpenFile(testTypes, delegate(bool wasFileOpened, OpenedFile file){
-			if(wasFileOpened) {
+			if (wasFileOpened) {
+				ShowContents(file);
+				textField.text += string.Format("OnMainThread: {0}", IsOnMainThread());
+			} else { 
+				textField.text = string.Format("OnMainThread: {0}", IsOnMainThread());
+			}
+		});
+		// TODO: Remove One Call
+		NativeFileSO.shared.OpenFile(testTypes, delegate (bool wasFileOpened, OpenedFile file) {
+			if (wasFileOpened) {
 				ShowContents(file);
 			}
 		});
@@ -161,6 +176,9 @@ public class TestController : MonoBehaviour {
 		NativeFileSO.shared.OpenFiles(testTypes, delegate (bool wereFilesOpened, OpenedFile[] files) {
 			if (wereFilesOpened) {
 				ShowContents(files);
+				textField.text += string.Format("OnMainThread: {0}", IsOnMainThread());
+			} else { 
+				textField.text = string.Format("OnMainThread: {0}", IsOnMainThread());
 			}
 		});
 	}
@@ -170,8 +188,9 @@ public class TestController : MonoBehaviour {
 		    testTitle, testDirectory, delegate (bool wereFilesSelected, OpenedFile[] files) {
 				if (wereFilesSelected) {
 					ShowContents(files);
+					Debug.Log(string.Format("OnMainThread: {0}", IsOnMainThread()));
 				} else {
-					textField.text = "File selection was cancelled.";
+					textField.text = "File selection was cancelled. On Main Thread: " + IsOnMainThread();
 				}
 			});
 	}
@@ -191,9 +210,9 @@ public class TestController : MonoBehaviour {
 		NativeFileSOMacWin.shared.SelectOpenPaths(testTypes, true,
 		  testTitle, testDirectory, delegate (bool werePathsSelected, string[] paths) {
 			  if (werePathsSelected) {
-				  textField.text = string.Format("Selected paths:\n{0}", string.Join("\n", paths));
+				textField.text = string.Format("Selected paths:\n{0}\nOn Main Thread: {1}", string.Join("\n", paths), IsOnMainThread());
 			  } else {
-				  textField.text = "Path selection was cancelled.";
+				textField.text = "Path selection was cancelled.\nOn Main Thread: " + IsOnMainThread();
 			  }
 		  });
 	}
@@ -218,9 +237,9 @@ public class TestController : MonoBehaviour {
 
 		NativeFileSOMacWin.shared.SelectSavePath(GetFileToSave(), testTitle, testDirectory, delegate (bool didSelectPath, string savePath) {
 			if (didSelectPath) {
-				textField.text = string.Format("Selected paths:\n{0}", savePath);
+				textField.text = string.Format("Selected paths:\n{0}\nOn Main Thread{1}", savePath, IsOnMainThread());
 			} else {
-				textField.text = "Path selection was cancelled.";
+				textField.text = "Path selection was cancelled.\nOn Main Thread: " + IsOnMainThread();
 			}	
 		});
 	}
@@ -242,14 +261,15 @@ public class TestController : MonoBehaviour {
 	}
 
 	private void ShowContents(OpenedFile[] files) {
-		if (files.Length == 0) {
+		if (files.Length == 1) {
 			ShowContents(files[0]);
 			return;
-		} 
-			
-		string output = string.Join("\n", files.Select(delegate(OpenedFile file) { 
-			return file.Data.Length > 1500000 ? "File > 1.5MB ... contents not shown" : file.ToUTF8String();
-		}).ToArray());
+		}
+
+		var fileContents = files.Select(delegate (OpenedFile file) {
+			return file.Data.Length > 100000 ? "File > 0.1MB ... contents not shown" : file.ToUTF8String();
+		}).ToArray();
+		string output = string.Join("\n", fileContents);
 
 		Debug.Log(output);
 		textField.text = output;
@@ -257,7 +277,7 @@ public class TestController : MonoBehaviour {
 
 	private void ShowContents(OpenedFile file) {
 
-		string contents = file.Data.Length > 1500000 ? "File > 1.5MB ... contents not shown" : file.ToUTF8String();
+		string contents = file.Data.Length > 100000 ? "File > 0.1MB ... contents not shown" : file.ToUTF8String();
 
 		string output = string.Format("File Contents: \n{0}\n --- EOF ---\n{1} bytes\n{2}\n{3}",
 								   contents, file.Data.Length,
@@ -265,5 +285,9 @@ public class TestController : MonoBehaviour {
 
 		Debug.Log(output);
 		textField.text = output;
+	}
+
+	private bool IsOnMainThread() {
+		return System.Threading.Thread.CurrentThread == mainThread;
 	}
 }

@@ -41,9 +41,7 @@ namespace Keiwando.NativeFileSO {
 
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		private delegate void UnityCallbackPathsSelected(
-			bool pathsSelected,
-			[MarshalAs(UnmanagedType.LPStr)]
-		    string paths);
+			bool pathsSelected, IntPtr paths, ulong length);
 
 		public static NativeFileSOMac shared = new NativeFileSOMac();
 
@@ -119,7 +117,7 @@ namespace Keiwando.NativeFileSO {
 			_pathsCallback = onCompletion;
 			var extensions = EncodeExtensions(fileTypes);
 
-			pluginSetCallback(DidSelectPathsFoPathsCB);
+			pluginSetCallback(DidSelectPathsForPathsCB);
 			pluginOpenFile(extensions, canSelectMultiple, title, directory);
 		}
 
@@ -156,7 +154,7 @@ namespace Keiwando.NativeFileSO {
 			if (isBusy) { return; }
 			isBusy = true;
 
-			pluginSetCallback(DidSelectPathsFoPathsCB);
+			pluginSetCallback(DidSelectPathsForPathsCB);
 
 			_pathsCallback = delegate (bool selected, string[] paths) {
 				var path = paths.Length > 0 ? paths[0] : null;
@@ -182,19 +180,35 @@ namespace Keiwando.NativeFileSO {
 
 		// MARK: - Callbacks
 
-		private static void DidSelectPathsForOpenFileCB(bool pathsSelected, 
-		                                                string paths) {
-			shared.DidSelectPathsForOpenFile(pathsSelected, paths != null ? paths.Split((char)28) : _noPaths);
+		private static void DidSelectPathsForOpenFileCB(bool pathsSelected, IntPtr pathsPtr, ulong length) {
+
+			if (pathsSelected) {
+				string paths = Marshal.PtrToStringAuto(pathsPtr, (int)length);
+				shared.DidSelectPathsForOpenFile(pathsSelected, paths.Split((char)28));
+			} else { 
+				shared.DidSelectPathsForOpenFile(pathsSelected, _noPaths);
+			}
 		}
 
-		private static void DidSelectPathsFoPathsCB(bool pathsSelected,
-													string paths) {
-			shared.DidSelectPathsFoPaths(pathsSelected, paths != null ? paths.Split((char)28) : _noPaths);
+		private static void DidSelectPathsForPathsCB(bool pathsSelected, IntPtr pathsPtr, ulong length) {
+
+			if (pathsSelected) {
+				string paths = Marshal.PtrToStringAuto(pathsPtr, (int)length);
+				shared.DidSelectPathsForPaths(pathsSelected, paths.Split((char)28));
+			} else { 
+				shared.DidSelectPathsForPaths(pathsSelected,_noPaths);
+			}
+
 		}
 
-		private static void DidSelectPathForSaveCB(bool pathsSelected,
-												   string paths) {
-			shared.DidSelectPathForSave(pathsSelected, paths != null ? paths.Split((char)28) : _noPaths);
+		private static void DidSelectPathForSaveCB(bool pathsSelected, IntPtr pathsPtr, ulong length) {
+
+			if (pathsSelected) {
+				string paths = Marshal.PtrToStringAuto(pathsPtr, (int)length);
+				shared.DidSelectPathForSave(pathsSelected, paths.Split((char)28));
+			} else { 
+				shared.DidSelectPathsForPaths(pathsSelected, _noPaths);
+			}
 		}
 
 		private void DidSelectPathsForOpenFile(bool pathsSelected, string[] paths) {
@@ -217,7 +231,7 @@ namespace Keiwando.NativeFileSO {
 			}
 		}
 
-		private void DidSelectPathsFoPaths(bool pathsSelected, string[] paths) {
+		private void DidSelectPathsForPaths(bool pathsSelected, string[] paths) {
 
 			isBusy = false;
 
@@ -234,15 +248,12 @@ namespace Keiwando.NativeFileSO {
 		private void DidSelectPathForSave(bool pathsSelected, string[] paths) {
 
 			isBusy = false;
-			Debug.Log("Callback");
 
 			var toSave = _cachedFileToSave;
 			if (toSave == null || !pathsSelected) return;
 
 			//var path = Marshal.PtrToStringAnsi(pathPtrs[0]);
 			var path = paths[0];
-
-			Debug.Log("Save Path : " + path);
 
 			NativeFileSOMacWin.SaveFileToPath(toSave, path);
 		}

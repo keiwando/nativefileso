@@ -26,7 +26,7 @@ namespace Keiwando.NativeFileSO {
 		private bool isBusy = false;
 
 		private NativeFileSOMobile() {
-			
+
 #if !UNITY_EDITOR
 
 			NativeFileSOUnityEvent.UnityReceivedControl += delegate {
@@ -39,6 +39,7 @@ namespace Keiwando.NativeFileSO {
 		public void OpenFile(SupportedFileType[] supportedTypes, Action<bool, OpenedFile> onOpen) {
 
 			if (isBusy) return;
+			isBusy = true;
 
 			_callback = delegate (bool wasOpened, OpenedFile[] openedFiles) {
 				if (onOpen != null) {
@@ -51,6 +52,7 @@ namespace Keiwando.NativeFileSO {
 		public void OpenFiles(SupportedFileType[] supportedTypes, Action<bool, OpenedFile[]> onOpen) {
 
 			if (isBusy) return;
+			isBusy = true;
 			_callback = onOpen;
 
 			nativeFileSO.OpenFiles(supportedTypes, true);
@@ -87,12 +89,13 @@ namespace Keiwando.NativeFileSO {
 			}
 		}
 
+#if UNITY_IOS
 		[MonoPInvokeCallback(typeof(NativeFileSOiOS.UnityCallbackFunction))]
 		internal static void FileWasOpenedCallback() {
 			shared.TryRetrieveOpenedFile();
 			shared.isBusy = false;
 		}
-
+#endif
 	}
 }
 

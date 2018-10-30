@@ -8,6 +8,7 @@ public class CustomFileTypes {
 		Extension = "evol",
 		Owner = true,
 		AppleUTI = "com.keiwando.Evolution.evol",
+		AppleConformsToUTI = "public.plain-text|public.data",
 		MimeType = "text/plain"
 	};
 
@@ -16,6 +17,7 @@ public class CustomFileTypes {
 		Extension = "creat",
 		Owner = true,
 		AppleUTI = "com.keiwando.Evolution.creat",
+		AppleConformsToUTI = "public.plain-text|public.data",
 		MimeType = "text/plain"
 	};
 }

@@ -50,9 +50,17 @@ canSelectMultiple:(bool)canSelectMultiple
             }
             NSString *pathsString = [paths componentsJoinedByString:[NSString stringWithFormat:@"%c", 28]];
             
-            [self sendCallback:YES paths:[pathsString UTF8String]];
+            // DEBUG:
+            [self redirectNSLog];
+            NSLog(pathsString);
+            
+            unsigned long strLen = [pathsString lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
+            
+            const char *str = [pathsString UTF8String];
+            [self sendCallback:YES paths:str length:strLen];
+            
         } else {
-            [self sendCallback:NO paths:nil];
+            [self sendCallback:NO paths:nil length:0];
         }
         [self freeDynamicMemory];
     }];
@@ -72,14 +80,19 @@ canSelectMultiple:(bool)canSelectMultiple
     NSModalResponse response = [panel runModal];
     
     if (response == NSModalResponseOK) {
-        NSArray *URLs = panel.URLs;
-        NSMutableArray *paths = [NSMutableArray arrayWithCapacity:URLs.count];
-        for (int i = 0; i < (int)URLs.count; i++) {
-            [paths addObject:[URLs[i] path]];
+        NSMutableArray *paths = [NSMutableArray arrayWithCapacity:panel.URLs.count];
+        for (int i = 0; i < (int)panel.URLs.count; i++) {
+            [paths addObject:[panel.URLs[i] path]];
         }
         NSString *pathsString = [paths componentsJoinedByString:[NSString stringWithFormat:@"%c", 28]];
         
-        return [pathsString UTF8String];
+        const char *str = [pathsString UTF8String];
+        if (str == nil) {
+            return [@"UTF8String is nil" UTF8String];
+        } else {
+            return [pathsString UTF8String];
+        }
+        
     } else {
         return nil;
     }
@@ -107,10 +120,10 @@ canSelectMultiple:(bool)canSelectMultiple
         }
         
         if (response == NSModalResponseOK) {
-            
-            [self sendCallback:YES paths:[panel.URL.path UTF8String]];
+            unsigned long strLen = [panel.URL.path lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
+            [self sendCallback:YES paths:[panel.URL.path UTF8String] length:strLen];
         } else {
-            [self sendCallback:NO paths:nil];
+            [self sendCallback:NO paths:nil length:0];
         }
         [self freeDynamicMemory];
     }];
@@ -258,13 +271,20 @@ canSelectMultiple:(bool)canSelectMultiple
 }
 
 + (void) sendCallback:(bool)pathsSelected
-                paths:(const char *)paths {
+                paths:(const char *)paths
+               length:(unsigned long)length {
     
     if (callback != nil) {
-        dispatch_async(dispatch_get_main_queue(), ^(void){
-            callback(pathsSelected, paths);
-        });
+        //dispatch_async(dispatch_get_main_queue(), ^(void){
+            callback(pathsSelected, paths, length);
+        //});
     }
+}
+
+// DEBUG:
++ (void) redirectNSLog {
+    NSString *logPath = @"/Users/Keiwan/Library/Logs/com.keiwando.NativeFileSO/nativeFileSOMac.log";
+    freopen([logPath fileSystemRepresentation],"a+",stderr);
 }
 
 
