@@ -1,0 +1,36 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.keiwando.lib_nativefileso">
+
+    <application>
+        <activity android:name="com.keiwando.lib_nativefileso.NativeFileOpenActivity">
+            <!-- #NativeFileSOIntentsStart# -->
+	<intent-filter>
+    	<action android:name="android.intent.action.SEND"/> 
+		<action android:name="android.intent.action.SEND_MULTIPLE"/> 
+		<category android:name="android.intent.category.DEFAULT"/>
+		<data android:mimeType="text/plain"/>
+	</intent-filter>
+	<intent-filter>
+    	<action android:name="android.intent.action.SEND"/> 
+		<action android:name="android.intent.action.SEND_MULTIPLE"/> 
+		<category android:name="android.intent.category.DEFAULT"/>
+		<data android:mimeType="application/pdf"/>
+	</intent-filter>
+	<intent-filter>
+    	<action android:name="android.intent.action.SEND"/> 
+		<action android:name="android.intent.action.SEND_MULTIPLE"/> 
+		<category android:name="android.intent.category.DEFAULT"/>
+		<data android:mimeType="image/jpeg"/>
+	</intent-filter><!-- #NativeFileSOIntentsEnd# -->
+        </activity>
+        <provider
+                android:name="com.keiwando.lib_nativefileso.androidx.core.content.FileProvider"
+                android:authorities="com.keiwando.nativefileso.${applicationId}.provider"
+                android:exported="false"
+                android:grantUriPermissions="true">
+            <meta-data
+                    android:name="android.support.FILE_PROVIDER_PATHS"
+                    android:resource="@xml/provider_paths"/>
+        </provider>
+    </application>
+</manifest>
