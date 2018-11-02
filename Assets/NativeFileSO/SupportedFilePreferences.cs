@@ -15,9 +15,8 @@ namespace Keiwando.NativeFileSO {
 			Demo.CustomFileTypes.evol,
 
 			SupportedFileType.PDF,
-			SupportedFileType.JPEG
+			//SupportedFileType.JPEG,
 
-			//,
 			//SupportedFileType.Any
 		};
 	}

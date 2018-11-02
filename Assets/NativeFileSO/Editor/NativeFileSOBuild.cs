@@ -105,29 +105,30 @@ public class NativeFileSOBuild {
 		var manifestPath = CombinePaths(pluginFolder, manifestName);
 
 		// DEBUG:
-		byte[] beforeData = File.ReadAllBytes(aarPath);
+		//byte[] beforeData = File.ReadAllBytes(aarPath);
 
 		ZipStorer zip = ZipStorer.Open(aarPath, FileAccess.ReadWrite);
 
 		var centralDir = zip.ReadCentralDir();
 		var manifest = centralDir.Find(x => Path.GetFileName(x.FilenameInZip)
 		                               == manifestName);
-		//zip.ExtractFile(manifest, manifestPath);
 
-		//UpdateManifestAssociations(manifestPath);
+		zip.ExtractFile(manifest, manifestPath);
+		UpdateManifestAssociations(manifestPath);
 
-		ZipStorer.RemoveEntries(ref zip, new List<ZipStorer.ZipFileEntry>() { });
+		//ZipStorer.RemoveEntries(ref zip, new List<ZipStorer.ZipFileEntry>() { });
 
-		//ZipStorer.RemoveEntries(ref zip, new List<ZipStorer.ZipFileEntry>() { 
-		//	manifest });
-		//zip.AddFile(ZipStorer.Compression.Store, manifestPath, manifest.FilenameInZip, "");
+		ZipStorer.RemoveEntries(ref zip, new List<ZipStorer.ZipFileEntry>() { 
+			manifest });
+		zip.AddFile(ZipStorer.Compression.Deflate, manifestPath, manifest.FilenameInZip, "");
 
 		zip.Close();
 
 		File.Delete(manifestPath);
 
-		byte[] afterData = File.ReadAllBytes(aarPath);
-		TestByteCompare(beforeData, afterData, 47270);
+		//byte[] afterData = File.ReadAllBytes(aarPath);
+		//TestByteCompare(beforeData, afterData, 47270);
+		//WriteByteCompare(beforeData, afterData);
 
 		Debug.Log("NativeFileSO: Finished updating the Android plugin");
 	}
@@ -249,6 +250,44 @@ public class NativeFileSOBuild {
 			int b2 = i < data2.Length ? data2[i] : -1;
 			Debug.Log(string.Format("{0}\t{1}\t{2}", i, b1, b2));
 		}
+	}
+
+	private static void WriteByteCompare(byte[] data1, byte[] data2) {
+
+		var logPath = "/Users/Keiwan/Desktop/Test/ByteComparison.txt";
+		//File.Create(logPath);
+
+		var sb = new System.Text.StringBuilder();
+		for (int i = 0; i < System.Math.Max(data1.Length, data2.Length); i++) { 
+			int b1 = i < data1.Length ? data1[i] : -1;
+			int b2 = i < data2.Length ? data2[i] : -1;
+
+			if (b1 != b2) {
+				sb.Append(string.Format("{0}\t{1}\t{2}\n", i, b1, b2));
+			}
+		}
+
+		File.WriteAllText(logPath, sb.ToString());
+	}
+
+	[MenuItem("Debug/DeflateTest")]
+	private static void DeflateTest() { 
+		// DEBUG:
+		var testMemoryStream = new MemoryStream();
+		//Stream testStream = testMemoryStream;
+		Stream testStream = new DeflateStream(testMemoryStream, CompressionMode.Compress, true);
+		testStream.Write(new byte[] { 0 }, 0, 1);
+		var testOutput = testMemoryStream.ToArray();
+		testStream.Flush();
+		testStream.Close();
+		testStream.Dispose();
+		var testBytes = testMemoryStream.ToArray();
+		var sb = new System.Text.StringBuilder();
+		for (int i = 0; i < testBytes.Length; i++) {
+			sb.Append((int)testBytes[i]);
+			sb.Append(" ");
+		}
+		Debug.Log(string.Format("Buffer: {0}", sb));
 	}
 }
 
