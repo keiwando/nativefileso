@@ -36,24 +36,24 @@ namespace Keiwando.NativeFileSO {
 #endif
 		}
 
-		public void OpenFile(SupportedFileType[] supportedTypes, Action<bool, OpenedFile> onOpen) {
+		public void OpenFile(SupportedFileType[] supportedTypes, Action<bool, OpenedFile> onCompletion) {
 
 			if (isBusy) return;
 			isBusy = true;
 
 			_callback = delegate (bool wasOpened, OpenedFile[] openedFiles) {
-				if (onOpen != null) {
-					onOpen(wasOpened, wasOpened ? openedFiles[0] : null);
+				if (onCompletion != null) {
+					onCompletion(wasOpened, wasOpened ? openedFiles[0] : null);
 				}
 			};
 			nativeFileSO.OpenFiles(supportedTypes, false);
 		}
 
-		public void OpenFiles(SupportedFileType[] supportedTypes, Action<bool, OpenedFile[]> onOpen) {
+		public void OpenFiles(SupportedFileType[] supportedTypes, Action<bool, OpenedFile[]> onCompletion) {
 
 			if (isBusy) return;
 			isBusy = true;
-			_callback = onOpen;
+			_callback = onCompletion;
 
 			nativeFileSO.OpenFiles(supportedTypes, true);
 		}
@@ -75,9 +75,7 @@ namespace Keiwando.NativeFileSO {
 		}
 
 		private void SendFileOpenedEvent(bool fileWasOpened, OpenedFile[] file) {
-
-
-
+			
 			if (_callback != null) {
 				_callback(fileWasOpened, file);
 				_callback = null;

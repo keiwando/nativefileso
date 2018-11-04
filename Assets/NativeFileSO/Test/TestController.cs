@@ -33,8 +33,8 @@ namespace Keiwando.NativeFileSO.Demo {
 
 			FileWriter.WriteTestFile(Application.persistentDataPath);
 
-#if UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX
-		SetupDesktop();
+#if UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_EDITOR
+			SetupDesktop();
 #elif UNITY_IOS || UNITY_ANDROID
 			SetupMobile();
 #endif

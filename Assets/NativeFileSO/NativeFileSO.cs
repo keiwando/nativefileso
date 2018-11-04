@@ -11,7 +11,7 @@ namespace Keiwando.NativeFileSO {
 #elif UNITY_IOS || UNITY_ANDROID
 		private static INativeFileSO nativeFileSO = NativeFileSOMobile.shared;
 #else
-	private static INativeFileSO nativeFileSO = null;
+		private static INativeFileSO nativeFileSO = null;
 #endif
 
 		public static readonly NativeFileSO shared = new NativeFileSO();

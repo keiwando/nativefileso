@@ -42,7 +42,7 @@ namespace Keiwando.NativeFileSO {
 			JavaNativeSO.CallStatic("LoadTemporaryFiles", Activity);
 			int numberOfLoadedFiles = JavaNativeSO.CallStatic<int>("GetNumberOfLoadedFiles");
 
-			if (numberOfLoadedFiles == 0) { return _noFiles; }
+			if (numberOfLoadedFiles <= 0) { return _noFiles; }
 
 			OpenedFile[] openedFiles = new OpenedFile[numberOfLoadedFiles];
 			for (int i = 0; i < openedFiles.Length; i++) {
