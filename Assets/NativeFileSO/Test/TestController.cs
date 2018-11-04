@@ -272,7 +272,7 @@ namespace Keiwando.NativeFileSO.Demo {
 			}).ToArray();
 			string output = string.Join("\n", fileContents);
 
-			Debug.Log(output);
+			Debug.Log("D / Plugin DEBUG: " + output);
 			textField.text = output;
 		}
 
@@ -284,7 +284,7 @@ namespace Keiwando.NativeFileSO.Demo {
 									   contents, file.Data.Length,
 									   file.Name, file.Extension);
 
-			Debug.Log(output);
+			Debug.Log("D/Plugin DEBUG: " + output);
 			textField.text = output;
 		}
 

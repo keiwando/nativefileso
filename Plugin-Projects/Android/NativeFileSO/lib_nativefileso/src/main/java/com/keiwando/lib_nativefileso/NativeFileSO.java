@@ -14,26 +14,6 @@ public class NativeFileSO {
 
     private final static NativeFileOpenURLBuffer fileBuffer = NativeFileOpenURLBuffer.getInstance();
 
-    /*public static byte[] GetFileByteContents() {
-        return fileBuffer.getByteContents();
-    }
-
-    public static boolean IsFileLoaded() {
-        return fileBuffer.isFileLoaded();
-    }
-
-    public static String GetFileName() {
-        return fileBuffer.getFilename();
-    }
-
-    public static void ResetLoadedFile() {
-        fileBuffer.reset();
-    }
-
-    public static boolean IsTemporaryFileAvailable(Activity context) {
-        return fileBuffer.isTemporaryFileAvailable(context.getCacheDir());
-    }*/
-
     public static void LoadTemporaryFiles(Activity context) {
 
         fileBuffer.loadFromTempDir(context.getCacheDir(), context.getContentResolver());
@@ -47,8 +27,8 @@ public class NativeFileSO {
         return fileBuffer.getOpenedFileAtIndex(i);
     }
 
-    public static void FreeMemory() {
-        fileBuffer.freeMemory();
+    public static void FreeMemory(Activity context) {
+        fileBuffer.freeMemory(context.getCacheDir());
     }
 
     public static void OpenFile(Activity context, String mimetypes) {

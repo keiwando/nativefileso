@@ -4,24 +4,7 @@
     <application>
         <activity android:name="com.keiwando.lib_nativefileso.NativeFileOpenActivity">
             <!-- #NativeFileSOIntentsStart# -->
-	<intent-filter>
-    	<action android:name="android.intent.action.SEND"/> 
-		<action android:name="android.intent.action.SEND_MULTIPLE"/> 
-		<category android:name="android.intent.category.DEFAULT"/>
-		<data android:mimeType="text/plain"/>
-	</intent-filter>
-	<intent-filter>
-    	<action android:name="android.intent.action.SEND"/> 
-		<action android:name="android.intent.action.SEND_MULTIPLE"/> 
-		<category android:name="android.intent.category.DEFAULT"/>
-		<data android:mimeType="application/pdf"/>
-	</intent-filter>
-	<intent-filter>
-    	<action android:name="android.intent.action.SEND"/> 
-		<action android:name="android.intent.action.SEND_MULTIPLE"/> 
-		<category android:name="android.intent.category.DEFAULT"/>
-		<data android:mimeType="image/jpeg"/>
-	</intent-filter><!-- #NativeFileSOIntentsEnd# -->
+			<!-- #NativeFileSOIntentsEnd# -->
         </activity>
         <provider
                 android:name="com.keiwando.lib_nativefileso.androidx.core.content.FileProvider"

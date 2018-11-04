@@ -48,12 +48,14 @@ namespace Keiwando.NativeFileSO {
 			for (int i = 0; i < openedFiles.Length; i++) {
 				AndroidJavaObject loadedFile = JavaNativeSO.CallStatic<AndroidJavaObject>("GetLoadedFileAtIndex", i);
 				string filename = loadedFile.Call<string>("getFilename");
-				byte[] data = loadedFile.Call<byte[]>("getData");
+				//byte[] data = loadedFile.Call<byte[]>("getData");
+				string path = loadedFile.Call<string>("getPath");
+				byte[] data = System.IO.File.ReadAllBytes(path);
 				openedFiles[i] = new OpenedFile(filename, data);
 			}
 
 			// Reset the loaded data
-			JavaNativeSO.CallStatic("FreeMemory");
+			JavaNativeSO.CallStatic("FreeMemory", Activity);
 
 			return openedFiles;
 		}
