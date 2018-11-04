@@ -170,6 +170,8 @@ public class NativeFileSOBuild {
 
 		return string.Format(@"
 			<intent-filter>
+				<action android:name=""android.intent.action.VIEW""/> 
+				<action android:name=""android.intent.action.EDIT""/>
 				<action android:name=""android.intent.action.SEND""/> 
 				<action android:name=""android.intent.action.SEND_MULTIPLE""/> 
 				<category android:name=""android.intent.category.DEFAULT""/>
