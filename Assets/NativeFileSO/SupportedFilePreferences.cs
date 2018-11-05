@@ -11,13 +11,13 @@ namespace Keiwando.NativeFileSO {
 
 
 			 //TODO: Remove from final build
-			Demo.CustomFileTypes.creat,
-			Demo.CustomFileTypes.evol,
+			//Demo.CustomFileTypes.creat,
+			//Demo.CustomFileTypes.evol,
 
-			SupportedFileType.PDF,
+			//SupportedFileType.PDF,
 			//SupportedFileType.JPEG,
 
-			//SupportedFileType.Any
+			SupportedFileType.Any
 		};
 	}
 }

@@ -59,7 +59,7 @@ namespace Keiwando.NativeFileSO {
 					   		  string title, string directory, 
 					   		  Action<bool, OpenedFile[]> onCompletion) {
 			
-			var openedFiles = OpenFilesSync(fileTypes);
+			var openedFiles = OpenFilesSync(fileTypes, canSelectMultiple, title, directory);
 			isBusy = false;
 			var filesWereOpened = openedFiles.Length != 0;
 			if (onCompletion != null) {
