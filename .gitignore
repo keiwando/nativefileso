@@ -69,3 +69,5 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+
+!NativeFileSO.unitypackage
