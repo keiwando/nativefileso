@@ -46,7 +46,8 @@ namespace Keiwando.NativeFileSO {
 		/// </summary>
 		public string MimeType;
 
-		// Presets
+		// MARK: - Presets
+
 		public static readonly SupportedFileType Any = new SupportedFileType {
 
 			Name = "Any",
