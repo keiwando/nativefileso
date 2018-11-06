@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Keiwando.NativeFileSO { 
 
+	/// <summary>
+	/// 
+	/// </summary>
 	public class NativeFileSO : INativeFileSO {
 
 #if UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_EDITOR

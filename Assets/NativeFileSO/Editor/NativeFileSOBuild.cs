@@ -199,6 +199,4 @@ public class NativeFileSOBuild {
 	}
 }
 
-//<data android:scheme=""file""/>
-
 

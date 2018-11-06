@@ -1,6 +1,14 @@
 ﻿using System;
 namespace Keiwando.NativeFileSO {
 
+	/// <summary>
+	/// Represents a file type that can be opened by the application.
+	/// </summary>
+	/// <remarks>
+	/// Use one of the static presets or create your own instance of this class.
+	/// Include instances of this type in the <see cref="T:Keiwando.NativeFileSO.SupportedFilePreferences.supportedFileTypes"/>
+	/// array in order to associate them with this application on iOS and Android.
+	/// </remarks>
 	public class SupportedFileType {
 
 		/// <summary>
@@ -9,42 +17,52 @@ namespace Keiwando.NativeFileSO {
 		public string Name;
 
 		/// <summary>
-		/// The file extension.
+		/// The extension of this file type.
 		/// </summary>
 		public string Extension;
 
 		/// <summary>
 		/// Specifies whether this application is the primary creator
-		/// of this file type. (e.g. custom save files)
+		/// of this file type.
 		/// </summary>
-		public bool Owner;
+		/// <remarks>
+		/// This property is only added to the Info.plist file for iOS
+		/// projects when associating this SupportedFileType with the application. 
+		/// It can be ignored if iOS is not a targeted platform.
+		/// </remarks>
+		public bool Owner = false;
 
 		/// <summary>
-		/// The Uniform Type Identifier used for file association on iOS.
-		/// See https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/understanding_utis/understand_utis_declare/understand_utis_declare.html#//apple_ref/doc/uid/TP40001319-CH204-SW1
-		/// for more info.
-		/// 
+		/// The Uniform Type Identifier used for file association on iOS. 
 		/// Separate multiple UTIs with a pipe (|).
 		/// </summary>
-		public string AppleUTI;
-
+		/// <remarks>
+		/// See https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/understanding_utis/understand_utis_declare/understand_utis_declare.html#//apple_ref/doc/uid/TP40001319-CH204-SW1
+		/// for more info. This property is only relevant on iOS.
+		/// </remarks>
+		public string AppleUTI = "public.data|public.content";
 
 		/// <summary>
 		/// Set this value if you are declaring a custom file type that conforms
 		/// to an existing UTI. 
 		/// 
-		/// For example, if you have a custom text file type, set this value
-		/// to public.plain-text
-		/// 
 		/// Separate multiple UTIs with a pipe (|).
 		/// </summary>
+		/// <remarks>
+		/// For example, if you are declaring a custom file type based on plain-text, 
+		/// you should set this property to "public.plain-text".
+		/// </remarks>
 		public string AppleConformsToUTI = "";
 
 		/// <summary>
-		/// The MimeType of the file. On Android, only the MimeType is relevant
-		/// for filtering supported files.
+		/// The MIME type of the file.
 		/// </summary>
-		public string MimeType;
+		/// <remarks>
+		/// On Android, only the MimeType is relevant for filtering supported 
+		/// files (And even these filters are not guaranteed to be respected
+		/// by the Android file chooser).
+		/// </remarks>
+		public string MimeType = "*/*";
 
 		// MARK: - Presets
 
