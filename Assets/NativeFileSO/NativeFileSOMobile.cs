@@ -1,13 +1,17 @@
-﻿//#define UNITY_IOS
-//#undef UNITY_ANDROID
-
-
-using System;
+﻿using System;
 using AOT;
 using UnityEngine;
 
 namespace Keiwando.NativeFileSO {
 
+	/// <summary>
+	/// Provides methods for native file open and share functionality on 
+	/// Android and iOS.
+	/// </summary>
+	/// <remarks>
+	/// See <see cref="NativeFileSO"/> for a more in-depth overview of how to
+	/// use the individual methods.
+	/// </remarks>
 	public class NativeFileSOMobile : INativeFileSO {
 
 #if UNITY_IOS
@@ -20,6 +24,14 @@ namespace Keiwando.NativeFileSO {
 
 		public static NativeFileSOMobile shared = new NativeFileSOMobile();
 
+		/// <summary>
+		/// Occurs when files were opened without the user being manually 
+		/// prompted to open files from within the app. This occurs if certain
+		/// file types have been associated with the application.
+		/// 
+		/// See <see cref="SupportedFilePreferences"/> for more information on
+		/// file associations.
+		/// </summary>
 		public event Action<OpenedFile[]> FilesWereOpened;
 
 		private Action<bool, OpenedFile[]> _callback;

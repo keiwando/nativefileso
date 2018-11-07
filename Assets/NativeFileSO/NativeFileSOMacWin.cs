@@ -5,6 +5,80 @@ using UnityEngine;
 
 namespace Keiwando.NativeFileSO {
 
+	/// <summary>
+	/// Provides methods for native file open and save functionality which is
+	/// shared between Windows and macOS.
+	/// </summary>
+	/// <example>
+	/// The following example demonstrates how to use the <see cref="NativeFileSOMacWin"/>
+	/// class in order to allow the user to select multiple paths of files to be opened.
+	/// <code>
+	/// using Keiwando.NativeFileSO;
+	/// 
+	/// public class OpenPathsTest {
+	///
+	/// 	public static void Main() {
+	///
+	/// 		// We want the user to select paths to plain text files.
+	/// 		SupportedFileType[] supportedFileTypes = {
+	/// 			SupportedFileType.PlainText
+	/// 		};
+	/// 
+	/// 		bool multiSelect = true; // Can select multiple paths at once
+	/// 		string title = "Custom Title"; // The title of the panel
+	/// 		string directory = ""; // Remember and reset to the previously selected directory
+	/// 		NativeFileSOMacWin.shared.SelectOpenPaths(supportedFileTypes, 
+	/// 		  mutltiSelect, title, directory,
+	/// 		  delegate(bool pathsWereSelected, string[] paths) {
+	/// 			if (pathsWereSelected) {
+	/// 				// Process the information within the paths array.
+	/// 			} else {
+	/// 				// The file selection was cancelled.
+	/// 			}
+	/// 		});
+	///		}
+	/// }
+	/// </code>to 
+	/// 
+	/// See also <see cref="NativeFileSO"/> for example of how to use the more
+	/// general API that also applies to mobile platforms.
+	/// </example>
+	/// <remarks>
+	/// Compared to the <see cref="NativeFileSO"/> class, the <see cref="NativeFileSOMacWin">
+	/// class provides additional methods which cannot be implemented in the same 
+	/// way on mobile platforms due to the different available native APIs. 
+	/// 
+	/// For example, on iOS and Android, the path to a selected file to be opened 
+	/// is only temporarily valid due to native security features and access
+	/// restrictions. Therefore, the entire file has to be copied into memory before
+	/// its data can be handed over to the caller of the method.
+	/// 
+	/// On desktop platforms, however, it is possible to provide methods that
+	/// simply return the chosen file path for a save or open operation. This 
+	/// then allows for more custom processing of the selected files. For example,
+	/// the file contents can be loaded and processed in smaller chunks which is more 
+	/// memory efficient and a preferred solution compared to loading the entire
+	/// file contents into memory, which should only be done if necessary.
+	/// 
+	/// This class is currently compatible with Windows and macOS. Attempting
+	/// Attempting to call the class methods on unsupported platforms will result
+	/// in a <see cref="NullReferenceException"/>.
+	/// 
+	/// Thread safety is not guaranteed!
+	/// 
+	/// Note for macOS: The Open and Save API methods that take a completion 
+	/// callback display the NSOpenPanel modally as a sheet, which makes it 
+	/// anchored to the top of the window and non-draggable. The *Sync variants
+	/// of those calls, however, use a floating panel which is detached from the
+	/// main application window and can be dragged around by the user.
+	/// 
+	/// If the visual style of the panel is of importance to you, then you should
+	/// pay attention to your choice of API call.
+	/// 
+	/// </remarks>
+	/// <exception cref="NullReferenceException">
+	/// Thrown when the API is attempted to be accessed on unsupported platforms.
+	/// </exception>
 	public class NativeFileSOMacWin : INativeFileSO {
 
 #if UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
@@ -15,6 +89,9 @@ namespace Keiwando.NativeFileSO {
 		private INativeFileSODesktop nativeFileSO = null;
 #endif
 
+		/// <summary>
+		///  The shared instance through which the API should be accessed.
+		/// </summary>
 		public static NativeFileSOMacWin shared = new NativeFileSOMacWin();
 
 		private delegate void UnityCallbackPathSelected(bool pathSelected, IntPtr path);
@@ -23,20 +100,73 @@ namespace Keiwando.NativeFileSO {
 
 		// MARK: - INativeFileSO Implementation
 
-		public void OpenFile(SupportedFileType[] fileTypes, Action<bool, OpenedFile> onCompletion) {
-			nativeFileSO.OpenFile(fileTypes, onCompletion);
+		/// <summary>
+		/// Presents a native dialog to the user which allows them to select a
+		/// single file to be opened. The selected file contents are then loaded 
+		/// into memory managed by an instance of the <see cref="OpenedFile"/> class.
+		/// </summary>
+		/// <remarks>
+		/// See <see cref="NativeFileSO.OpenFile(SupportedFileType[], Action{bool, OpenedFile})"/>
+		/// for more information on the usage of this method.
+		/// </remarks>
+		/// <param name="supportedTypes"> The file types used to filter the available files shown to the user.</param>
+		/// <param name="onCompletion">A callback for when the presented dialog has been dismissed. 
+		/// At this point, a file has either been opened or the selection has been cancelled.</param>
+		public void OpenFile(SupportedFileType[] supportedTypes, Action<bool, OpenedFile> onCompletion) {
+			nativeFileSO.OpenFile(supportedTypes, onCompletion);
 		}
 
-		public void OpenFiles(SupportedFileType[] fileTypes, Action<bool, OpenedFile[]> onCompletion) {
-			nativeFileSO.OpenFiles(fileTypes, true, "", "", onCompletion);
+		/// <summary>
+		/// Presents a native dialog to the user which allows them to select multiple 
+		/// files to be opened at once. The selected file contents are then loaded 
+		/// into memory managed by instances of the <see cref="OpenedFile"/> class.
+		/// </summary>
+		/// <remarks>
+		/// See <see cref="NativeFileSO.OpenFiles(SupportedFileType[], Action{bool, OpenedFile[]})"/>
+		/// for more information on the usage of this method.
+		/// </remarks>
+		/// <param name="supportedTypes">The file types used to filter the available files shown to the user.</param>
+		/// <param name="onCompletion">A callback for when the presented dialog has been dismissed. 
+		/// At this point, files have either been opened or the selection has been cancelled.</param>
+		public void OpenFiles(SupportedFileType[] supportedTypes, Action<bool, OpenedFile[]> onCompletion) {
+			nativeFileSO.OpenFiles(supportedTypes, true, "", "", onCompletion);
 		}
 
+		/// <summary>
+		/// Presents a native dialog to the user which allows them to select a save
+		/// location for the specified file and copies the file to that location. 
+		/// </summary>
+		/// <remarks>
+		/// See <see cref="NativeFileSO.SaveFile(FileToSave)"/> for more information
+		/// on the usage of this method.
+		/// </remarks>
+		/// <param name="file">An instance of the <see cref="FileToSave"/> class
+		/// which holds information about the file to be exported.</param>
 		public void SaveFile(FileToSave file) {
 			nativeFileSO.SaveFile(file);
 		}
 
 		// MARK: - Desktop Only functionality
 
+		/// <summary>
+		/// Presents a native dialog to the user which allows them to select multiple
+		/// files to be opened and loads the selected files into instances of the 
+		/// <see cref="OpenedFile"/> class.
+		/// </summary>
+		/// <remarks>
+		/// On macOS, this will present a non-floating panel.
+		/// </remarks>
+		/// <param name="fileTypes">The file types used to filter the available files shown 
+		/// to the user.</param>
+		/// <param name="canSelectMultiple">Determines whether mutliple files can be selected 
+		/// and loaded at once.</param>
+		/// <param name="title">Title of the shown dialog. Note: The title is not
+		/// shown for macOS > 10.11</param>
+		/// <param name="directory">The default directory in which file navigation
+		/// should start. If this value is empty, the panel will remember the 
+		/// last visited directory.</param>
+		/// <param name="onCompletion">A callback for when the presented dialog has been dismissed. 
+		/// At this point, files have either been opened or the selection has been cancelled.</param>
 		public void OpenFiles(SupportedFileType[] fileTypes, 
 		                      bool canSelectMultiple,
 					   		  string title, 
@@ -46,6 +176,24 @@ namespace Keiwando.NativeFileSO {
 			nativeFileSO.OpenFiles(fileTypes, canSelectMultiple, title, directory, onCompletion);
 		}
 
+		/// <summary>
+		/// Presents a native dialog to the user which allows them to select multiple
+		/// files to be opened and loads the selected files into instances of the 
+		/// <see cref="OpenedFile"/> class.
+		/// </summary>
+		/// <remarks>
+		/// On macOS, this will present a floating panel.
+		/// </remarks>
+		/// <returns>The array of loaded files.</returns>
+		/// <param name="fileTypes">The file types used to filter the available files shown 
+		/// to the user.</param>
+		/// <param name="canSelectMultiple">Determines whether mutliple files can be selected 
+		/// and loaded at once.</param>
+		/// <param name="title">Title of the shown dialog. Note: The title is not
+		/// shown for macOS > 10.11</param>
+		/// <param name="directory">The default directory in which file navigation
+		/// should start. If this value is empty, the panel will remember the 
+		/// last visited directory.</param>
 		public OpenedFile[] OpenFilesSync(SupportedFileType[] fileTypes, 
 		                                  bool canSelectMultiple, 
 								   		  string title, 
@@ -54,6 +202,24 @@ namespace Keiwando.NativeFileSO {
 			return nativeFileSO.OpenFilesSync(fileTypes, canSelectMultiple, title, directory);
 		}
 
+		/// <summary>
+		/// Presents a native dialog to the user which allows them to select multiple
+		/// file paths for opening files.
+		/// </summary>
+		/// <remarks>
+		/// On macOS, this will present a non-floating panel.
+		/// </remarks>
+		/// <param name="fileTypes">The file types used to filter the available files shown 
+		/// to the user.</param>
+		/// <param name="canSelectMultiple">Determines whether mutliple files can be selected 
+		/// and loaded at once.</param>
+		/// <param name="title">Title of the shown dialog. Note: The title is not
+		/// shown for macOS > 10.11</param>
+		/// <param name="directory">The default directory in which file navigation
+		/// should start. If this value is empty, the panel will remember the 
+		/// last visited directory.</param>
+		/// <param name="onCompletion">A callback for when the presented dialog has been dismissed. 
+		/// At this point, files have either been opened or the selection has been cancelled.</param>
 		public void SelectOpenPaths(SupportedFileType[] fileTypes, 
 		                            bool canSelectMultiple,
 							 		string title, 
@@ -63,6 +229,25 @@ namespace Keiwando.NativeFileSO {
 			nativeFileSO.SelectOpenPaths(fileTypes, canSelectMultiple, title, directory, onCompletion);
 		}
 
+		/// <summary>
+		/// Presents a native dialog to the user which allows them to select multiple
+		/// file paths for opening files.
+		/// </summary>
+		/// <remarks>
+		/// On macOS, this will present a floating panel.
+		/// </remarks>
+		/// <returns>The array of selected file paths.</returns>
+		/// <param name="fileTypes">The file types used to filter the available files shown 
+		/// to the user.</param>
+		/// <param name="canSelectMultiple">Determines whether mutliple files can be selected 
+		/// and loaded at once.</param>
+		/// <param name="title">Title of the shown dialog. Note: The title is not
+		/// shown for macOS > 10.11</param>
+		/// <param name="directory">The default directory in which file navigation
+		/// should start. If this value is empty, the panel will remember the 
+		/// last visited directory.</param>
+		/// <param name="onCompletion">A callback for when the presented dialog has been dismissed. 
+		/// At this point, files have either been opened or the selection has been cancelled.</param>
 		public string[] SelectOpenPathsSync(SupportedFileType[] fileTypes, 
 		                                    bool canSelectMultiple,
 									 		string title, 
@@ -71,10 +256,35 @@ namespace Keiwando.NativeFileSO {
 			return nativeFileSO.SelectOpenPathsSync(fileTypes, canSelectMultiple, title, directory);
 		}
 
+		/// <summary>
+		/// Presents a native dialog to the user which allows them to select a save
+		/// location for the specified file and copies the file to that location. 
+		/// </summary>
+		/// <param name="file">An instance of the <see cref="FileToSave"/> class
+		/// which holds information about the file to be exported.</param>
+		/// <param name="title">Title of the shown dialog. Note: The title is not
+		/// shown for macOS > 10.11</param>
+		/// <param name="directory">The default directory in which file navigation
+		/// should start. If this value is empty, the panel will remember the 
+		/// last visited directory.</param>
 		public void SaveFile(FileToSave file, string title, string directory) {
 			nativeFileSO.SaveFile(file, title, directory);
 		}
 
+		/// <summary>
+		/// Presents a native dialog to the user which allows them to select a save
+		/// location for the specified file.
+		/// </summary>
+		/// <param name="file">An instance of the <see cref="FileToSave"/> class
+		/// which holds information about the file to be exported.</param>
+		/// <param name="title">Title of the shown dialog. Note: The title is not
+		/// shown for macOS > 10.11</param>
+		/// <param name="directory">The default directory in which file navigation
+		/// should start. If this value is empty, the panel will remember the 
+		/// last visited directory.</param>
+		/// <param name="onCompletion">A callback for when the presented dialog
+		/// has been dismissed. At this point, a save path has either been selected
+		/// or the selection has been cancelled.</param>
 		public void SelectSavePath(FileToSave file,
 								   string title,
 								   string directory,
@@ -82,13 +292,32 @@ namespace Keiwando.NativeFileSO {
 			nativeFileSO.SelectSavePath(file, title, directory, onCompletion);
 		}
 
+		/// <summary>
+		/// Presents a native dialog to the user which allows them to select a save
+		/// location for the specified file.
+		/// </summary>
+		/// <returns>The selected save location. Returns null if no path was selected.</returns>
+		/// <param name="file">An instance of the <see cref="FileToSave"/> class
+		/// which holds information about the file to be exported.</param>
+		/// <param name="title">Title of the shown dialog. Note: The title is not
+		/// shown for macOS > 10.11</param>
+		/// <param name="directory">The default directory in which file navigation
+		/// should start. If this value is empty, the panel will remember the 
+		/// last visited directory.</param>
 		public string SelectSavePathSync(FileToSave file,
 								  		 string title,
 										 string directory) {
 			return nativeFileSO.SelectSavePathSync(file, title, directory);
 		}
 
-		// MARK: - Helpers
+
+		/// <summary>
+		/// Loads the contents of a file at the specified path into an instance
+		/// of the <see cref="OpenedFile"/> class.
+		/// </summary>
+		/// <returns>The <see cref="OpenedFile"/> instance or null, if the file
+		/// could not be loaded.</returns>
+		/// <param name="path">The full path to the file that is to be loaded.</param>
 		public static OpenedFile FileFromPath(string path) {
 
 			try {
@@ -101,6 +330,13 @@ namespace Keiwando.NativeFileSO {
 			}
 		}
 
+		/// <summary>
+		/// Loads the contents of multiple files at the specified paths into instances
+		/// of the <see cref="OpenedFile"/> class.
+		/// </summary>
+		/// <returns>An array of <see cref="OpenedFile"/> instances containing the 
+		/// loaded file data.</returns>
+		/// <param name="paths">An array of full paths to the files to be loaded.</param>
 		public static OpenedFile[] FilesFromPaths(string[] paths) {
 			var files = new List<OpenedFile>();
 
@@ -113,6 +349,11 @@ namespace Keiwando.NativeFileSO {
 			return files.ToArray();
 		}
 
+		/// <summary>
+		/// Copies the specified file to the given path.
+		/// </summary>
+		/// <param name="file">The file to be saved/copied.</param>
+		/// <param name="path">The full save path denoting the new file location.</param>
 		public static void SaveFileToPath(FileToSave file, string path) {
 			File.Copy(file.SrcPath, path, true);
 		}

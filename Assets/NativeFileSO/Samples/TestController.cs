@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Keiwando.NativeFileSO.Demo { 
+namespace Keiwando.NativeFileSO.Samples {
 
 	public class TestController : MonoBehaviour {
 
@@ -30,8 +30,6 @@ namespace Keiwando.NativeFileSO.Demo {
 		void Start() {
 
 			mainThread = System.Threading.Thread.CurrentThread;
-
-			FileWriter.WriteTestFile(Application.persistentDataPath);
 
 #if UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_EDITOR
 			SetupDesktop();
@@ -148,10 +146,10 @@ namespace Keiwando.NativeFileSO.Demo {
 		}
 
 		private void SaveFileTest() {
-
-			// TODO: Remove One Call
+			
+			FileWriter.WriteTestFile(Application.persistentDataPath);
 			NativeFileSO.shared.SaveFile(GetFileToSave());
-			NativeFileSO.shared.SaveFile(GetFileToSave());
+			FileWriter.DeleteTestFile(Application.persistentDataPath);
 		}
 
 		private void OpenSingleFileTest() {
@@ -162,12 +160,6 @@ namespace Keiwando.NativeFileSO.Demo {
 					textField.text += string.Format("OnMainThread: {0}", IsOnMainThread());
 				} else {
 					textField.text = string.Format("OnMainThread: {0}", IsOnMainThread());
-				}
-			});
-			// TODO: Remove One Call
-			NativeFileSO.shared.OpenFile(testTypes, delegate (bool wasFileOpened, OpenedFile file) {
-				if (wasFileOpened) {
-					ShowContents(file);
 				}
 			});
 		}
@@ -231,11 +223,14 @@ namespace Keiwando.NativeFileSO.Demo {
 		}
 
 		private void SaveTitleDirectoryDesktopTest() {
+
+			FileWriter.WriteTestFile(Application.persistentDataPath);
 			NativeFileSOMacWin.shared.SaveFile(GetFileToSave(), testTitle, testDirectory);
+			FileWriter.DeleteTestFile(Application.persistentDataPath);
 		}
 
 		private void SavePathDesktopTest() {
-
+			
 			NativeFileSOMacWin.shared.SelectSavePath(GetFileToSave(), testTitle, testDirectory, delegate (bool didSelectPath, string savePath) {
 				if (didSelectPath) {
 					textField.text = string.Format("Selected paths:\n{0}\nOn Main Thread{1}", savePath, IsOnMainThread());
@@ -253,7 +248,6 @@ namespace Keiwando.NativeFileSO.Demo {
 				textField.text = "Path selection was cancelled.";
 			}
 		}
-
 
 
 		private FileToSave GetFileToSave() {
