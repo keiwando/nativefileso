@@ -48,6 +48,18 @@ namespace Keiwando.NativeFileSO {
 #endif
 		}
 
+		/// <summary>
+		/// Presents a native dialog to the user which allows them to select a
+		/// single file to be opened. The selected file contents are then loaded 
+		/// into memory managed by an instance of the <see cref="OpenedFile"/> class.
+		/// </summary>
+		/// <remarks>
+		/// See <see cref="NativeFileSO.OpenFile(SupportedFileType[], Action{bool, OpenedFile})"/>
+		/// for more information on the usage of this method.
+		/// </remarks>
+		/// <param name="supportedTypes"> The file types used to filter the available files shown to the user.</param>
+		/// <param name="onCompletion">A callback for when the presented dialog has been dismissed. 
+		/// At this point, a file has either been opened or the selection has been cancelled.</param>
 		public void OpenFile(SupportedFileType[] supportedTypes, Action<bool, OpenedFile> onCompletion) {
 
 			if (isBusy) return;
@@ -61,6 +73,18 @@ namespace Keiwando.NativeFileSO {
 			nativeFileSO.OpenFiles(supportedTypes, false);
 		}
 
+		/// <summary>
+		/// Presents a native dialog to the user which allows them to select multiple 
+		/// files to be opened at once. The selected file contents are then loaded 
+		/// into memory managed by instances of the <see cref="OpenedFile"/> class.
+		/// </summary>
+		/// <remarks>
+		/// See <see cref="NativeFileSO.OpenFiles(SupportedFileType[], Action{bool, OpenedFile[]})"/>
+		/// for more information on the usage of this method.
+		/// </remarks>
+		/// <param name="supportedTypes">The file types used to filter the available files shown to the user.</param>
+		/// <param name="onCompletion">A callback for when the presented dialog has been dismissed. 
+		/// At this point, files have either been opened or the selection has been cancelled.</param>
 		public void OpenFiles(SupportedFileType[] supportedTypes, Action<bool, OpenedFile[]> onCompletion) {
 
 			if (isBusy) return;
@@ -70,6 +94,16 @@ namespace Keiwando.NativeFileSO {
 			nativeFileSO.OpenFiles(supportedTypes, true);
 		}
 
+		/// <summary>
+		/// Presents a native dialog to the user which allows them to select a save
+		/// location for the specified file and copies the file to that location. 
+		/// </summary>
+		/// <remarks>
+		/// See <see cref="NativeFileSO.SaveFile(FileToSave)"/> for more information
+		/// on the usage of this method.
+		/// </remarks>
+		/// <param name="file">An instance of the <see cref="FileToSave"/> class
+		/// which holds information about the file to be exported.</param>
 		public void SaveFile(FileToSave file) {
 
 			if (isBusy) return;
