@@ -218,7 +218,6 @@ namespace Keiwando.NativeFileSO {
 			if (_filesCallback == null) { return; }
 
 			if (pathsSelected) {
-				//var paths = MarshalPaths(pathPtrs);
 				var files = NativeFileSOMacWin.FilesFromPaths(paths);
 
 				if (files.Length > 0) {
@@ -238,7 +237,6 @@ namespace Keiwando.NativeFileSO {
 			if (_pathsCallback == null) { return; }
 
 			if (pathsSelected) {
-				//var paths = MarshalPaths(pathPtrs);
 				_pathsCallback(true, paths);
 			} else {
 				_pathsCallback(false, _noPaths);
@@ -252,7 +250,6 @@ namespace Keiwando.NativeFileSO {
 			var toSave = _cachedFileToSave;
 			if (toSave == null || !pathsSelected) return;
 
-			//var path = Marshal.PtrToStringAnsi(pathPtrs[0]);
 			var path = paths[0];
 
 			NativeFileSOMacWin.SaveFileToPath(toSave, path);
@@ -265,7 +262,7 @@ namespace Keiwando.NativeFileSO {
 
 		private string EncodeExtensions(SupportedFileType[] fileTypes) { 
 
-			var extensions = fileTypes.Select(x => x.Extension).ToArray();
+			var extensions = fileTypes.SelectMany(x => x.Extension.Split('|')).ToArray();
 			return EncodeExtensions(extensions);
 		} 
 	}

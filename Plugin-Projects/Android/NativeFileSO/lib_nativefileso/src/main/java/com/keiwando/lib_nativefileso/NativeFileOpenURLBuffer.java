@@ -139,7 +139,7 @@ public class NativeFileOpenURLBuffer {
                 result = result.substring(cut + 1);
             }
         }
-        Log.d("Plugin Debug", "File Path: " + uri.getPath());
+        Log.d("Plugin Debug", "File Path: " + uri.toString());
         Log.d("Plugin Debug", "Filename: " + result);
         return result;
     }

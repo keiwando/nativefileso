@@ -12,7 +12,7 @@ namespace Keiwando.NativeFileSO.Samples {
 			Owner = true,
 			AppleUTI = "com.keiwando.Evolution.evol",
 			AppleConformsToUTI = "public.plain-text",
-			MimeType = "text/plain"
+			MimeType = "application/octet-stream"
 		};
 
 		public static readonly SupportedFileType creat = new SupportedFileType {
@@ -21,7 +21,7 @@ namespace Keiwando.NativeFileSO.Samples {
 			Owner = true,
 			AppleUTI = "com.keiwando.Evolution.creat",
 			AppleConformsToUTI = "public.plain-text",
-			MimeType = "text/plain"
+			MimeType = "application/octet-stream"
 		};
 	}
 }

@@ -77,7 +77,10 @@ public class NativeFileSOBuild {
 				exportedTypesDict.SetString("UTTypeIdentifier", supportedType.AppleUTI.Split('|')[0]);
 
 				var tagSpecificationDict = exportedTypesDict.CreateDict("UTTypeTagSpecification");
-				tagSpecificationDict.SetString("public.filename-extension", supportedType.Extension);
+				var tagSpecificationExtensions = tagSpecificationDict.CreateArray("public.filename-extension");
+				foreach (var extension in supportedType.Extension.Split('|')) {
+					tagSpecificationExtensions.AddString(extension);
+				}
 				tagSpecificationDict.SetString("public.mime-type", supportedType.MimeType);
 			}
 		}
@@ -182,21 +185,21 @@ public class NativeFileSOBuild {
 
 	private static string GetIntentForCustomFileType(SupportedFileType fileType) {
 
-		return string.Format(@"
-			<intent-filter>
-				<action android:name=""android.intent.action.VIEW""/> 
-				<action android:name=""android.intent.action.EDIT""/>
-				<action android:name=""android.intent.action.SEND""/> 
-				<action android:name=""android.intent.action.SEND_MULTIPLE""/>
-				<category android:name=""android.intent.category.DEFAULT""/>
-				<category android:name=""android.intent.category.BROWSABLE""/>
-				<data android:mimeType=""*/*""/>
-				<data android:pathPattern="".*\\.{1}""/>
-				<data android:host=""*""/>
+		return GetIntentForFileBrowser(fileType.MimeType);
+
+		//return string.Format(@"
+		//	<intent-filter>
+		//		<action android:name=""android.intent.action.VIEW""/> 
+		//		<action android:name=""android.intent.action.EDIT""/>
+		//		<action android:name=""android.intent.action.SEND""/> 
+		//		<action android:name=""android.intent.action.SEND_MULTIPLE""/>
+		//		<category android:name=""android.intent.category.DEFAULT""/>
+		//		<category android:name=""android.intent.category.BROWSABLE""/>
 				
-			</intent-filter>"    
-		, fileType.MimeType, fileType.Extension);
+		//		<data android:mimeType=""*/*""/>
+				
+		//	</intent-filter>"    
+		//, fileType.MimeType, fileType.Extension);
 	}
 }
-
 
