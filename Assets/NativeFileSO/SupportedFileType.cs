@@ -17,7 +17,8 @@ namespace Keiwando.NativeFileSO {
 		public string Name;
 
 		/// <summary>
-		/// The extension of this file type.
+		/// The extension(s) of this file type. Separate multiple
+		/// extensions with a pipe (|).
 		/// </summary>
 		public string Extension;
 
@@ -96,7 +97,7 @@ namespace Keiwando.NativeFileSO {
 		public static readonly SupportedFileType JPEG = new SupportedFileType {
 
 			Name = "JPEG Image",
-			Extension = "jpg",
+			Extension = "jpg|jpeg",
 			Owner = false,
 			AppleUTI = "public.jpeg",
 			MimeType = "image/jpeg"

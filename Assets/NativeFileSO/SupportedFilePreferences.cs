@@ -20,10 +20,10 @@ namespace Keiwando.NativeFileSO {
 
 			// Edit this list to include your desired file types
 
-			//SupportedFileType.PDF,
-			//SupportedFileType.JPEG,
+			SupportedFileType.PDF,
+			SupportedFileType.JPEG,
 
-			SupportedFileType.Any
+			//SupportedFileType.Any
 		};
 	}
 }

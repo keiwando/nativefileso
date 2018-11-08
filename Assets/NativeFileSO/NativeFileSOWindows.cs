@@ -220,8 +220,13 @@ namespace Keiwando.NativeFileSO {
 
 		private string EncodeFilters(SupportedFileType[] types) {
 			return string.Join("|", types.Select(delegate(SupportedFileType x){
-				var ext = x.Extension.Equals(string.Empty) ? "*" : x.Extension;
-				return string.Format("{0} (*.{1})|*.{1}", x.Name, ext);
+				var ext = "*.*";
+				if (!x.Extension.Equals(string.Empty)) {
+					ext = string.Join(";", x.Extension.Split('|').Select(
+						str => string.Format("*.{0}", str)
+					).ToArray());
+				}
+				return string.Format("{0} ({1})|{1}", x.Name, ext);
 			}).ToArray());
 
 		}

@@ -85,9 +85,9 @@ namespace Keiwando.NativeFileSO {
 
 		public void LoadIfTemporaryFileAvailable() {}
 
-		private string EncodeUTIs(string[] extensions) {
+		private string EncodeUTIs(string[] utis) {
 
-			return string.Join("|", extensions);
+			return string.Join("|", utis);
 		}
 	}
 }

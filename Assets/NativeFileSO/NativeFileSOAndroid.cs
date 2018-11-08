@@ -76,8 +76,8 @@ namespace Keiwando.NativeFileSO {
 			JavaNativeSO.CallStatic("SaveFile", Activity, file.SrcPath, file.MimeType);
 		}
 
-		private string EncodeMimeTypes(string[] extensions) {
-			return string.Join(" ", extensions);
+		private string EncodeMimeTypes(string[] mimetypes) {
+			return string.Join(" ", mimetypes);
 		}
 	}
 }
