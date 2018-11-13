@@ -95,7 +95,7 @@ public class NativeFileSOBuild {
 		project.AddBuildProperty(targetGUID, "OTHER_LDFLAGS", "-ObjC");
 	}
 
-	[MenuItem("NativeFileSO/UpdateAndroidPluginFileAssociations")]
+	[MenuItem("Tools/NativeFileSO/RefreshAndroidPlugin")]
 	public static void UpdateAndroidPlugin() {
 
 		var pluginFolder = CombinePaths(Application.dataPath, "Plugins", 
