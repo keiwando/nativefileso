@@ -19,13 +19,10 @@ namespace Keiwando.NativeFileSO {
 		public static readonly SupportedFileType[] supportedFileTypes = {
 
 			// Edit this list to include your desired file types
-			//Samples.CustomFileTypes.evol,
-			//Samples.CustomFileTypes.creat,
 
 			//SupportedFileType.PDF,
-			SupportedFileType.JPEG,
-			SupportedFileType.PlainText
-
+			//SupportedFileType.JPEG,
+			//SupportedFileType.PlainText
 			//SupportedFileType.Any
 		};
 	}

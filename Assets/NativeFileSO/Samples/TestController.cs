@@ -149,7 +149,7 @@ namespace Keiwando.NativeFileSO.Samples {
 			
 			FileWriter.WriteTestFile(Application.persistentDataPath);
 			NativeFileSO.shared.SaveFile(GetFileToSave());
-			FileWriter.DeleteTestFile(Application.persistentDataPath);
+			//FileWriter.DeleteTestFile(Application.persistentDataPath);
 		}
 
 		private void OpenSingleFileTest() {
