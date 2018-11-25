@@ -205,7 +205,7 @@ namespace Keiwando.NativeFileSO {
 		///	NativeFileSO.shared.SaveFile(file);
 		/// </code>
 		/// </example>
-		/// <param name="file">An instance of the <see cref="FileToSave"/> class
+		/// <param name="file">An instance of the <see cref="Keiwando.NativeFileSO.FileToSave"/> class
 		/// which holds information about the file to be exported.</param>
 		public void SaveFile(FileToSave file) {
 			nativeFileSO.SaveFile(file);
