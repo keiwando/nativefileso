@@ -44,36 +44,36 @@ namespace Keiwando.NativeFileSO {
 	/// general API that also applies to mobile platforms.
 	/// </example>
 	/// <remarks>
-	/// Compared to the <see cref="NativeFileSO"/> class, the <see cref="NativeFileSOMacWin">
+	/// <para>Compared to the <see cref="NativeFileSO"/> class, the <see cref="NativeFileSOMacWin">
 	/// class provides additional methods which cannot be implemented in the same 
-	/// way on mobile platforms due to the different available native APIs. 
+	/// way on mobile platforms due to the different available native APIs.</para>
 	/// 
-	/// For example, on iOS and Android, the path to a selected file to be opened 
+	/// <para>For example, on iOS and Android, the path to a selected file to be opened 
 	/// is only temporarily valid due to native security features and access
 	/// restrictions. Therefore, the entire file has to be copied into memory before
-	/// its data can be handed over to the caller of the method.
+	/// its data can be handed over to the caller of the method.</para>
 	/// 
-	/// On desktop platforms, however, it is possible to provide methods that
+	/// <para>On desktop platforms, however, it is possible to provide methods that
 	/// simply return the chosen file path for a save or open operation. This 
 	/// then allows for more custom processing of the selected files. For example,
 	/// the file contents can be loaded and processed in smaller chunks which is more 
 	/// memory efficient and a preferred solution compared to loading the entire
-	/// file contents into memory, which should only be done if necessary.
+	/// file contents into memory, which should only be done if necessary.</para>
 	/// 
-	/// This class is currently compatible with Windows and macOS. Attempting
+	/// <para>This class is currently compatible with Windows and macOS. Attempting
 	/// Attempting to call the class methods on unsupported platforms will result
-	/// in a <see cref="NullReferenceException"/>.
+	/// in a <see cref="NullReferenceException"/>.</para>
 	/// 
-	/// Thread safety is not guaranteed!
+	/// <para>Thread safety is not guaranteed!</para>
 	/// 
-	/// Note for macOS: The Open and Save API methods that take a completion 
+	/// <para>Note for macOS: The Open and Save API methods that take a completion 
 	/// callback display the NSOpenPanel modally as a sheet, which makes it 
 	/// anchored to the top of the window and non-draggable. The *Sync variants
 	/// of those calls, however, use a floating panel which is detached from the
-	/// main application window and can be dragged around by the user.
+	/// main application window and can be dragged around by the user.</para>
 	/// 
-	/// If the visual style of the panel is of importance to you, then you should
-	/// pay attention to your choice of API call.
+	/// <para>If the visual style of the panel is of importance to you, then you should
+	/// pay attention to your choice of API call.</para>
 	/// 
 	/// </remarks>
 	/// <exception cref="NullReferenceException">
@@ -112,7 +112,7 @@ namespace Keiwando.NativeFileSO {
 		/// <param name="supportedTypes"> The file types used to filter the available files shown to the user.</param>
 		/// <param name="onCompletion">A callback for when the presented dialog has been dismissed. 
 		/// At this point, a file has either been opened or the selection has been cancelled.</param>
-		public void OpenFile(SupportedFileType[] supportedTypes, Action<bool, OpenedFile> onCompletion) {
+		public void OpenFile (SupportedFileType[] supportedTypes, Action<bool, OpenedFile> onCompletion) {
 			nativeFileSO.OpenFile(supportedTypes, onCompletion);
 		}
 
@@ -128,7 +128,7 @@ namespace Keiwando.NativeFileSO {
 		/// <param name="supportedTypes">The file types used to filter the available files shown to the user.</param>
 		/// <param name="onCompletion">A callback for when the presented dialog has been dismissed. 
 		/// At this point, files have either been opened or the selection has been cancelled.</param>
-		public void OpenFiles(SupportedFileType[] supportedTypes, Action<bool, OpenedFile[]> onCompletion) {
+		public void OpenFiles (SupportedFileType[] supportedTypes, Action<bool, OpenedFile[]> onCompletion) {
 			nativeFileSO.OpenFiles(supportedTypes, true, "", "", onCompletion);
 		}
 
@@ -142,7 +142,7 @@ namespace Keiwando.NativeFileSO {
 		/// </remarks>
 		/// <param name="file">An instance of the <see cref="FileToSave"/> class
 		/// which holds information about the file to be exported.</param>
-		public void SaveFile(FileToSave file) {
+		public void SaveFile (FileToSave file) {
 			nativeFileSO.SaveFile(file);
 		}
 
@@ -167,7 +167,7 @@ namespace Keiwando.NativeFileSO {
 		/// last visited directory.</param>
 		/// <param name="onCompletion">A callback for when the presented dialog has been dismissed. 
 		/// At this point, files have either been opened or the selection has been cancelled.</param>
-		public void OpenFiles(SupportedFileType[] fileTypes, 
+		public void OpenFiles (SupportedFileType[] fileTypes, 
 		                      bool canSelectMultiple,
 					   		  string title, 
 		                      string directory, 
@@ -194,7 +194,7 @@ namespace Keiwando.NativeFileSO {
 		/// <param name="directory">The default directory in which file navigation
 		/// should start. If this value is empty, the panel will remember the 
 		/// last visited directory.</param>
-		public OpenedFile[] OpenFilesSync(SupportedFileType[] fileTypes, 
+		public OpenedFile[] OpenFilesSync (SupportedFileType[] fileTypes, 
 		                                  bool canSelectMultiple, 
 								   		  string title, 
 		                                  string directory) {
@@ -220,7 +220,7 @@ namespace Keiwando.NativeFileSO {
 		/// last visited directory.</param>
 		/// <param name="onCompletion">A callback for when the presented dialog has been dismissed. 
 		/// At this point, files have either been opened or the selection has been cancelled.</param>
-		public void SelectOpenPaths(SupportedFileType[] fileTypes, 
+		public void SelectOpenPaths (SupportedFileType[] fileTypes, 
 		                            bool canSelectMultiple,
 							 		string title, 
 		                            string directory,
@@ -248,8 +248,8 @@ namespace Keiwando.NativeFileSO {
 		/// last visited directory.</param>
 		/// <param name="onCompletion">A callback for when the presented dialog has been dismissed. 
 		/// At this point, files have either been opened or the selection has been cancelled.</param>
-		public string[] SelectOpenPathsSync(SupportedFileType[] fileTypes, 
-		                                    bool canSelectMultiple,
+		public string[] SelectOpenPathsSync (SupportedFileType[] fileTypes, 
+		                                   	bool canSelectMultiple,
 									 		string title, 
 		                                    string directory) {
 			
@@ -267,7 +267,7 @@ namespace Keiwando.NativeFileSO {
 		/// <param name="directory">The default directory in which file navigation
 		/// should start. If this value is empty, the panel will remember the 
 		/// last visited directory.</param>
-		public void SaveFile(FileToSave file, string title, string directory) {
+		public void SaveFile (FileToSave file, string title, string directory) {
 			nativeFileSO.SaveFile(file, title, directory);
 		}
 
@@ -285,7 +285,7 @@ namespace Keiwando.NativeFileSO {
 		/// <param name="onCompletion">A callback for when the presented dialog
 		/// has been dismissed. At this point, a save path has either been selected
 		/// or the selection has been cancelled.</param>
-		public void SelectSavePath(FileToSave file,
+		public void SelectSavePath (FileToSave file,
 								   string title,
 								   string directory,
 								   Action<bool, string> onCompletion) {
@@ -296,7 +296,7 @@ namespace Keiwando.NativeFileSO {
 		/// Presents a native dialog to the user which allows them to select a save
 		/// location for the specified file.
 		/// </summary>
-		/// <returns>The selected save location. Returns null if no path was selected.</returns>
+		/// <returns>The selected save location. Returns <c>null</c> if no path was selected.</returns>
 		/// <param name="file">An instance of the <see cref="FileToSave"/> class
 		/// which holds information about the file to be exported.</param>
 		/// <param name="title">Title of the shown dialog. Note: The title is not
@@ -304,7 +304,7 @@ namespace Keiwando.NativeFileSO {
 		/// <param name="directory">The default directory in which file navigation
 		/// should start. If this value is empty, the panel will remember the 
 		/// last visited directory.</param>
-		public string SelectSavePathSync(FileToSave file,
+		public string SelectSavePathSync (FileToSave file,
 								  		 string title,
 										 string directory) {
 			return nativeFileSO.SelectSavePathSync(file, title, directory);
@@ -318,7 +318,7 @@ namespace Keiwando.NativeFileSO {
 		/// <returns>The <see cref="OpenedFile"/> instance or null, if the file
 		/// could not be loaded.</returns>
 		/// <param name="path">The full path to the file that is to be loaded.</param>
-		public static OpenedFile FileFromPath(string path) {
+		public static OpenedFile FileFromPath (string path) {
 
 			try {
 				byte[] data = File.ReadAllBytes(path);
@@ -337,7 +337,7 @@ namespace Keiwando.NativeFileSO {
 		/// <returns>An array of <see cref="OpenedFile"/> instances containing the 
 		/// loaded file data.</returns>
 		/// <param name="paths">An array of full paths to the files to be loaded.</param>
-		public static OpenedFile[] FilesFromPaths(string[] paths) {
+		public static OpenedFile[] FilesFromPaths (string[] paths) {
 			var files = new List<OpenedFile>();
 
 			foreach (var path in paths) {
@@ -354,7 +354,7 @@ namespace Keiwando.NativeFileSO {
 		/// </summary>
 		/// <param name="file">The file to be saved/copied.</param>
 		/// <param name="path">The full save path denoting the new file location.</param>
-		public static void SaveFileToPath(FileToSave file, string path) {
+		public static void SaveFileToPath (FileToSave file, string path) {
 			File.Copy(file.SrcPath, path, true);
 		}
 	}

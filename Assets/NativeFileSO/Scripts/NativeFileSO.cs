@@ -9,9 +9,9 @@ namespace Keiwando.NativeFileSO {
 	/// which is shared between both mobile and desktop platforms.
 	/// </summary>
 	/// <example>
-	/// The following example demonstrates how to use the <see cref="NativeFileSO"/>
+	/// <para>The following example demonstrates how to use the <see cref="NativeFileSO"/>
 	/// class in order to copy/export a file from an existing path to a new location
-	/// chosen by the user.
+	/// chosen by the user.</para>
 	/// <code>
 	/// using Keiwando.NativeFileSO;
 	/// 
@@ -31,8 +31,8 @@ namespace Keiwando.NativeFileSO {
 	/// }
 	/// </code>
 	/// 
-	/// The following example demonstrates how to use the <see cref="NativeFileSO"/>
-	/// class in order to let the user choose a text file and handle its loaded contents.
+	/// <para>The following example demonstrates how to use the <see cref="NativeFileSO"/>
+	/// class in order to let the user choose a text file and handle its loaded contents.</para>
 	/// <code>
 	/// using Keiwando.NativeFileSO;
 	/// 
@@ -59,14 +59,14 @@ namespace Keiwando.NativeFileSO {
 	/// </code>
 	/// </example>
 	/// <remarks>
-	/// The dialogs shows by the Open and Save functions block any other UI
-	/// interactions until the user dismisses the dialog.
+	/// <para>The dialogs shows by the Open and Save functions block any other UI
+	/// interactions until the user dismisses the dialog.</para>
 	/// 
-	/// This class is currently compatible with Windows, macOS, iOS and Android.
+	/// <para>This class is currently compatible with Windows, macOS, iOS and Android.
 	/// Attempting to call the class methods on unsupported platforms will result
-	/// in a <see cref="NullReferenceException"/>.
+	/// in a <see cref="NullReferenceException"/>.</para>
 	/// 
-	/// Thread safety is not guaranteed!
+	/// <para>Thread safety is not guaranteed!</para>
 	/// </remarks>
 	/// <exception cref="NullReferenceException">
 	/// Thrown when the API is attempted to be accessed on unsupported platforms.
