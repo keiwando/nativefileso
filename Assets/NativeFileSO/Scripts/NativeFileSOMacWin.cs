@@ -38,13 +38,13 @@ namespace Keiwando.NativeFileSO {
 	/// 		});
 	///		}
 	/// }
-	/// </code>to 
+	/// </code>
 	/// 
-	/// See also <see cref="NativeFileSO"/> for example of how to use the more
+	/// See also <see cref="NativeFileSO"/> for examples of how to use the more
 	/// general API that also applies to mobile platforms.
 	/// </example>
 	/// <remarks>
-	/// <para>Compared to the <see cref="NativeFileSO"/> class, the <see cref="NativeFileSOMacWin">
+	/// <para>Compared to the <see cref="NativeFileSO"/> class, the <see cref="NativeFileSOMacWin"/>
 	/// class provides additional methods which cannot be implemented in the same 
 	/// way on mobile platforms due to the different available native APIs.</para>
 	/// 
@@ -68,7 +68,7 @@ namespace Keiwando.NativeFileSO {
 	/// 
 	/// <para>Note for macOS: The Open and Save API methods that take a completion 
 	/// callback display the NSOpenPanel modally as a sheet, which makes it 
-	/// anchored to the top of the window and non-draggable. The *Sync variants
+	/// anchored to the top of the window and non-draggable. The ..Sync variants
 	/// of those calls, however, use a floating panel which is detached from the
 	/// main application window and can be dragged around by the user.</para>
 	/// 

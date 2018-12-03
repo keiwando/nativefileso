@@ -67,6 +67,9 @@ namespace Keiwando.NativeFileSO {
 
 		// MARK: - Presets
 
+		/// <summary>
+		/// The <see cref="SupportedFileType"/> preset that matches files of all types.
+		/// </summary>
 		public static readonly SupportedFileType Any = new SupportedFileType {
 
 			Name = "Any",
@@ -76,6 +79,10 @@ namespace Keiwando.NativeFileSO {
 			MimeType = "*/*"
 		};
 
+		/// <summary>
+		/// The <see cref="SupportedFileType"/> preset that matches plain text files
+		/// with a .txt extension.
+		/// </summary>
 		public static readonly SupportedFileType PlainText = new SupportedFileType {
 
 			Name = "Text File",
@@ -85,6 +92,10 @@ namespace Keiwando.NativeFileSO {
 			MimeType = "text/plain"
 		};
 
+		/// <summary>
+		/// The <see cref="SupportedFileType"/> preset that matches XML files with
+		/// an .xml extension.
+		/// </summary>
 		public static readonly SupportedFileType XML = new SupportedFileType {
 
 			Name = "XML File",
@@ -94,6 +105,10 @@ namespace Keiwando.NativeFileSO {
 			MimeType = "text/xml"
 		};
 
+		/// <summary>
+		/// The <see cref="SupportedFileType"/> preset that matches JPEG image
+		/// files with either a .jpg or .jpeg file extension.
+		/// </summary>
 		public static readonly SupportedFileType JPEG = new SupportedFileType {
 
 			Name = "JPEG Image",
@@ -103,6 +118,10 @@ namespace Keiwando.NativeFileSO {
 			MimeType = "image/jpeg"
 		};
 
+		/// <summary>
+		/// The <see cref="SupportedFileType"/> preset that matches PNG image
+		/// files with a .png file extension.
+		/// </summary>
 		public static readonly SupportedFileType PNG = new SupportedFileType {
 
 			Name = "PNG Image",
@@ -112,6 +131,10 @@ namespace Keiwando.NativeFileSO {
 			MimeType = "image/png"
 		};
 
+		/// <summary>
+		/// The <see cref="SupportedFileType"/> preset that matches MP4 video files
+		/// with an .mp4 extension.
+		/// </summary>
 		public static readonly SupportedFileType MP4 = new SupportedFileType {
 
 			Name = "MPEG-4 content",
@@ -121,6 +144,10 @@ namespace Keiwando.NativeFileSO {
 			MimeType = "video/mp4"
 		};
 
+		/// <summary>
+		/// The <see cref="SupportedFileType"/> preset that matches mp3 autio files
+		/// with an .mp3 extension.
+		/// </summary>
 		public static readonly SupportedFileType MP3 = new SupportedFileType {
 
 			Name = "MPEG-3 audio",
@@ -130,6 +157,10 @@ namespace Keiwando.NativeFileSO {
 			MimeType = "audio/mpeg3"
 		};
 
+		/// <summary>
+		/// The <see cref="SupportedFileType"/> preset that matches PDF files
+		/// with a .pdf file extension.
+		/// </summary>
 		public static readonly SupportedFileType PDF = new SupportedFileType {
 
 			Name = "PDF",
@@ -139,6 +170,10 @@ namespace Keiwando.NativeFileSO {
 			MimeType = "application/pdf"
 		};
 
+		/// <summary>
+		/// The <see cref="SupportedFileType"/> preset that matches GIF files
+		/// with a .gif file extension.
+		/// </summary>
 		public static readonly SupportedFileType GIF = new SupportedFileType {
 
 			Name = "Gif",

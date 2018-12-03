@@ -20,8 +20,8 @@ namespace Keiwando.NativeFileSO {
 	/// 	public static void Main() {
 	///
 	/// 		string path = "path/to/existing/fileToSave.txt";
-	///			string newFilename = "ExportedFile.txt";
-	///
+	/// 		string newFilename = "ExportedFile.txt";
+	///			
 	/// 		FileToSave file = new FileToSave(path, newFilename, SupportedFileType.PlainText);
 	///
 	///			// Allows the user to choose a save location and saves the 
@@ -115,21 +115,22 @@ namespace Keiwando.NativeFileSO {
 		/// </code>
 		/// </example>
 		/// <remarks>
-		/// The supportedTypes array is just an indicator to the native file chooser
+		/// <para>The supportedTypes array is just an indicator to the native file chooser
 		/// dialog to only allow the user to choose from files of predefined types.
 		/// However, this is not a guarantee that the chosen file is going to contain
-		/// data in the correct file format. 
+		/// data in the correct file format.</para>
 		/// 
-		/// For one, the file chooser on Android allows the user to circumvent the 
+		/// <para>For one, the file chooser on Android allows the user to circumvent the 
 		/// file type filter and ultimately select an arbitrary file. At the same 
 		/// time, the file choosers that rely on filtering the files based on their
 		/// extension can be "cheated" by simply changing the file extensions of an 
-		/// arbitrary file. 
+		/// arbitrary file.</para>
 		/// 
-		/// You should therefore always check whether the opened file inside of the 
+		/// <para>You should therefore always check whether the opened file inside of the 
 		/// onCompletion callback contains valid data, instead of assuming that the 
-		/// chosen file type is always correct.
+		/// chosen file type is always correct.</para>
 		/// </remarks>
+		/// <seealso cref="NativeFileSO.OpenFiles(SupportedFileType[], Action{bool, OpenedFile[]})"/>
 		/// <param name="supportedTypes">The file types used to filter the available files shown to the user.</param>
 		/// <param name="onCompletion">A callback when the presented dialog has been dismissed. 
 		/// At this point, a file has either been opened or the selection was cancelled.</param>
@@ -165,20 +166,20 @@ namespace Keiwando.NativeFileSO {
 		/// </code>
 		/// </example>
 		/// <remarks>
-		/// The supportedTypes array is just an indicator to the native file chooser
+		/// <para>The supportedTypes array is just an indicator to the native file chooser
 		/// dialog to only allow the user to choose from files of predefined types.
 		/// However, this is not a guarantee that the chosen files are going to contain
-		/// data in the correct file format. 
+		/// data in the correct file format.</para>
 		/// 
-		/// For one, the file chooser on Android allows the user to circumvent the 
+		/// <para>For one, the file chooser on Android allows the user to circumvent the 
 		/// file type filter and ultimately select arbitrary files. At the same 
 		/// time, the file choosers that rely on filtering the files based on their
 		/// extension can be "cheated" by simply changing the file extensions of an 
-		/// arbitrary file. 
+		/// arbitrary file.</para>
 		/// 
-		/// You should therefore always check whether the opened files inside of the 
+		/// <para>You should therefore always check whether the opened files inside of the 
 		/// onCompletion callback contain valid data, instead of assuming that the 
-		/// file types are always correct.
+		/// file types are always correct.</para>
 		/// </remarks>
 		/// <param name="supportedTypes">The file types used to filter the available files shown to the user.</param>
 		/// <param name="onCompletion">A callback when the presented dialog has been dismissed. 

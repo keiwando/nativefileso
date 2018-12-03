@@ -37,13 +37,13 @@ namespace Keiwando.NativeFileSO {
 		public string MimeType { get; private set; }
 
 		/// <summary>
-		/// The <see cref="SupportedFileType"/> associated with this file.
+		/// The <see cref="T:Keiwando.NativeFileSO.SupportedFileType"/> associated with this file.
 		/// </summary>
 		/// <value>The type of the file.</value>
 		public SupportedFileType FileType { get; private set; }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="T:Keiwando.NativeFileSO.FileToSave"/> class
+		/// Initializes a new instance of the <see cref="FileToSave"/> class
 		/// with the specified file path.
 		/// </summary>
 		/// <param name="srcPath">The current path to the existing file to be saved.</param>
@@ -57,7 +57,7 @@ namespace Keiwando.NativeFileSO {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="T:Keiwando.NativeFileSO.FileToSave"/> class
+		/// Initializes a new instance of the <see cref="FileToSave"/> class
 		/// with the specified file path and the new file name under which to save the file.
 		/// </summary>
 		/// <param name="srcPath">The current path to the existing file to be saved.</param>
@@ -71,7 +71,7 @@ namespace Keiwando.NativeFileSO {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="T:Keiwando.NativeFileSO.FileToSave"/> class
+		/// Initializes a new instance of the <see cref="FileToSave"/> class
 		/// with the specified file path, new filename and extension.
 		/// </summary>
 		/// <param name="srcPath">The current path to the existing file to be saved.</param>

@@ -1,0 +1,4 @@
+outputPath: /Users/Keiwan/Documents/Websites/keiwando/nativefileso/docs
+sourcePath: /Users/Keiwan/Documents/UnityProjects/NativeFileSO/Assets/NativeFileSO/Scripts
+headerPath: /Users/Keiwan/Documents/UnityProjects/NativeFileSO/dox/header.html
+indexContentPath: /Users/Keiwan/Documents/UnityProjects/NativeFileSO/dox/indexContents.html
