@@ -25,7 +25,7 @@ namespace Keiwando.NativeFileSO {
 		public string Name { get; private set; }
 
 		/// <summary>
-		/// Gets the filename under which the file is to be saved.
+		/// Gets the file extension under which the file is to be saved.
 		/// </summary>
 		/// <value>The file extension.</value>
 		public string Extension { get; private set; }
@@ -76,8 +76,8 @@ namespace Keiwando.NativeFileSO {
 		/// </summary>
 		/// <param name="srcPath">The current path to the existing file to be saved.</param>
 		/// <param name="newName">The new file name including the extension.</param>
-		/// <param name="extension">The new file extension</param>
-		/// <param name="mimetype">The MIME type of the file</param>
+		/// <param name="extension">The new file extension.</param>
+		/// <param name="mimetype">The MIME type of the file.</param>
 		/// <param name="fileType">The file type associated with this file.</param>
 		public FileToSave(string srcPath, string newName, string extension, 
 		                  string mimetype = "*/*", SupportedFileType fileType = null) 

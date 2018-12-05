@@ -72,8 +72,8 @@ namespace Keiwando.NativeFileSO {
 	/// of those calls, however, use a floating panel which is detached from the
 	/// main application window and can be dragged around by the user.</para>
 	/// 
-	/// <para>If the visual style of the panel is of importance to you, then you should
-	/// pay attention to your choice of API call.</para>
+	/// <para>If the visual style of the panel is of importance to you, simply
+	/// call the respective method.</para>
 	/// 
 	/// </remarks>
 	/// <exception cref="NullReferenceException">
@@ -111,7 +111,8 @@ namespace Keiwando.NativeFileSO {
 		/// </remarks>
 		/// <param name="supportedTypes"> The file types used to filter the available files shown to the user.</param>
 		/// <param name="onCompletion">A callback for when the presented dialog has been dismissed. 
-		/// At this point, a file has either been opened or the selection has been cancelled.</param>
+		/// The first parameter of the callback specifies whether 
+		/// a file was opened or the selection was cancelled.</param>
 		public void OpenFile (SupportedFileType[] supportedTypes, Action<bool, OpenedFile> onCompletion) {
 			nativeFileSO.OpenFile(supportedTypes, onCompletion);
 		}
@@ -127,7 +128,8 @@ namespace Keiwando.NativeFileSO {
 		/// </remarks>
 		/// <param name="supportedTypes">The file types used to filter the available files shown to the user.</param>
 		/// <param name="onCompletion">A callback for when the presented dialog has been dismissed. 
-		/// At this point, files have either been opened or the selection has been cancelled.</param>
+		/// The first parameter of the callback specifies whether 
+		/// a file was opened or the selection was cancelled.</param>
 		public void OpenFiles (SupportedFileType[] supportedTypes, Action<bool, OpenedFile[]> onCompletion) {
 			nativeFileSO.OpenFiles(supportedTypes, true, "", "", onCompletion);
 		}
@@ -219,7 +221,8 @@ namespace Keiwando.NativeFileSO {
 		/// should start. If this value is empty, the panel will remember the 
 		/// last visited directory.</param>
 		/// <param name="onCompletion">A callback for when the presented dialog has been dismissed. 
-		/// At this point, files have either been opened or the selection has been cancelled.</param>
+		/// The first parameter of the callback specifies whether 
+		/// a file was opened or the selection was cancelled.</param>
 		public void SelectOpenPaths (SupportedFileType[] fileTypes, 
 		                            bool canSelectMultiple,
 							 		string title, 
@@ -247,7 +250,8 @@ namespace Keiwando.NativeFileSO {
 		/// should start. If this value is empty, the panel will remember the 
 		/// last visited directory.</param>
 		/// <param name="onCompletion">A callback for when the presented dialog has been dismissed. 
-		/// At this point, files have either been opened or the selection has been cancelled.</param>
+		/// The first parameter of the callback specifies whether 
+		/// a file was opened or the selection was cancelled.</param>
 		public string[] SelectOpenPathsSync (SupportedFileType[] fileTypes, 
 		                                   	bool canSelectMultiple,
 									 		string title, 
@@ -283,8 +287,8 @@ namespace Keiwando.NativeFileSO {
 		/// should start. If this value is empty, the panel will remember the 
 		/// last visited directory.</param>
 		/// <param name="onCompletion">A callback for when the presented dialog
-		/// has been dismissed. At this point, a save path has either been selected
-		/// or the selection has been cancelled.</param>
+		/// has been dismissed. The first parameter of the callback specifies whether 
+		/// a file was opened or the selection was cancelled.</param>
 		public void SelectSavePath (FileToSave file,
 								   string title,
 								   string directory,

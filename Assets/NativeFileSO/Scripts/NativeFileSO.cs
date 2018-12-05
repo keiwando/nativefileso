@@ -23,11 +23,11 @@ namespace Keiwando.NativeFileSO {
 	/// 		string newFilename = "ExportedFile.txt";
 	///			
 	/// 		FileToSave file = new FileToSave(path, newFilename, SupportedFileType.PlainText);
-	///
-	///			// Allows the user to choose a save location and saves the 
-	///			// file to that location
-	///			NativeFileSO.shared.SaveFile(file);
-	///		}
+	/// 		
+	/// 		// Allows the user to choose a save location and saves the
+	/// 		// file to that location
+	/// 		NativeFileSO.shared.SaveFile(file);
+	/// 	}
 	/// }
 	/// </code>
 	/// 
@@ -59,7 +59,7 @@ namespace Keiwando.NativeFileSO {
 	/// </code>
 	/// </example>
 	/// <remarks>
-	/// <para>The dialogs shows by the Open and Save functions block any other UI
+	/// <para>The dialogs shown by the Open and Save functions block any other UI
 	/// interactions until the user dismisses the dialog.</para>
 	/// 
 	/// <para>This class is currently compatible with Windows, macOS, iOS and Android.
@@ -115,7 +115,7 @@ namespace Keiwando.NativeFileSO {
 		/// </code>
 		/// </example>
 		/// <remarks>
-		/// <para>The supportedTypes array is just an indicator to the native file chooser
+		/// <para>The <paramref name="supportedTypes"/> array is just an indicator to the native file chooser
 		/// dialog to only allow the user to choose from files of predefined types.
 		/// However, this is not a guarantee that the chosen file is going to contain
 		/// data in the correct file format.</para>
@@ -127,14 +127,16 @@ namespace Keiwando.NativeFileSO {
 		/// arbitrary file.</para>
 		/// 
 		/// <para>You should therefore always check whether the opened file inside of the 
-		/// onCompletion callback contains valid data, instead of assuming that the 
+		/// <paramref name="onCompletion"/> callback contains valid data, instead of assuming that the 
 		/// chosen file type is always correct.</para>
 		/// </remarks>
 		/// <seealso cref="NativeFileSO.OpenFiles(SupportedFileType[], Action{bool, OpenedFile[]})"/>
-		/// <param name="supportedTypes">The file types used to filter the available files shown to the user.</param>
-		/// <param name="onCompletion">A callback when the presented dialog has been dismissed. 
-		/// At this point, a file has either been opened or the selection was cancelled.</param>
-		public void OpenFile(SupportedFileType[] supportedTypes, Action<bool, OpenedFile> onCompletion) {
+		/// <param name="supportedTypes">The file types used to filter the 
+		/// available files shown to the user.</param>
+		/// <param name="onCompletion">A callback for when the presented dialog has 
+		/// been dismissed. The first parameter of the callback specifies whether 
+		/// a file was opened or the selection was cancelled.</param>
+		public void OpenFile (SupportedFileType[] supportedTypes, Action<bool, OpenedFile> onCompletion) {
 			nativeFileSO.OpenFile(supportedTypes, onCompletion);
 		}
 
@@ -166,7 +168,7 @@ namespace Keiwando.NativeFileSO {
 		/// </code>
 		/// </example>
 		/// <remarks>
-		/// <para>The supportedTypes array is just an indicator to the native file chooser
+		/// <para>The <paramref name="supportedTypes"/> array is just an indicator to the native file chooser
 		/// dialog to only allow the user to choose from files of predefined types.
 		/// However, this is not a guarantee that the chosen files are going to contain
 		/// data in the correct file format.</para>
@@ -178,13 +180,14 @@ namespace Keiwando.NativeFileSO {
 		/// arbitrary file.</para>
 		/// 
 		/// <para>You should therefore always check whether the opened files inside of the 
-		/// onCompletion callback contain valid data, instead of assuming that the 
+		/// <paramref name="onCompletion"/> callback contain valid data, instead of assuming that the 
 		/// file types are always correct.</para>
 		/// </remarks>
 		/// <param name="supportedTypes">The file types used to filter the available files shown to the user.</param>
-		/// <param name="onCompletion">A callback when the presented dialog has been dismissed. 
-		/// At this point, files have either been opened or the selection was cancelled.</param>
-		public void OpenFiles(SupportedFileType[] supportedTypes, Action<bool, OpenedFile[]> onCompletion) {
+		/// <param name="onCompletion">A callback for when the presented dialog has 
+		/// been dismissed. The first parameter of the callback specifies whether 
+		/// files were opened or the selection was cancelled.</param>
+		public void OpenFiles (SupportedFileType[] supportedTypes, Action<bool, OpenedFile[]> onCompletion) {
 			nativeFileSO.OpenFiles(supportedTypes, onCompletion);
 		}
 
@@ -197,18 +200,18 @@ namespace Keiwando.NativeFileSO {
 		/// <code>
 		/// // We have a text file that we want to export
 		/// string path = "path/to/existing/fileToSave.txt";
-		///	string newFilename = "ExportedFile.txt";
+		/// string newFilename = "ExportedFile.txt";
 		///
 		/// FileToSave file = new FileToSave(path, newFilename, SupportedFileType.PlainText);
 		///
-		///	// Allows the user to choose a save location and saves the 
-		///	// file to that location
-		///	NativeFileSO.shared.SaveFile(file);
+		/// // Allows the user to choose a save location and saves the 
+		/// // file to that location
+		/// NativeFileSO.shared.SaveFile(file);
 		/// </code>
 		/// </example>
-		/// <param name="file">An instance of the <see cref="Keiwando.NativeFileSO.FileToSave"/> class
+		/// <param name="file">An instance of the <see cref="FileToSave"/> class
 		/// which holds information about the file to be exported.</param>
-		public void SaveFile(FileToSave file) {
+		public void SaveFile (FileToSave file) {
 			nativeFileSO.SaveFile(file);
 		}
 	}
