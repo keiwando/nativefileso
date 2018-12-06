@@ -20,6 +20,18 @@ namespace Keiwando.NativeFileSO {
 		/// The extension(s) of this file type. Separate multiple
 		/// extensions with a pipe (|).
 		/// </summary>
+		/// <example>
+		/// Here's how the JPEG preset is defined with two possible extensions:
+		/// <code>
+		/// public static readonly SupportedFileType JPEG = new SupportedFileType {
+		/// 	Name = "JPEG Image",
+		/// 	Extension = "jpg|jpeg",
+		///    Owner = false,
+		///    AppleUTI = "public.jpeg",
+		///    MimeType = "image/jpeg"
+		/// };
+		/// </code>
+		/// </example>
 		public string Extension;
 
 		/// <summary>
@@ -38,7 +50,8 @@ namespace Keiwando.NativeFileSO {
 		/// Separate multiple UTIs with a pipe (|).
 		/// </summary>
 		/// <remarks>
-		/// See https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/understanding_utis/understand_utis_declare/understand_utis_declare.html#//apple_ref/doc/uid/TP40001319-CH204-SW1
+		/// See <a href="https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/understanding_utis/understand_utis_declare/understand_utis_declare.html#//apple_ref/doc/uid/TP40001319-CH204-SW1"
+		/// >Declaring New Uniform Type Identifiers</a>
 		/// for more info. This property is only relevant on iOS.
 		/// </remarks>
 		public string AppleUTI = "public.data|public.content";
@@ -49,10 +62,10 @@ namespace Keiwando.NativeFileSO {
 		/// 
 		/// Separate multiple UTIs with a pipe (|).
 		/// </summary>
-		/// <remarks>
+		/// <example>
 		/// For example, if you are declaring a custom file type based on plain-text, 
 		/// you should set this property to "public.plain-text".
-		/// </remarks>
+		/// </example>
 		public string AppleConformsToUTI = "";
 
 		/// <summary>
@@ -94,7 +107,7 @@ namespace Keiwando.NativeFileSO {
 
 		/// <summary>
 		/// The <see cref="SupportedFileType"/> preset that matches XML files with
-		/// an .xml extension.
+		/// a .xml extension.
 		/// </summary>
 		public static readonly SupportedFileType XML = new SupportedFileType {
 
@@ -133,7 +146,7 @@ namespace Keiwando.NativeFileSO {
 
 		/// <summary>
 		/// The <see cref="SupportedFileType"/> preset that matches MP4 video files
-		/// with an .mp4 extension.
+		/// with a .mp4 extension.
 		/// </summary>
 		public static readonly SupportedFileType MP4 = new SupportedFileType {
 
@@ -145,8 +158,8 @@ namespace Keiwando.NativeFileSO {
 		};
 
 		/// <summary>
-		/// The <see cref="SupportedFileType"/> preset that matches mp3 autio files
-		/// with an .mp3 extension.
+		/// The <see cref="SupportedFileType"/> preset that matches mp3 audio files
+		/// with a .mp3 extension.
 		/// </summary>
 		public static readonly SupportedFileType MP3 = new SupportedFileType {
 

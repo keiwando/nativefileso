@@ -9,7 +9,7 @@ namespace Keiwando.NativeFileSO {
 	public class OpenedFile {
 
 		/// <summary>
-		/// Gets the filename including the extension.
+		/// The filename including the extension.
 		/// </summary>
 		/// <remarks>
 		/// The filename here is not the full path to the file but only its last
@@ -19,13 +19,13 @@ namespace Keiwando.NativeFileSO {
 		public string Name { get; private set; }
 
 		/// <summary>
-		/// Gets the extension (including the period ".") of the file.
+		/// The file extension (including the period ".").
 		/// </summary>
 		/// <value>The file extension.</value>
 		public string Extension { get; private set; }
 
 		/// <summary>
-		/// Gets the loaded byte contents of the file.
+		/// The loaded byte contents of the file.
 		/// </summary>
 		/// <value>The byte data.</value>
 		public byte[] Data { 

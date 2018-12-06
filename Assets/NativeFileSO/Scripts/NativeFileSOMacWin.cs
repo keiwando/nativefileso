@@ -160,15 +160,16 @@ namespace Keiwando.NativeFileSO {
 		/// </remarks>
 		/// <param name="fileTypes">The file types used to filter the available files shown 
 		/// to the user.</param>
-		/// <param name="canSelectMultiple">Determines whether mutliple files can be selected 
+		/// <param name="canSelectMultiple">Determines whether multiple files can be selected 
 		/// and loaded at once.</param>
-		/// <param name="title">Title of the shown dialog. Note: The title is not
-		/// shown for macOS > 10.11</param>
+		/// <param name="title">The title of the dialog. Note: The title is not
+		/// shown on macOS 10.11 and above.</param>
 		/// <param name="directory">The default directory in which file navigation
 		/// should start. If this value is empty, the panel will remember the 
 		/// last visited directory.</param>
 		/// <param name="onCompletion">A callback for when the presented dialog has been dismissed. 
-		/// At this point, files have either been opened or the selection has been cancelled.</param>
+		/// The first parameter of the callback specifies whether 
+		/// files were opened or the selection was cancelled.</param>
 		public void OpenFiles (SupportedFileType[] fileTypes, 
 		                      bool canSelectMultiple,
 					   		  string title, 
@@ -186,13 +187,14 @@ namespace Keiwando.NativeFileSO {
 		/// <remarks>
 		/// On macOS, this will present a floating panel.
 		/// </remarks>
-		/// <returns>The array of loaded files.</returns>
+		/// <returns>The array of loaded files managed by <see cref="OpenedFile"/>
+		/// instances.</returns>
 		/// <param name="fileTypes">The file types used to filter the available files shown 
 		/// to the user.</param>
-		/// <param name="canSelectMultiple">Determines whether mutliple files can be selected 
+		/// <param name="canSelectMultiple">Determines whether multiple files can be selected 
 		/// and loaded at once.</param>
-		/// <param name="title">Title of the shown dialog. Note: The title is not
-		/// shown for macOS > 10.11</param>
+		/// <param name="title">The title of the dialog. Note: The title is not
+		/// shown on macOS 10.11 and above.</param>
 		/// <param name="directory">The default directory in which file navigation
 		/// should start. If this value is empty, the panel will remember the 
 		/// last visited directory.</param>
@@ -213,16 +215,16 @@ namespace Keiwando.NativeFileSO {
 		/// </remarks>
 		/// <param name="fileTypes">The file types used to filter the available files shown 
 		/// to the user.</param>
-		/// <param name="canSelectMultiple">Determines whether mutliple files can be selected 
+		/// <param name="canSelectMultiple">Determines whether multiple files can be selected 
 		/// and loaded at once.</param>
-		/// <param name="title">Title of the shown dialog. Note: The title is not
-		/// shown for macOS > 10.11</param>
+		/// <param name="title">The title of the dialog. Note: The title is not
+		/// shown on macOS 10.11 and above.</param>
 		/// <param name="directory">The default directory in which file navigation
 		/// should start. If this value is empty, the panel will remember the 
 		/// last visited directory.</param>
 		/// <param name="onCompletion">A callback for when the presented dialog has been dismissed. 
 		/// The first parameter of the callback specifies whether 
-		/// a file was opened or the selection was cancelled.</param>
+		/// a path was selected or the selection was cancelled.</param>
 		public void SelectOpenPaths (SupportedFileType[] fileTypes, 
 		                            bool canSelectMultiple,
 							 		string title, 
@@ -242,16 +244,13 @@ namespace Keiwando.NativeFileSO {
 		/// <returns>The array of selected file paths.</returns>
 		/// <param name="fileTypes">The file types used to filter the available files shown 
 		/// to the user.</param>
-		/// <param name="canSelectMultiple">Determines whether mutliple files can be selected 
+		/// <param name="canSelectMultiple">Determines whether multiple files can be selected 
 		/// and loaded at once.</param>
-		/// <param name="title">Title of the shown dialog. Note: The title is not
-		/// shown for macOS > 10.11</param>
+		/// <param name="title">The title of the dialog. Note: The title is not
+		/// shown on macOS 10.11 and above.</param>
 		/// <param name="directory">The default directory in which file navigation
 		/// should start. If this value is empty, the panel will remember the 
 		/// last visited directory.</param>
-		/// <param name="onCompletion">A callback for when the presented dialog has been dismissed. 
-		/// The first parameter of the callback specifies whether 
-		/// a file was opened or the selection was cancelled.</param>
 		public string[] SelectOpenPathsSync (SupportedFileType[] fileTypes, 
 		                                   	bool canSelectMultiple,
 									 		string title, 
@@ -266,8 +265,8 @@ namespace Keiwando.NativeFileSO {
 		/// </summary>
 		/// <param name="file">An instance of the <see cref="FileToSave"/> class
 		/// which holds information about the file to be exported.</param>
-		/// <param name="title">Title of the shown dialog. Note: The title is not
-		/// shown for macOS > 10.11</param>
+		/// <param name="title">The title of the dialog. Note: The title is not
+		/// shown on macOS 10.11 and above.</param>
 		/// <param name="directory">The default directory in which file navigation
 		/// should start. If this value is empty, the panel will remember the 
 		/// last visited directory.</param>
@@ -281,14 +280,14 @@ namespace Keiwando.NativeFileSO {
 		/// </summary>
 		/// <param name="file">An instance of the <see cref="FileToSave"/> class
 		/// which holds information about the file to be exported.</param>
-		/// <param name="title">Title of the shown dialog. Note: The title is not
-		/// shown for macOS > 10.11</param>
+		/// <param name="title">The title of the dialog. Note: The title is not
+		/// shown on macOS 10.11 and above.</param>
 		/// <param name="directory">The default directory in which file navigation
 		/// should start. If this value is empty, the panel will remember the 
 		/// last visited directory.</param>
 		/// <param name="onCompletion">A callback for when the presented dialog
 		/// has been dismissed. The first parameter of the callback specifies whether 
-		/// a file was opened or the selection was cancelled.</param>
+		/// a path was selected or the selection was cancelled.</param>
 		public void SelectSavePath (FileToSave file,
 								   string title,
 								   string directory,
@@ -303,8 +302,8 @@ namespace Keiwando.NativeFileSO {
 		/// <returns>The selected save location. Returns <c>null</c> if no path was selected.</returns>
 		/// <param name="file">An instance of the <see cref="FileToSave"/> class
 		/// which holds information about the file to be exported.</param>
-		/// <param name="title">Title of the shown dialog. Note: The title is not
-		/// shown for macOS > 10.11</param>
+		/// <param name="title">The title of the dialog. Note: The title is not
+		/// shown on macOS 10.11 and above.</param>
 		/// <param name="directory">The default directory in which file navigation
 		/// should start. If this value is empty, the panel will remember the 
 		/// last visited directory.</param>

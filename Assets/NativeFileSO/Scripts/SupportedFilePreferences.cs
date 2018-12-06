@@ -14,7 +14,7 @@ namespace Keiwando.NativeFileSO {
 		/// <remarks>
 		/// Users are going to be able to open files of the file types
 		/// included in this array from outside of the application, e.g. using
-		/// the native "Share" and "Open in" functionality of Android and iOS.
+		/// the native "Share" and "Open in" functionality within Android and iOS.
 		/// </remarks>
 		public static readonly SupportedFileType[] supportedFileTypes = {
 

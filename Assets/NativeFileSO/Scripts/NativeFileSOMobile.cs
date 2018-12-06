@@ -25,13 +25,12 @@ namespace Keiwando.NativeFileSO {
 		public static NativeFileSOMobile shared = new NativeFileSOMobile();
 
 		/// <summary>
-		/// Occurs when files were opened without the user being manually 
+		/// This event fires when files were opened without the user being manually 
 		/// prompted to open files from within the app. This occurs if certain
 		/// file types have been associated with the application.
-		/// 
-		/// See <see cref="SupportedFilePreferences"/> for more information on
-		/// file associations.
 		/// </summary>
+		/// <remarks>See <see cref="SupportedFilePreferences"/> for more information on
+		/// file associations.</remarks>
 		public event Action<OpenedFile[]> FilesWereOpened;
 
 		private Action<bool, OpenedFile[]> _callback;
@@ -59,8 +58,9 @@ namespace Keiwando.NativeFileSO {
 		/// </remarks>
 		/// <param name="supportedTypes"> The file types used to filter the available files shown to the user.</param>
 		/// <param name="onCompletion">A callback for when the presented dialog has been dismissed. 
-		/// At this point, a file has either been opened or the selection has been cancelled.</param>
-		public void OpenFile(SupportedFileType[] supportedTypes, Action<bool, OpenedFile> onCompletion) {
+		/// The first parameter of the callback specifies whether 
+		/// a file was opened or the selection was cancelled.</param>
+		public void OpenFile (SupportedFileType[] supportedTypes, Action<bool, OpenedFile> onCompletion) {
 
 			if (isBusy) return;
 			isBusy = true;
@@ -84,8 +84,9 @@ namespace Keiwando.NativeFileSO {
 		/// </remarks>
 		/// <param name="supportedTypes">The file types used to filter the available files shown to the user.</param>
 		/// <param name="onCompletion">A callback for when the presented dialog has been dismissed. 
-		/// At this point, files have either been opened or the selection has been cancelled.</param>
-		public void OpenFiles(SupportedFileType[] supportedTypes, Action<bool, OpenedFile[]> onCompletion) {
+		/// The first parameter of the callback specifies whether 
+		/// files were opened or the selection was cancelled.</param>
+		public void OpenFiles (SupportedFileType[] supportedTypes, Action<bool, OpenedFile[]> onCompletion) {
 
 			if (isBusy) return;
 			isBusy = true;
@@ -104,7 +105,7 @@ namespace Keiwando.NativeFileSO {
 		/// </remarks>
 		/// <param name="file">An instance of the <see cref="FileToSave"/> class
 		/// which holds information about the file to be exported.</param>
-		public void SaveFile(FileToSave file) {
+		public void SaveFile (FileToSave file) {
 
 			if (isBusy) return;
 
