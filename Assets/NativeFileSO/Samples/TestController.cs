@@ -157,9 +157,6 @@ namespace Keiwando.NativeFileSO.Samples {
 			NativeFileSO.shared.OpenFile(testTypes, delegate (bool wasFileOpened, OpenedFile file) {
 				if (wasFileOpened) {
 					ShowContents(file);
-					textField.text += string.Format("OnMainThread: {0}", IsOnMainThread());
-				} else {
-					textField.text = string.Format("OnMainThread: {0}", IsOnMainThread());
 				}
 			});
 		}
@@ -169,9 +166,6 @@ namespace Keiwando.NativeFileSO.Samples {
 			NativeFileSO.shared.OpenFiles(testTypes, delegate (bool wereFilesOpened, OpenedFile[] files) {
 				if (wereFilesOpened) {
 					ShowContents(files);
-					textField.text += string.Format("OnMainThread: {0}", IsOnMainThread());
-				} else {
-					textField.text = string.Format("OnMainThread: {0}", IsOnMainThread());
 				}
 			});
 		}
@@ -181,9 +175,8 @@ namespace Keiwando.NativeFileSO.Samples {
 				testTitle, testDirectory, delegate (bool wereFilesSelected, OpenedFile[] files) {
 					if (wereFilesSelected) {
 						ShowContents(files);
-						Debug.Log(string.Format("OnMainThread: {0}", IsOnMainThread()));
 					} else {
-						textField.text = "File selection was cancelled. On Main Thread: " + IsOnMainThread();
+						textField.text = "File selection was cancelled.";
 					}
 				});
 		}
@@ -203,9 +196,9 @@ namespace Keiwando.NativeFileSO.Samples {
 			NativeFileSOMacWin.shared.SelectOpenPaths(testTypes, true,
 			  testTitle, testDirectory, delegate (bool werePathsSelected, string[] paths) {
 				  if (werePathsSelected) {
-					  textField.text = string.Format("Selected paths:\n{0}\nOn Main Thread: {1}", string.Join("\n", paths), IsOnMainThread());
+					  textField.text = string.Format("Selected paths:\n{0}", string.Join("\n", paths));
 				  } else {
-					  textField.text = "Path selection was cancelled.\nOn Main Thread: " + IsOnMainThread();
+					  textField.text = "Path selection was cancelled.";
 				  }
 			  });
 		}
@@ -233,9 +226,9 @@ namespace Keiwando.NativeFileSO.Samples {
 			
 			NativeFileSOMacWin.shared.SelectSavePath(GetFileToSave(), testTitle, testDirectory, delegate (bool didSelectPath, string savePath) {
 				if (didSelectPath) {
-					textField.text = string.Format("Selected paths:\n{0}\nOn Main Thread{1}", savePath, IsOnMainThread());
+					textField.text = string.Format("Selected paths:\n{0}", savePath);
 				} else {
-					textField.text = "Path selection was cancelled.\nOn Main Thread: " + IsOnMainThread();
+					textField.text = "Path selection was cancelled.";
 				}
 			});
 		}
