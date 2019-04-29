@@ -78,6 +78,8 @@ namespace Keiwando.NativeFileSO {
 		private static INativeFileSO nativeFileSO = NativeFileSOMacWin.shared;
 #elif UNITY_IOS || UNITY_ANDROID
 		private static INativeFileSO nativeFileSO = NativeFileSOMobile.shared;
+#elif UNITY_WEBGL
+		private static INativeFileSO nativeFileSO = NativeFileSOWebGL.shared;
 #else
 		private static INativeFileSO nativeFileSO = null;
 #endif

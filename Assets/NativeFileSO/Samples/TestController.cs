@@ -33,7 +33,7 @@ namespace Keiwando.NativeFileSO.Samples {
 
 #if UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_EDITOR
 			SetupDesktop();
-#elif UNITY_IOS || UNITY_ANDROID
+#elif UNITY_IOS || UNITY_ANDROID || UNITY_WEBGL
 			SetupMobile();
 #endif
 
