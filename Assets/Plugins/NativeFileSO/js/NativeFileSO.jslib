@@ -36,14 +36,10 @@ mergeInto(LibraryManager.library, {
 
         document.body.appendChild(input)
 
-        setTimeout(function() {
+        document.onmouseup = function() {
             input.click()
-        }, 100)
-
-        // document.onmouseup = function() {
-        //     input.click()
-        //     document.onmouseup = null
-        // }
+            document.onmouseup = null
+        }
         
     }
 })
