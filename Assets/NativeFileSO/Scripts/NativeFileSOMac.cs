@@ -180,6 +180,7 @@ namespace Keiwando.NativeFileSO {
 
 		// MARK: - Callbacks
 
+		[AOT.MonoPInvokeCallback(typeof(AsyncCallback))]
 		private static void DidSelectPathsForOpenFileCB(bool pathsSelected, IntPtr pathsPtr, ulong length) {
 
 			if (pathsSelected) {
