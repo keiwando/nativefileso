@@ -50,10 +50,6 @@ canSelectMultiple:(bool)canSelectMultiple
             }
             NSString *pathsString = [paths componentsJoinedByString:[NSString stringWithFormat:@"%c", 28]];
             
-            // DEBUG:
-            [self redirectNSLog];
-            NSLog(pathsString);
-            
             unsigned long strLen = [pathsString lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
             
             const char *str = [pathsString UTF8String];
@@ -275,16 +271,8 @@ canSelectMultiple:(bool)canSelectMultiple
                length:(unsigned long)length {
     
     if (callback != nil) {
-        //dispatch_async(dispatch_get_main_queue(), ^(void){
-            callback(pathsSelected, paths, length);
-        //});
+        callback(pathsSelected, paths, length);
     }
-}
-
-// DEBUG:
-+ (void) redirectNSLog {
-    NSString *logPath = @"/Users/Keiwan/Library/Logs/com.keiwando.NativeFileSO/nativeFileSOMac.log";
-    freopen([logPath fileSystemRepresentation],"a+",stderr);
 }
 
 
