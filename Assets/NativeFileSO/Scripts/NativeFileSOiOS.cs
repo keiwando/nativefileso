@@ -6,7 +6,7 @@ using UnityEngine;
 
 #if UNITY_IOS
 
-namespace Keiwando.NativeFileSO {
+namespace Keiwando.NFSO {
 
 	public class NativeFileSOiOS : INativeFileSOMobile {
 

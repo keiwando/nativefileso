@@ -1,8 +1,8 @@
 ﻿using System;
-using Keiwando.NativeFileSO;
+using Keiwando.NFSO;
 
 // TODO: Don't include in package
-namespace Keiwando.NativeFileSO.Samples { 
+namespace Keiwando.NFSO.Samples { 
 
 	public class CustomFileTypes {
 

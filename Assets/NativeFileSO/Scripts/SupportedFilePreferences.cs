@@ -1,5 +1,5 @@
 ﻿using System;
-namespace Keiwando.NativeFileSO {
+namespace Keiwando.NFSO {
 
 	/// <summary>
 	/// A class used by the custom post-processing build phase in order to 

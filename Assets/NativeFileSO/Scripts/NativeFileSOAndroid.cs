@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 
 #if UNITY_ANDROID
-namespace Keiwando.NativeFileSO {
+namespace Keiwando.NFSO {
 	
 	public class NativeFileSOAndroid: INativeFileSOMobile {
 

@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Keiwando.NativeFileSO {
+namespace Keiwando.NFSO {
 
 	/// <summary>
 	/// Stores basic information about a file which has been chosen by the user

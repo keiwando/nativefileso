@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using Ookii.Dialogs;
 using UnityEngine;
 
-namespace Keiwando.NativeFileSO {
+namespace Keiwando.NFSO {
 
 	public class NativeFileSOWindows: INativeFileSODesktop {
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Keiwando.NativeFileSO.Samples { 
+namespace Keiwando.NFSO.Samples { 
 
 	public class FileWriter {
 

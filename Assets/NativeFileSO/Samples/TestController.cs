@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Keiwando.NativeFileSO.Samples {
+namespace Keiwando.NFSO.Samples {
 
 	public class TestController : MonoBehaviour {
 

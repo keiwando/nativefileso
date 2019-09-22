@@ -1,12 +1,12 @@
 ﻿using System;
-namespace Keiwando.NativeFileSO {
+namespace Keiwando.NFSO {
 
 	/// <summary>
 	/// Represents a file type that can be opened by the application.
 	/// </summary>
 	/// <remarks>
 	/// Use one of the static presets or create your own instance of this class.
-	/// Include instances of this type in the <see cref="T:Keiwando.NativeFileSO.SupportedFilePreferences.supportedFileTypes"/>
+	/// Include instances of this type in the <see cref="T:Keiwando.NFSO.SupportedFilePreferences.supportedFileTypes"/>
 	/// array in order to associate them with this application on iOS and Android.
 	/// </remarks>
 	public class SupportedFileType {

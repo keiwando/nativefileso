@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEditor.iOS.Xcode;
-using Keiwando.NativeFileSO;
+using Keiwando.NFSO;
 
 public class NativeFileSOBuild {
 

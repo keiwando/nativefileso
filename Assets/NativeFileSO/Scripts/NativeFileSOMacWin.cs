@@ -3,7 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Keiwando.NativeFileSO {
+namespace Keiwando.NFSO {
 
 	/// <summary>
 	/// Provides methods for native file open and save functionality which is
@@ -13,7 +13,7 @@ namespace Keiwando.NativeFileSO {
 	/// The following example demonstrates how to use the <see cref="NativeFileSOMacWin"/>
 	/// class in order to allow the user to select multiple paths of files to be opened.
 	/// <code>
-	/// using Keiwando.NativeFileSO;
+	/// using Keiwando.NFSO;
 	/// 
 	/// public class OpenPathsTest {
 	///

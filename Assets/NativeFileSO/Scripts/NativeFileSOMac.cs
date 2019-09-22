@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Linq;
 using UnityEngine;
 
-namespace Keiwando.NativeFileSO {
+namespace Keiwando.NFSO {
 
 	public class NativeFileSOMac: INativeFileSODesktop {
 

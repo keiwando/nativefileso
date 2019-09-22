@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Keiwando.NativeFileSO { 
+namespace Keiwando.NFSO { 
 
 	public class NativeFileSOUnityEvent : MonoBehaviour {
 

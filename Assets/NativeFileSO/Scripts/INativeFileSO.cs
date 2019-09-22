@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Keiwando.NativeFileSO { 
+namespace Keiwando.NFSO { 
 
 	public interface INativeFileSO {
 

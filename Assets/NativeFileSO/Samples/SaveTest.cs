@@ -1,5 +1,5 @@
 ﻿
-namespace Keiwando.NativeFileSO.Samples {
+namespace Keiwando.NFSO.Samples {
 
 	public class SaveTest {
 

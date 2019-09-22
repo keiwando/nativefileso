@@ -2,7 +2,7 @@
 using AOT;
 using UnityEngine;
 
-namespace Keiwando.NativeFileSO {
+namespace Keiwando.NFSO {
 
 	/// <summary>
 	/// Provides methods for native file open and share functionality on 
