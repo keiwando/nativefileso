@@ -3,8 +3,11 @@
 //  UnityNativeFileImportExport
 //
 //  Created by Keiwan Donyagard on 18.09.18.
-//  Copyright © 2018 Keiwan Donyagard. All rights reserved.
-//
+//  Copyright © 2018 Keiwan Donyagard
+// 
+//  This Source Code Form is subject to the terms of the Mozilla Public
+//  License, v. 2.0. If a copy of the MPL was not distributed with this
+//  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
