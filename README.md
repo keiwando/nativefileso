@@ -45,16 +45,16 @@ Otherwise, continue with the following steps:
 
 Inside of your own MonoBehaviour class that you want to deal with associated files that the user is trying to open in your app, you need to subscribe to the `FilesWereOpened` event that is raised by the shared instance of the `NativeFileSOMobile` class.
 
-```
+```csharp
 using Keiwando.NFSO;
 
 public class MyFileHandler : MonoBehaviour {
 
-	void Start() {
-		NativeFileSOMobile.shared.FilesWereOpened += delegate (OpenedFile[] files) {
-			// Process the opened files
-		};		
-	}
+    void Start() {
+        NativeFileSOMobile.shared.FilesWereOpened += delegate (OpenedFile[] files) {
+            // Process the opened files
+        };		
+    }
 }
 ```
 
@@ -68,16 +68,15 @@ and add `Keiwando.NativeFileSO.NativeFileSOUnityEvent` to the list and assign it
 
 You associate file types with your app by including them in the `supportedFileTypes` array in the `SupportedFilePreferences.cs` file. You can use the presets or create your own instances of the `SupportedFileType` class.
 
-```
+```csharp
 public static readonly SupportedFileType[] supportedFileTypes = {
 
-	// Edit this list to include your desired file types
+    // Edit this list to include your desired file types
 
-	SupportedFileType.JPEG,
-	SupportedFileType.PlainText
-	//SupportedFileType.Any
+    SupportedFileType.JPEG,
+    SupportedFileType.PlainText
+    //SupportedFileType.Any
 };
-
 ```
 
 These files will be automatically associated with the iOS app, however, the Android plugin requires one additional step. After editing the `supportedFileTypes` array, wait for the Editor to compile the scripts and then click on the **Tools > NativeFileSO > RefreshAndroidPlugin** menu item. You will need to manually do this once each time you change the list of associated file types.
@@ -92,7 +91,9 @@ The `NativeFileSO` class provides the main interface for you to interact with th
 
 All of the classes you need to interact with are contained in the `Keiwando.NFSO` namespace, so the following examples are assumed to contain a
 
-    using Keiwando.NFSO;
+```csharp
+using Keiwando.NFSO;
+```
 
 statement at the top of the file.
 
@@ -102,7 +103,7 @@ Visit the [documentation](http://keiwando.com/nativefileso/docs/) for a more det
 
 The following example demonstrates how to use the `NativeFileSO` class in order to copy/export a file from an existing path to a new location chosen by the user.
 
-```
+```csharp
 string path = "path/to/existing/fileToSave.txt";
 string newFilename = "ExportedFile.txt";
 
@@ -117,20 +118,20 @@ NativeFileSO.shared.SaveFile(file);
 
 This snipped shows how to use the `NativeFileSO` class in order to let the user choose a text file and handle its loaded contents.
 
-```
+```csharp
 // We want the user to select a plain text file.
 SupportedFileType[] supportedFileTypes = {
-	SupportedFileType.PlainText
+    SupportedFileType.PlainText
 };
 
 NativeFileSO.shared.OpenFile(supportedFileTypes,
   delegate (bool fileWasOpened, OpenedFile file) {
-	if (fileWasOpened) {
-		// Process the loaded contents of "file"
-		Debug.Log(file.ToUTF8String());  
-	} else {
-		// The file selection was cancelled.	
-	}
+    if (fileWasOpened) {
+        // Process the loaded contents of "file"
+        Debug.Log(file.ToUTF8String());  
+    } else {
+        // The file selection was cancelled.	
+    }
 });
 ```
 
@@ -157,5 +158,23 @@ NativeFileSO.shared.OpenFile(supportedFileTypes,
 
 Here are the main limitations and platform requirements for the asset that you should read and take into consideration before deciding on whether you would like to integrate NativeFileSO into your own project.
 
-### General
-* 
+**Windows**
+* The Windows build requires **.NET 2.0** (not subset!) and **Mono** (IL2CPP is not supported on Windows)
+
+**macOS**
+* The Open and Save panels don't show custom titles on OSX 10.11 and above.
+
+**Android**
+* Supports **Android 4.4**
+* Requires the Gradle build system! Doesn't work with the internal build system.
+* Does not support minification! (Set PlayerSettings > Publishing Settings > Minify > None)
+* The Android File Browser doesn't guarantee which file type is selected by the user (Can't filter by extension and MIME types are unreliable too)
+* File extensions cannot be reliably associated with the application on Android, so only the MIME type is used for the association. This is mainly important if your app supports a custom file type. In this case, you can set its MIME type to `"application/octet-stream"` or more generally associate every file type with your app (using a wildcard MIME type of `"*/*"`) and deal with invalid file types from within the app after the files have been loaded.
+* When the user opens a file with an associated type with your application, the app is restarted.
+
+**iOS**
+* Supports **iOS 11+**
+* Using “Copy to” with a `UIActivityViewController` only copies the first file of the selection to your app - this is an iOS limitation. Multiple files can be imported at once from within the app using the `OpenFiles` function.
+
+**Mobile (iOS + Android)**
+* The file associations only work for files that exist locally on the device. (The files are not downloaded and imported from an online URL.)
