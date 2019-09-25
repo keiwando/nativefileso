@@ -10,9 +10,21 @@
 
 With all of the functionality that NativeFileSO can offer, there are still some limitations due to platform specific constraints, so please make sure to carefully read the section on [requirements & limitations](#requirements-&-limitations).
 
+## Support this project
+
+This project is available for free. [Donations](https://keiwan.itch.io/nativefileso/purchase) to support the time and effort that has gone into these plugins are greatly appreciated!
+
+## Real world example
+
+I wrote this plugin in order to use it in one of my own projects: [Evolution](https://keiwan.itch.io/evolution). It's a cross-platform sandbox game/simulator that demonstrates machine learning with evolutionary algorithms. This plugin allows it to import and export save files both from within the app and also to associate the custom save file types with the mobile apps so that they show up in the list of apps that can open those files.
+
+Evolution is available for free on all platforms so it's probably the easiest way to get a sense of what this plugin behaves like in once it has been integrated into an actual application.
+
+It's source code is available [here](https://github.com/keiwando/evolution).
+
 ## Setup
 
-Setting up the asset requires relatively little work. After *importing the package* contents, you should have the following folder hierarchy inside of your *Assets* folder:
+Setting up the asset requires relatively little work. After *importing the package* contents, you should have the following folder hierarchy inside of your `Assets` folder:
 
 ```
 Assets/
