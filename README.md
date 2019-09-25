@@ -2,6 +2,8 @@
 
 **NativeFileSO** adds native file import and export functionality across Windows, macOS, iOS and Android to your Unity project.
 
+![Overview](Publishing/Demo/Full-Banner.jpg)
+
 ### Features
 * Select external files and load their byte contents.
 * Export / Share files to a user-selected path / app.
