@@ -14,7 +14,7 @@ With all of the functionality that NativeFileSO can offer, there are still some 
 
 ## Support this project
 
-This project is available for free. [Donations](https://keiwan.itch.io/nativefileso/purchase) to support the time and effort that has gone into these plugins are greatly appreciated!
+NativeFileSO is available for free. [Donations](https://keiwan.itch.io/nativefileso/purchase) to support the time and effort that has gone into this project are greatly appreciated!
 
 ## Real world example
 
@@ -173,7 +173,7 @@ NativeFileSO.shared.OpenFile(supportedFileTypes,
 Here are the main limitations and platform requirements for the asset that you should read and take into consideration before deciding on whether you would like to integrate NativeFileSO into your own project.
 
 **Windows**
-* The Windows build requires **.NET 2.0** (not subset!) and **Mono** (IL2CPP is not supported on Windows)
+* The Windows build requires at least the **.NET 2.0** (not subset!) API compatibility level and the **Mono** scripting backend (IL2CPP is not supported on Windows)
 
 **macOS**
 * The Open and Save panels don't show custom titles on OSX 10.11 and above.

@@ -7,7 +7,6 @@
 using System;
 using Keiwando.NFSO;
 
-// TODO: Don't include in package
 namespace Keiwando.NFSO.Samples { 
 
 	public class CustomFileTypes {

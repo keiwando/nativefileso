@@ -11,7 +11,7 @@ PlayerSettings:
   defaultScreenOrientation: 4
   targetDevice: 2
   useOnDemandResources: 0
-  accelerometerFrequency: 60
+  accelerometerFrequency: 0
   companyName: Keiwan Donyagard
   productName: NativeFileSO
   defaultCursor: {fileID: 0}
@@ -118,7 +118,7 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 1
-  bundleVersion: 0.1
+  bundleVersion: 1.0
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -156,7 +156,8 @@ PlayerSettings:
     Android: com.keiwando.NativeFileSO
     Standalone: com.keiwando.NativeFileSO
     iOS: com.keiwando.nativefileso
-  buildNumber: {}
+  buildNumber:
+    iOS: 1
   AndroidBundleVersionCode: 2
   AndroidMinSdkVersion: 19
   AndroidTargetSdkVersion: 0
