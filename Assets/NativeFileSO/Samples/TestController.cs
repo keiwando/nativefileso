@@ -225,7 +225,7 @@ namespace Keiwando.NFSO.Samples {
 
 			FileWriter.WriteTestFile(Application.persistentDataPath);
 			NativeFileSOMacWin.shared.SaveFile(GetFileToSave(), testTitle, testDirectory);
-			FileWriter.DeleteTestFile(Application.persistentDataPath);
+			// FileWriter.DeleteTestFile(Application.persistentDataPath);
 		}
 
 		private void SavePathDesktopTest() {
