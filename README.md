@@ -130,7 +130,7 @@ NativeFileSO.shared.SaveFile(file);
 
 ### Open a single file
 
-This snipped shows how to use the `NativeFileSO` class in order to let the user choose a text file and handle its loaded contents.
+This snippet shows how to use the `NativeFileSO` class in order to let the user choose a text file and handle its loaded contents.
 
 ```csharp
 // We want the user to select a plain text file.
