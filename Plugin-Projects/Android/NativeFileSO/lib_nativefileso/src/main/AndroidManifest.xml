@@ -2,7 +2,7 @@
           package="com.keiwando.lib_nativefileso">
 
     <application>
-        <activity android:name="com.keiwando.lib_nativefileso.NativeFileOpenActivity">
+        <activity android:name="com.keiwando.lib_nativefileso.NativeFileOpenActivity" android:exported="true">
             <!-- #NativeFileSOIntentsStart# -->
 			<!-- #NativeFileSOIntentsEnd# -->
         </activity>
