@@ -1,4 +1,0 @@
-outputPath: ../../../Websites/keiwando/nativefileso/docs
-sourcePath: ../Assets/NativeFileSO/Scripts
-headerPath: header.html
-indexContentPath: indexContents.html

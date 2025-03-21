@@ -168,17 +168,17 @@ NativeFileSO.shared.OpenFile(supportedFileTypes,
 ![Android](Publishing/Demo/Android.jpg?raw=true)
 
 
-## Requirements & Limitations
+## Requirements & Limitations <!-- anchor: requirements-&-limitations -->
 
 Here are the main limitations and platform requirements for the asset that you should read and take into consideration before deciding on whether you would like to integrate NativeFileSO into your own project.
 
-**Windows**
+#### Windows
 * The Windows build requires at least the **.NET 2.0** (not subset!) API compatibility level and the **Mono** scripting backend (IL2CPP is not supported on Windows)
 
-**macOS**
+#### macOS
 * The Open and Save panels don't show custom titles on OSX 10.11 and above.
 
-**Android**
+#### Android
 * Supports **Android 4.4**
 * Requires the Gradle build system! Doesn't work with the internal build system.
 * Does not support minification! (Set PlayerSettings > Publishing Settings > Minify > None)
@@ -186,9 +186,9 @@ Here are the main limitations and platform requirements for the asset that you s
 * File extensions cannot be reliably associated with the application on Android, so only the MIME type is used for the association. This is mainly important if your app supports a custom file type. In this case, you can set its MIME type to `"application/octet-stream"` or more generally associate every file type with your app (using a wildcard MIME type of `"*/*"`) and deal with invalid file types from within the app after the files have been loaded.
 * When the user opens a file with an associated type with your application, the app is restarted.
 
-**iOS**
+#### iOS
 * Supports **iOS 11+**
 * Using “Copy to” with a `UIActivityViewController` only copies the first file of the selection to your app - this is an iOS limitation. Multiple files can be imported at once from within the app using the `OpenFiles` function.
 
-**Mobile (iOS + Android)**
+#### Mobile (iOS + Android)
 * The file associations only work for files that exist locally on the device. (The files are not downloaded and imported from an online URL.)
