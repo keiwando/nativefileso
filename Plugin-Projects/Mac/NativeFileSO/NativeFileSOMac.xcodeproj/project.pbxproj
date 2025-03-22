@@ -275,7 +275,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 9JYRND24N9;
+				DEVELOPMENT_TEAM = ERZXMZEK56;
 				INFOPLIST_FILE = NativeFileSOMac/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				PRODUCT_BUNDLE_IDENTIFIER = com.keiwando.NativeFileSOMac;
@@ -290,7 +290,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 9JYRND24N9;
+				DEVELOPMENT_TEAM = ERZXMZEK56;
 				INFOPLIST_FILE = NativeFileSOMac/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				PRODUCT_BUNDLE_IDENTIFIER = com.keiwando.NativeFileSOMac;
