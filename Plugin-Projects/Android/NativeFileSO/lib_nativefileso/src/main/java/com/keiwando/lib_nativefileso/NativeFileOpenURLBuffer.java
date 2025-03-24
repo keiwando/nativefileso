@@ -13,82 +13,23 @@ import android.os.Debug;
 import android.provider.OpenableColumns;
 import android.util.Log;
 
+import com.keiwando.lib_nativefileso.androidx.annotation.NonNull;
+
 import java.io.*;
 import java.util.ArrayList;
 
-public class NativeFileOpenURLBuffer {
+public final class NativeFileOpenURLBuffer {
 
     private static final NativeFileOpenURLBuffer instance = new NativeFileOpenURLBuffer();
 
     private static final String NATIVE_SO_DIR = "NativeFileSO";
 
-    private ArrayList<OpenedFile> openedFiles = new ArrayList<>();
+    private final ArrayList<OpenedFile> openedFiles = new ArrayList<>();
 
     private NativeFileOpenURLBuffer(){}
 
     public static NativeFileOpenURLBuffer getInstance() {
         return instance;
-    }
-
-    public void refreshBufferWithUris(ArrayList<Uri> uris, ContentResolver resolver) {
-        openedFiles.clear();
-        for(Uri uri : uris) {
-            OpenedFile file = loadFileFromUri(uri, resolver);
-            if (file != null) {
-                openedFiles.add(file);
-            }
-        }
-    }
-
-    public OpenedFile loadFileFromUri(Uri uri, ContentResolver resolver) {
-
-        Log.d("Plugin DEBUG", "Start loading file");
-
-        InputStream stream = null;
-        try {
-            stream = resolver.openInputStream(uri);
-
-            if (stream == null) {
-                return null;
-            }
-
-            int size = (int)Math.min(Integer.MAX_VALUE, getFileSizeFromUri(uri, resolver));
-            Log.d("Plugin Debug", "File size: " + size);
-
-            ByteArrayOutputStream result;
-            byte[] data;
-
-            if (size == -1) {
-                result = new ByteArrayOutputStream();
-                byte[] buffer = new byte[1024];
-                int length;
-                while ((length = stream.read(buffer)) != -1) {
-                    result.write(buffer, 0, length);
-                }
-                data = result.toByteArray();
-
-            } else {
-
-                data = new byte[size];
-                stream.read(data, 0, data.length);
-            }
-
-            String filename = getFilenameFromUri(uri, resolver);
-
-            Log.d("Plugin DEBUG", "A file was loaded in Plugin!");
-            stream.close();
-
-            return new OpenedFile(filename, data, uri.getPath());
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            //stream.close();
-            return null;
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.d("Plugin DEBUG", "EXCEPTION: File did not finish loading!");
-            return null;
-        }
     }
 
     public void saveFileFromUriToFolder(Uri uri, File file, ContentResolver resolver) {
@@ -122,20 +63,18 @@ public class NativeFileOpenURLBuffer {
 
     private String getFilenameFromUri(Uri uri, ContentResolver resolver) {
 
-        Cursor cursor = resolver.query(uri, null, null, null, null, null);
         String result = null;
+        if (uri == null || resolver == null) {
+            return "";
+        }
 
-        try {
+        try (Cursor cursor = resolver.query(uri, null, null, null, null, null);) {
             if (cursor != null && cursor.moveToFirst()) {
-                result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                result = cursor.getString(cursor.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME));
             }
         } catch (Exception e) {
             e.printStackTrace();
             Log.d("Plugin DEBUG","Could not retrieve filename");
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
         }
 
         if (result == null) {
@@ -152,12 +91,14 @@ public class NativeFileOpenURLBuffer {
 
     private long getFileSizeFromUri(Uri uri, ContentResolver resolver) {
 
-        Cursor cursor = resolver.query(uri, null, null, null, null, null);
         long size = -1;
+        if (uri == null || resolver == null) {
+            return size;
+        }
 
-        try {
+        try (Cursor cursor = resolver.query(uri, null, null, null, null, null)) {
             if (cursor != null && cursor.moveToFirst()) {
-                size = cursor.getLong(cursor.getColumnIndex(OpenableColumns.SIZE));
+                size = cursor.getLong(cursor.getColumnIndexOrThrow(OpenableColumns.SIZE));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -185,17 +126,18 @@ public class NativeFileOpenURLBuffer {
 
         byte[] data = new byte[0];
 
-        for (File file : getNativeSODir(cacheDir).listFiles()) {
+        File[] files = getNativeSODir(cacheDir).listFiles();
+        if (files == null) {
+            return;
+        }
+        for (File file : files) {
 
-            //OpenedFile openedFile = loadFileFromUri(Uri.fromFile(file), resolver);
             String filename = getFilenameFromUri(Uri.fromFile(file), resolver);
-            long size = getFileSizeFromUri(Uri.fromFile(file), resolver);
+            // long size = getFileSizeFromUri(Uri.fromFile(file), resolver);
             OpenedFile openedFile = new OpenedFile(filename, data, file.getPath());
-            if (openedFile != null) {
-                openedFiles.add(openedFile);
-                Log.d("Plugin DEBUG", "Loaded file from Cache Dir");
-                //file.delete();
-            }
+            openedFiles.add(openedFile);
+            Log.d("Plugin DEBUG", "Loaded file from Cache Dir");
+            //file.delete();
         }
     }
 

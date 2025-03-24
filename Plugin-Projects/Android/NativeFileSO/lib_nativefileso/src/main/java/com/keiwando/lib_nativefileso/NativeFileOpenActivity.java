@@ -12,9 +12,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+
+import com.keiwando.lib_nativefileso.androidx.annotation.NonNull;
 import com.keiwando.lib_nativefileso.androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class NativeFileOpenActivity extends Activity {
 
@@ -40,7 +43,7 @@ public class NativeFileOpenActivity extends Activity {
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true); // 4.4+
             }
 
-            if (encodedTypes != null && !encodedTypes.equals("")) {
+            if (encodedTypes != null && !encodedTypes.isEmpty()) {
                 String[] mimeTypes = encodedTypes.split(" ");
 
                 if (mimeTypes.length == 1) {
@@ -63,12 +66,12 @@ public class NativeFileOpenActivity extends Activity {
             // File is trying to be opened externally
             ArrayList<Uri> uris = new ArrayList<>();
             String action = lastIntent.getAction();
-            if (action == Intent.ACTION_SEND) {
+            if (Objects.equals(action, Intent.ACTION_SEND)) {
                 uris.add((Uri)lastIntent.getExtras().get(Intent.EXTRA_STREAM));
 
-            } else if (action == Intent.ACTION_SEND_MULTIPLE){
+            } else if (Objects.equals(action, Intent.ACTION_SEND_MULTIPLE)){
                 uris = (ArrayList<Uri>)lastIntent.getExtras().get(Intent.EXTRA_STREAM);
-            } else if (action == Intent.ACTION_VIEW || action == Intent.ACTION_EDIT) {
+            } else if (Objects.equals(action, Intent.ACTION_VIEW) || Objects.equals(action, Intent.ACTION_EDIT)) {
                 uris.add((Uri)lastIntent.getData());
             } else {
                 Log.d("Plugin DEBUG", "Intent action not known.");
@@ -103,14 +106,18 @@ public class NativeFileOpenActivity extends Activity {
                 ArrayList<Uri> uris = new ArrayList<>();
                 ClipData clipData = data.getClipData();
                 if (clipData == null) {
-
-                    uris.add(data.getData());
+                    Uri uri = data.getData();
+                    if (uri != null) {
+                        uris.add(uri);
+                    }
                 } else {
                     for (int i = 0; i < clipData.getItemCount(); i++) {
-                        uris.add(clipData.getItemAt(i).getUri());
+                        Uri uri = clipData.getItemAt(i).getUri();
+                        if (uri != null) {
+                            uris.add(uri);
+                        }
                     }
                 }
-                //NativeFileOpenURLBuffer.getInstance().refreshBufferWithUris(uris, getContentResolver());
                 NativeFileOpenURLBuffer.getInstance().saveFilesInCacheDir(uris, getCacheDir(), getContentResolver());
             }
         }

@@ -9,14 +9,17 @@ package com.keiwando.lib_nativefileso;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import com.keiwando.lib_nativefileso.androidx.core.content.FileProvider;
 
 import java.io.File;
+import java.util.List;
 
 public class NativeFileSO {
 
-    private final static String AUTHORITY = "com.keiwando.nativefileso.{applicationId}.provider";
+    private final static String AUTHORITY = "com.keiwando.nativefileso.{applicationId}.fileprovider";
 
     private final static NativeFileOpenURLBuffer fileBuffer = NativeFileOpenURLBuffer.getInstance();
 
@@ -67,9 +70,15 @@ public class NativeFileSO {
         shareIntent.setAction(Intent.ACTION_SEND);
         shareIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         shareIntent.putExtra(Intent.EXTRA_STREAM, contentURI);
-
         shareIntent.setType(mimeType);
 
-        context.startActivity(Intent.createChooser(shareIntent, "Share"));
+        Intent chooser = Intent.createChooser(shareIntent, "Share");
+
+        List<ResolveInfo> resInfoList = context.getPackageManager().queryIntentActivities(chooser, PackageManager.MATCH_ALL);
+        for (ResolveInfo resolveInfo : resInfoList) {
+            String packageName = resolveInfo.activityInfo.packageName;
+            context.grantUriPermission(packageName, contentURI, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
+        context.startActivity(chooser);
     }
 }
