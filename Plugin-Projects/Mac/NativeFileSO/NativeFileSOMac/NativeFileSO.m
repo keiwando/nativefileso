@@ -98,12 +98,12 @@ canSelectMultiple:(bool)canSelectMultiple
     }
 }
 
-+ (void)fileSave:(NSString *)extension
++ (void)fileSave:(NSString *)extensions
             name:(NSString *)name
            title:(NSString *)title
        directory:(NSString *)directory {
     
-    NSArray *fileExtensions = [NSArray arrayWithObjects:extension, nil];
+    NSArray *fileExtensions = [self extractExtensions:extensions];
     NSSavePanel* panel = [self createSavePanel:fileExtensions
                                           name:name
                                          title:title
@@ -129,12 +129,12 @@ canSelectMultiple:(bool)canSelectMultiple
     }];
 }
 
-+ (const char *) fileSaveSync:(NSString *)extension
++ (const char *) fileSaveSync:(NSString *)extensions
                          name:(NSString *)name
                         title:(NSString *)title
                     directory:(NSString *)directory {
     
-    NSArray *fileExtensions = [NSArray arrayWithObjects:extension, nil];
+    NSArray *fileExtensions = [self extractExtensions:extensions];
     NSSavePanel* panel = [self createSavePanel:fileExtensions
                                           name:name
                                          title:title

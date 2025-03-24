@@ -32,15 +32,15 @@ namespace Keiwando.NFSO {
 
 		[DllImport("NativeFileSOMac")]
 		private static extern void pluginSaveFile(string name, 
-		                                          string extension, 
+		                                          string extensions, 
 		                                          string title, 
 		                                          string directory);
 
 		[DllImport("NativeFileSOMac")]
 		private static extern IntPtr pluginSaveFileSync(string name,
-												  	  string extension,
-												 	  string title,
-												  	  string directory);
+												  	  											string extensions,
+												 	  												string title,
+												  	  											string directory);					
 
 		[DllImport("NativeFileSOMac")]
 		private static extern void pluginFreeMemory();
@@ -178,6 +178,40 @@ namespace Keiwando.NFSO {
 			isBusy = true;
 
 			var pathPtr = pluginSaveFileSync(file.Name, file.Extension, title, directory);
+			pluginFreeMemory();
+			isBusy = false;
+
+			return Marshal.PtrToStringAnsi(pathPtr);
+		}
+
+		public void SelectSavePath(SupportedFileType[] fileTypes, 
+												string defaultFileName,
+												string title,
+												string directory,
+												Action<bool, string> onCompletion) {
+
+			if (isBusy) { return; }
+			isBusy = true;	
+
+			pluginSetCallback(DidSelectPathsForPathsCB);
+
+			_pathsCallback = delegate (bool selected, string[] paths) {
+				var path = paths.Length > 0 ? paths[0] : null;
+				onCompletion(selected, path);
+			};
+
+			pluginSaveFile(defaultFileName, EncodeExtensions(fileTypes), title, directory);
+		}
+
+		public string SelectSavePathSync(SupportedFileType[] fileTypes,
+															string defaultFileName,
+															string title,
+															string directory) {
+
+			if (isBusy) { return null; }
+			isBusy = true;
+
+			var pathPtr = pluginSaveFileSync(defaultFileName, EncodeExtensions(fileTypes), title, directory);
 			pluginFreeMemory();
 			isBusy = false;
 

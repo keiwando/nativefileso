@@ -41,5 +41,16 @@ namespace Keiwando.NFSO {
 		string SelectSavePathSync(FileToSave file,
 								  string title, 
 		                          string directory);
+
+		void SelectSavePath(SupportedFileType[] fileTypes, 
+												string defaultFileName,
+												string title,
+												string directory,
+												Action<bool, string> onCompletion);
+
+		string SelectSavePathSync(SupportedFileType[] fileTypes,
+															string defaultFileName,
+															string title,
+															string directory);
 	}
 }

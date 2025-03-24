@@ -143,6 +143,18 @@ namespace Keiwando.NFSO.Samples {
 				SavePathDesktopSyncTest();
 			});
 
+			var savePathMultipleMimeTypesDesktopButton = Instantiate(buttonTemplate, buttonTemplate.transform.parent);
+			SetButtonTitle(savePathMultipleMimeTypesDesktopButton, "Select save path with multiple file types");
+			savePathMultipleMimeTypesDesktopButton.onClick.AddListener(delegate () {
+				SavePathMultiFileTypesDesktopTest();
+			});
+
+			var savePathSyncMultipleMimeTypesDesktopButton = Instantiate(buttonTemplate, buttonTemplate.transform.parent);
+			SetButtonTitle(savePathSyncMultipleMimeTypesDesktopButton, "Select save path with multiple file types (sync)");
+			savePathSyncMultipleMimeTypesDesktopButton.onClick.AddListener(delegate () {
+				SavePathMultiFileTypesDesktopSyncTest();
+			});
+
 			buttonTemplate.gameObject.SetActive(false);
 		}
 
@@ -232,7 +244,7 @@ namespace Keiwando.NFSO.Samples {
 			
 			NativeFileSOMacWin.shared.SelectSavePath(GetFileToSave(), testTitle, testDirectory, delegate (bool didSelectPath, string savePath) {
 				if (didSelectPath) {
-					textField.text = string.Format("Selected paths:\n{0}", savePath);
+					textField.text = string.Format("Selected path:\n{0}", savePath);
 				} else {
 					textField.text = "Path selection was cancelled.";
 				}
@@ -242,12 +254,32 @@ namespace Keiwando.NFSO.Samples {
 		private void SavePathDesktopSyncTest() {
 			var path = NativeFileSOMacWin.shared.SelectSavePathSync(GetFileToSave(), "Save Path Sync", testDirectory);
 			if (path != null) {
-				textField.text = string.Format("Selected paths:\n{0}", path);
+				textField.text = string.Format("Selected path:\n{0}", path);
 			} else {
 				textField.text = "Path selection was cancelled.";
 			}
 		}
 
+		private void SavePathMultiFileTypesDesktopTest() {
+			SupportedFileType[] fileTypes = {SupportedFileType.PlainText, SupportedFileType.PDF, SupportedFileType.GIF, SupportedFileType.PNG};
+			NativeFileSOMacWin.shared.SelectSavePath(fileTypes, "Unnamed", testTitle, testDirectory, delegate (bool didSelectPath, string savePath) {
+				if (didSelectPath) {
+					textField.text = string.Format("Selected path:\n{0}", savePath);
+				} else {
+					textField.text = "Path selection was cancelled.";
+				}
+			});	
+		}
+
+		private void SavePathMultiFileTypesDesktopSyncTest() {
+			SupportedFileType[] fileTypes = {SupportedFileType.PlainText, SupportedFileType.PDF, SupportedFileType.GIF, SupportedFileType.PNG};
+			var path = NativeFileSOMacWin.shared.SelectSavePathSync(fileTypes, "Unnamed", testTitle, testDirectory);
+			if (path != null) {
+				textField.text = string.Format("Selected path:\n{0}", path);
+			} else {
+				textField.text = "Path selection was cancelled.";
+			}
+		}
 
 		private FileToSave GetFileToSave() {
 			var testFilePath = Path.Combine(Application.persistentDataPath, "NativeFileSOTest.txt");

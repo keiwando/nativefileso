@@ -43,22 +43,22 @@ extern "C" {
     }
     
     void pluginSaveFile(const char *name,
-                        const char *extension,
+                        const char *extensions,
                         const char *title,
                         const char *directory) {
         
-        [NativeFileSO fileSave:[NativeFileSO optionalString:extension]
+        [NativeFileSO fileSave:[NativeFileSO optionalString:extensions]
                           name:[NativeFileSO optionalString:name]
                          title:[NativeFileSO optionalString:title]
                      directory:[NativeFileSO optionalString:directory]];
     }
     
     const char* pluginSaveFileSync(const char *name,
-                             const char *extension,
+                             const char *extensions,
                              const char *title,
                              const char *directory) {
         
-        return [NativeFileSO fileSaveSync:[NativeFileSO optionalString:extension]
+        return [NativeFileSO fileSaveSync:[NativeFileSO optionalString:extensions]
                                      name:[NativeFileSO optionalString:name]
                                     title:[NativeFileSO optionalString:title]
                                 directory:[NativeFileSO optionalString:directory]];

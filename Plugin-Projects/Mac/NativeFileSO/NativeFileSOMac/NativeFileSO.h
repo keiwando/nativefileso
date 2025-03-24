@@ -30,13 +30,13 @@ canSelectMultiple:(bool)canSelectMultiple
                    title:(NSString *)title
                directory:(NSString *)directory;
 
-+ (void) fileSave:(NSString *)extension
++ (void) fileSave:(NSString *)extensions
                 name:(NSString *)name
                 title:(NSString *)title
             directory:(NSString *)directory;
 
 
-+ (const char *) fileSaveSync:(NSString *)extension
++ (const char *) fileSaveSync:(NSString *)extensions
                    name:(NSString *)name
                   title:(NSString *)title
               directory:(NSString *)directory;

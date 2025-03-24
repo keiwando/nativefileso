@@ -273,9 +273,10 @@
 		BB4EB5E52152BB7B0059A003 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = ERZXMZEK56;
+				DEVELOPMENT_TEAM = 9JYRND24N9;
 				INFOPLIST_FILE = NativeFileSOMac/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				PRODUCT_BUNDLE_IDENTIFIER = com.keiwando.NativeFileSOMac;
@@ -288,9 +289,10 @@
 		BB4EB5E62152BB7B0059A003 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = ERZXMZEK56;
+				DEVELOPMENT_TEAM = 9JYRND24N9;
 				INFOPLIST_FILE = NativeFileSOMac/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				PRODUCT_BUNDLE_IDENTIFIER = com.keiwando.NativeFileSOMac;
