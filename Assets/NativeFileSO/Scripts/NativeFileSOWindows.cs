@@ -176,6 +176,25 @@ namespace Keiwando.NFSO {
 		public string SelectSavePathSync(FileToSave file,
 								  		 string title,
 										 string directory) {
+				return SelectSavePathSync(new SupportedFileType[] { file.FileType }, file.Name, title, directory);
+		}
+
+		public void SelectSavePath(SupportedFileType[] fileTypes, 
+												string defaultFileName,
+												string title,
+												string directory,
+												Action<bool, string> onCompletion) {
+
+			var path = SelectSavePathSync(fileTypes, defaultFileName, title, directory);
+			if (onCompletion != null) {
+				onCompletion(path != null, path);
+			}		
+		}
+
+		public string SelectSavePathSync(SupportedFileType[] fileTypes,
+															string defaultFileName,
+															string title,
+															string directory) {
 
 			if (isBusy) { return null; }
 			isBusy = true;
@@ -184,18 +203,19 @@ namespace Keiwando.NFSO {
 
 			if (string.IsNullOrEmpty(directory)) {
 				dialog.RestoreDirectory = true;
-				dialog.FileName = file.Name;
+				dialog.FileName = defaultFileName;
 			} else {
-				dialog.FileName = CreateFilenameForSaveDialog(directory, file.Name);
+				dialog.FileName = CreateFilenameForSaveDialog(directory, defaultFileName);
 			}
 
-			dialog.DefaultExt = file.Extension;
+			if (fileTypes.Length > 0) {
+				dialog.DefaultExt = fileTypes[0].Extension;
+
+				dialog.Filter = EncodeFilters(fileTypes);
+			}
 			if (dialog.DefaultExt.Length > 0) {
 				dialog.AddExtension = true;
 				dialog.SupportMultiDottedExtensions = true;
-			}
-			if (file.FileType != null) {
-				dialog.Filter = EncodeFilters(new[] { file.FileType });
 			}
 
 			dialog.Title = title;
