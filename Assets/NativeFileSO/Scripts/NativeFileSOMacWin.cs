@@ -369,14 +369,22 @@ namespace Keiwando.NFSO {
 		/// <returns>The <see cref="OpenedFile"/> instance or null, if the file
 		/// could not be loaded.</returns>
 		/// <param name="path">The full path to the file that is to be loaded.</param>
-		public static OpenedFile FileFromPath (string path) {
+		public static OpenedFile FileFromPath(string path)
+		{
+			if (string.IsNullOrEmpty(path) || !File.Exists(path))
+			{
+				Debug.LogWarning($"[NativeFileSO] Invalid path: {path}");
+				return null;
+			}
 
-			try {
-				byte[] data = File.ReadAllBytes(path);
-				var name = Path.GetFileName(path);
-				return new OpenedFile(name, data);
-			} catch (Exception e) {
-				Debug.Log(e.StackTrace);
+			try
+			{
+				var data = File.ReadAllBytes(path);
+				return new OpenedFile(path, data);
+			}
+			catch (Exception e)
+			{
+				Debug.LogError($"[NativeFileSO] Could not read file:\n{path}\n{e.Message}");
 				return null;
 			}
 		}
