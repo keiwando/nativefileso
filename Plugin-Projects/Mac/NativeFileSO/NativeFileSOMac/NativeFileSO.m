@@ -218,11 +218,23 @@ canSelectMultiple:(bool)canSelectMultiple
             [panel setDirectoryURL:directoryURL];
         }
     }
-    
+  
     if (fileExtensions.count == 0 || [fileExtensions containsObject:@"*"]) {
+      if (@available(macOS 11.0, *)) {
+        [panel setAllowedContentTypes:[NSArray new]];
+      } else {
         [panel setAllowedFileTypes:nil];
+      }
     } else {
+      if (@available(macOS 11.0, *)) {
+        NSMutableArray *utTypes = [NSMutableArray new];
+        for (NSUInteger i = 0; i < fileExtensions.count; i++) {
+          [utTypes addObject:[UTType typeWithFilenameExtension:fileExtensions[i]]];
+        }
+        [panel setAllowedContentTypes:utTypes];
+      } else {
         [panel setAllowedFileTypes:fileExtensions];
+      }
     }
     
     return panel;
