@@ -91,6 +91,8 @@ namespace Keiwando.NFSO {
 		private INativeFileSODesktop nativeFileSO = NativeFileSOMac.shared;
 #elif UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
 		private INativeFileSODesktop nativeFileSO = NativeFileSOWindows.shared;
+#elif UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX
+		private INativeFileSODesktop nativeFileSO = NativeFileSOLinux.shared;
 #else
 		private INativeFileSODesktop nativeFileSO = null;
 #endif
